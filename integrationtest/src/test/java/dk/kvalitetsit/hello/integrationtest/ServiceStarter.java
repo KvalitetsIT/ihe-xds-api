@@ -17,7 +17,7 @@ import java.util.Collections;
 
 public class ServiceStarter {
     private static final Logger logger = LoggerFactory.getLogger(ServiceStarter.class);
-    private static final Logger serviceLogger = LoggerFactory.getLogger("kithugs");
+    private static final Logger serviceLogger = LoggerFactory.getLogger("ihe-xds-api");
     private static final Logger mariadbLogger = LoggerFactory.getLogger("mariadb");
 
     private Network dockerNetwork;
@@ -40,7 +40,7 @@ public class ServiceStarter {
 
         setupDatabaseContainer();
 
-        var resourcesContainerName = "kithugs-resources";
+        var resourcesContainerName = "ihe-xds-api-resources";
         var resourcesRunning = containerRunning(resourcesContainerName);
         logger.info("Resource container is running: " + resourcesRunning);
 
@@ -49,17 +49,17 @@ public class ServiceStarter {
         // Start service
         if (resourcesRunning) {
             VolumesFrom volumesFrom = new VolumesFrom(resourcesContainerName);
-            service = new GenericContainer<>("local/kithugs-qa:dev")
+            service = new GenericContainer<>("local/ihe-xds-api-qa:dev")
                     .withCreateContainerCmdModifier(modifier -> modifier.withVolumesFrom(volumesFrom))
                     .withEnv("JVM_OPTS", "-javaagent:/jacoco/jacocoagent.jar=output=file,destfile=/jacoco-report/jacoco-it.exec,dumponexit=true,append=true -cp integrationtest.jar");
         } else {
-            service = new GenericContainer<>("local/kithugs-qa:dev")
+            service = new GenericContainer<>("local/ihe-xds-api-qa:dev")
                     .withFileSystemBind("/tmp", "/jacoco-report/")
                     .withEnv("JVM_OPTS", "-javaagent:/jacoco/jacocoagent.jar=output=file,destfile=/jacoco-report/jacoco-it.exec,dumponexit=true -cp integrationtest.jar");
         }
 
         service.withNetwork(dockerNetwork)
-                .withNetworkAliases("kithugs")
+                .withNetworkAliases("ihe-xds-api")
 
                 .withEnv("LOG_LEVEL", "INFO")
 

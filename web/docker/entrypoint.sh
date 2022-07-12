@@ -26,8 +26,8 @@ if [[ -z $CORRELATION_ID ]]; then
 fi
 
 if [[ -z $SERVICE_ID ]]; then
-  echo "Default SERVICE_ID = kithugs"
-  export SERVICE_ID=kithugs
+  echo "Default SERVICE_ID = ihe-xds-api"
+  export SERVICE_ID=ihe-xds-api
 fi
 
 JAR_FILE=web.jar

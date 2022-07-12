@@ -1,5 +1,5 @@
-![Build Status](https://github.com/KvalitetsIT/kithugs/workflows/CICD/badge.svg)
-# kithugs
+![Build Status](https://github.com/KvalitetsIT/ihe-xds-api/workflows/CICD/badge.svg)
+# ihe-xds-api
 
 Template repository showing how to be a good Java Spring Boot citizen in a k8s cluster.
 
