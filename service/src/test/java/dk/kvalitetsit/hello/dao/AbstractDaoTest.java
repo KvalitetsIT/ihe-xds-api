@@ -1,7 +1,8 @@
 package dk.kvalitetsit.hello.dao;
 
 import dk.kvalitetsit.hello.configuration.TestConfiguration;
-import dk.kvalitetsit.hello.configuration.DatabaseConfiguration;
+import dk.kvalitetsit.ihexdsapi.configuration.DatabaseConfiguration;
+
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.springframework.context.annotation.PropertySource;

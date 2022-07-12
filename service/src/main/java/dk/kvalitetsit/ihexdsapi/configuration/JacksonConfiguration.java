@@ -1,4 +1,4 @@
-package dk.kvalitetsit.hello.configuration;
+package dk.kvalitetsit.ihexdsapi.configuration;
 
 import com.fasterxml.jackson.databind.Module;
 import org.openapitools.jackson.nullable.JsonNullableModule;

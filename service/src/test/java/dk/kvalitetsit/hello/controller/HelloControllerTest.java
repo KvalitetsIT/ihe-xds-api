@@ -1,8 +1,10 @@
 package dk.kvalitetsit.hello.controller;
 
-import dk.kvalitetsit.hello.service.HelloService;
-import dk.kvalitetsit.hello.service.model.HelloServiceInput;
-import dk.kvalitetsit.hello.service.model.HelloServiceOutput;
+import dk.kvalitetsit.ihexdsapi.controller.IheXdsController;
+import dk.kvalitetsit.ihexdsapi.service.IheXdsService;
+import dk.kvalitetsit.ihexdsapi.service.model.HelloServiceInput;
+import dk.kvalitetsit.ihexdsapi.service.model.HelloServiceOutput;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -17,14 +19,14 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.times;
 
 public class HelloControllerTest {
-    private HelloController helloController;
-    private HelloService helloService;
+    private IheXdsController helloController;
+    private IheXdsService helloService;
 
     @Before
     public void setup() {
-        helloService = Mockito.mock(HelloService.class);
+        helloService = Mockito.mock(IheXdsService.class);
 
-        helloController = new HelloController(helloService);
+        helloController = new IheXdsController(helloService);
     }
 
     @Test

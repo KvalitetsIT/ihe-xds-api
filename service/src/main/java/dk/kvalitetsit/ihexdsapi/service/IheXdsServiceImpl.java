@@ -1,11 +1,11 @@
-package dk.kvalitetsit.hello.service;
-
-import dk.kvalitetsit.hello.service.model.HelloServiceInput;
-import dk.kvalitetsit.hello.service.model.HelloServiceOutput;
+package dk.kvalitetsit.ihexdsapi.service;
 
 import java.time.ZonedDateTime;
 
-public class HelloServiceImpl implements HelloService {
+import dk.kvalitetsit.ihexdsapi.service.model.HelloServiceInput;
+import dk.kvalitetsit.ihexdsapi.service.model.HelloServiceOutput;
+
+public class IheXdsServiceImpl implements IheXdsService {
     @Override
     public HelloServiceOutput helloServiceBusinessLogic(HelloServiceInput input) {
         var output = new HelloServiceOutput();

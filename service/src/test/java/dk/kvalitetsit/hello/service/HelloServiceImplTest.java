@@ -1,8 +1,11 @@
 package dk.kvalitetsit.hello.service;
 
-import dk.kvalitetsit.hello.service.model.HelloServiceInput;
 import org.junit.Before;
 import org.junit.Test;
+
+import dk.kvalitetsit.ihexdsapi.service.IheXdsService;
+import dk.kvalitetsit.ihexdsapi.service.IheXdsServiceImpl;
+import dk.kvalitetsit.ihexdsapi.service.model.HelloServiceInput;
 
 import java.util.UUID;
 
@@ -10,11 +13,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class HelloServiceImplTest {
-    private HelloService helloService;
+    private IheXdsService helloService;
 
     @Before
     public void setup() {
-        helloService = new HelloServiceImpl();
+        helloService = new IheXdsServiceImpl();
     }
 
     @Test
