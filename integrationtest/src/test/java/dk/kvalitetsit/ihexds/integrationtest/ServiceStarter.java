@@ -1,4 +1,4 @@
-package dk.kvalitetsit.hello.integrationtest;
+package dk.kvalitetsit.ihexds.integrationtest;
 
 import com.github.dockerjava.api.model.VolumesFrom;
 import dk.kvalitetsit.hello.VideoLinkHandlerApplication;

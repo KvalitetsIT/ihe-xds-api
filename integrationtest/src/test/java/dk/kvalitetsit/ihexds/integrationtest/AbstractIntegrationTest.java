@@ -1,4 +1,4 @@
-package dk.kvalitetsit.hello.integrationtest;
+package dk.kvalitetsit.ihexds.integrationtest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

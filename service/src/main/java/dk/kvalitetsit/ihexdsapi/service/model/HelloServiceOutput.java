@@ -1,4 +1,4 @@
-package dk.kvalitetsit.hello.service.model;
+package dk.kvalitetsit.ihexdsapi.service.model;
 
 import java.time.ZonedDateTime;
 

@@ -1,4 +1,4 @@
-package dk.kvalitetsit.hello.integrationtest;
+package dk.kvalitetsit.ihexds.integrationtest;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;

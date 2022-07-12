@@ -1,4 +1,4 @@
-package dk.kvalitetsit.hello.service.model;
+package dk.kvalitetsit.ihexdsapi.service.model;
 
 public class HelloServiceInput {
     private String name;

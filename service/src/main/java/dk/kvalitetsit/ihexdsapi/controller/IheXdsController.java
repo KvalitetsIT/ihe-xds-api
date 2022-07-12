@@ -1,6 +1,10 @@
 package dk.kvalitetsit.ihexdsapi.controller;
 
+import javax.validation.Valid;
+
 import org.openapitools.api.IhexdsApi;
+import org.openapitools.model.Iti18Request;
+import org.openapitools.model.Iti18Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -20,5 +24,11 @@ public class IheXdsController implements IhexdsApi {
     public IheXdsController(IheXdsService helloService) {
         this.helloService = helloService;
     }
+
+	@Override
+	public ResponseEntity<Iti18Response> v1Iti18Get(@Valid Iti18Request iti18Request) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
