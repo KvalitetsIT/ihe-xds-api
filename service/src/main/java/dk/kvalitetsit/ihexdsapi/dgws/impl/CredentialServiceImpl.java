@@ -14,9 +14,9 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Base64;
-import java.util.Properties;
+import java.util.*;
 
+import dk.kvalitetsit.ihexdsapi.dgws.CredentialInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +27,10 @@ import dk.sosi.seal.vault.GenericCredentialVault;
 
 public class CredentialServiceImpl implements CredentialService {
 
+	private static final String PASSWORD = "Test1234";
 	private static final Logger LOGGER = LoggerFactory.getLogger(CredentialServiceImpl.class);
+
+	private Map<String, CredentialInfo> registeredInfos = new HashMap<>();
 
 	private KeyStore createKeystore(String alias, String password, String publicCertStr, String privateKeyStr) throws KeyStoreException, CertificateException, IOException, NoSuchAlgorithmException, InvalidKeySpecException {
 		// Create the keystore
@@ -73,18 +76,36 @@ public class CredentialServiceImpl implements CredentialService {
 	}
 
 	@Override
-	public CredentialVault createCredentialVault(String password, String publicCertStr, String privateKeyStr) throws DgwsSecurityException {
-		
+	public synchronized CredentialInfo createAndAddCredentialInfo(String id, String cvr, String organisation, String publicCertStr, String privateKeyStr) throws DgwsSecurityException {
+
+		if (registeredInfos.containsKey(id)) {
+			throw new DgwsSecurityException("A credential vault with id "+id+" is already registered.");
+		}
+
 		Properties properties = new Properties();
 		KeyStore keystore;
 		try {
-			keystore = createKeystore(CredentialVault.ALIAS_SYSTEM, password, publicCertStr, privateKeyStr);
+			keystore = createKeystore(CredentialVault.ALIAS_SYSTEM, PASSWORD, publicCertStr, privateKeyStr);
 		} catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | InvalidKeySpecException | IOException e) {
 			LOGGER.error("Error creating keystore", e);
 			throw new DgwsSecurityException(e);
 		}
 		
-		GenericCredentialVault generic = new GenericCredentialVault(properties, keystore, password);
-		return generic;
+		GenericCredentialVault generic = new GenericCredentialVault(properties, keystore, PASSWORD);
+		CredentialInfo credentialInfo = new CredentialInfo(generic, cvr, organisation);
+
+		registeredInfos.put(id, credentialInfo);
+
+		return credentialInfo;
+	}
+
+	@Override
+	public Collection<String> getIds() {
+		return registeredInfos.keySet();
+	}
+
+	@Override
+	public CredentialInfo getCredentialInfoFromId(String id) {
+		return registeredInfos.get(id);
 	}
 }

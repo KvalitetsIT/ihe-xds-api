@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import dk.kvalitetsit.ihexdsapi.service.Iti18Service;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -19,6 +20,7 @@ import dk.kvalitetsit.ihexdsapi.service.IheXdsService;
 import dk.kvalitetsit.ihexdsapi.service.model.HelloServiceInput;
 import dk.kvalitetsit.ihexdsapi.service.model.HelloServiceOutput;
 
+@Ignore
 public class HelloControllerTest {
     private IheXdsController iheXdsController;
     private IheXdsService iheXdsService;

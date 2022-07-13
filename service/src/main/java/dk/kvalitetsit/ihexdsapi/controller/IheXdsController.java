@@ -2,6 +2,7 @@ package dk.kvalitetsit.ihexdsapi.controller;
 
 import javax.validation.Valid;
 
+import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
 import org.openapitools.api.IhexdsApi;
 import org.openapitools.model.Iti18Request;
 import org.openapitools.model.Iti18Response;
@@ -30,8 +31,12 @@ public class IheXdsController implements IhexdsApi {
 	@Override
 	public ResponseEntity<Iti18Response> v1Iti18Get(@Valid Iti18Request iti18Request) {
 		LOGGER.info("iti18 mere meningsfyldt TODO");
-		Iti18Response iti18Response = iti18Service.queryForDocument(iti18Request);
-		return new ResponseEntity<Iti18Response>(iti18Response, HttpStatus.OK);
+		try {
+			Iti18Response iti18Response = iti18Service.queryForDocument(iti18Request);
+			return new ResponseEntity<Iti18Response>(iti18Response, HttpStatus.OK);
+		} catch (DgwsSecurityException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

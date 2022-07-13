@@ -2,6 +2,8 @@ package dk.kvalitetsit.ihexdsapi.configuration;
 
 import javax.xml.namespace.QName;
 
+import dk.kvalitetsit.ihexdsapi.dgws.CredentialService;
+import dk.kvalitetsit.ihexdsapi.dgws.impl.CredentialServiceImpl;
 import dk.kvalitetsit.ihexdsapi.dgws.impl.StsServiceImpl;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
@@ -40,10 +42,15 @@ public class IheXdsConfiguration{
     public StsService stsService() {
     	return new StsServiceImpl(STSURL);
     }
-    
     @Bean
-    public Iti18Service iti18Service(StsService stsService, Iti18PortType iti18PortType) {
-    	Iti18ServiceImpl iti18ServiceImpl = new Iti18ServiceImpl(stsService, iti18PortType);
+	public CredentialService credentialService() {
+		CredentialServiceImpl credentialService = new CredentialServiceImpl();
+		return credentialService;
+	}
+
+    @Bean
+    public Iti18Service iti18Service(CredentialService credentialService, StsService stsService, Iti18PortType iti18PortType) {
+    	Iti18ServiceImpl iti18ServiceImpl = new Iti18ServiceImpl(credentialService, stsService, iti18PortType);
     	return iti18ServiceImpl;
     }
     

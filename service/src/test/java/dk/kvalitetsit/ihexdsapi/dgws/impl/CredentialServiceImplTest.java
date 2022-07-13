@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.stream.Collectors;
 
+import dk.kvalitetsit.ihexdsapi.dgws.CredentialInfo;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -22,13 +23,14 @@ public class CredentialServiceImplTest extends AbstractTest {
 		// Given
 		String publicCertStr = getFileString("/certificates/public-cert1.cer");
 		String privateKeyStr = getFileString("/certificates/private-cert1.pem");
-		String password = "password";
-		
+		String cvr = "46837428";
+		String organisationName = "Statens Serum Institut";
+
 		// When
-		CredentialVault vault = subject.createCredentialVault(password, publicCertStr, privateKeyStr);
+		CredentialInfo info = subject.createAndAddCredentialInfo("id", cvr, organisationName, publicCertStr, privateKeyStr);
 		
 		// Then
-		Assert.assertNotNull(vault);
+		Assert.assertNotNull(info);
 	}
 
 	@Test(expected = DgwsSecurityException.class)
@@ -37,10 +39,11 @@ public class CredentialServiceImplTest extends AbstractTest {
 		// Given
 		String publicCertStr = "Not a cert";
 		String privateKeyStr = "Not a key";
-		String password = "password";
-		
+		String cvr = "46837428";
+		String organisationName = "Statens Serum Institut";
+
 		// When
-		subject.createCredentialVault(password, publicCertStr, privateKeyStr);
+		subject.createAndAddCredentialInfo("id", cvr, organisationName, publicCertStr, privateKeyStr);
 	}
 
 	@Test
@@ -49,12 +52,13 @@ public class CredentialServiceImplTest extends AbstractTest {
 		// Given
 		String publicCertStr = getFileString("/certificates/other-cert.cer");
 		String privateKeyStr = getFileString("/certificates/private-cert1.pem");
-		String password = "password";
-		
+		String cvr = "46837428";
+		String organisationName = "Statens Serum Institut";
+
 		// When
-		CredentialVault vault = subject.createCredentialVault(password, publicCertStr, privateKeyStr);
+		CredentialInfo info = subject.createAndAddCredentialInfo("id", cvr, organisationName, publicCertStr, privateKeyStr);
 		
 		// Then
-		Assert.assertNotNull(vault);
+		Assert.assertNotNull(info);
 	}
 }

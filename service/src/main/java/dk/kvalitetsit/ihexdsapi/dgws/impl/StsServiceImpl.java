@@ -3,6 +3,7 @@ package dk.kvalitetsit.ihexdsapi.dgws.impl;
 import java.io.IOException;
 import java.util.Properties;
 
+import dk.kvalitetsit.ihexdsapi.dgws.CredentialInfo;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
 import dk.sosi.seal.model.*;
 import org.springframework.http.HttpEntity;
@@ -36,8 +37,8 @@ public class StsServiceImpl implements StsService {
 	}
 
 	@Override
-	public DgwsClientInfo getDgwsClientInfoForSystem(CredentialVault credentialVault, String cvr, String organisation) throws DgwsSecurityException {
-		Document systemCardDocument = getSystemIdCardFromSTS(credentialVault, cvr, organisation);
+	public DgwsClientInfo getDgwsClientInfoForSystem(CredentialInfo credentialInfo) throws DgwsSecurityException {
+		Document systemCardDocument = getSystemIdCardFromSTS(credentialInfo.getCredentialVault(), credentialInfo.getCvr(), credentialInfo.getOrganisationName());
 		return new DgwsClientInfo(systemCardDocument);
 	}
 	
