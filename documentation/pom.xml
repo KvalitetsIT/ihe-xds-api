@@ -113,7 +113,11 @@
 										<files>
 											<file>
 												<source>${project.basedir}/src/main/resources/ihe-xds-api.yaml</source>
-												<destName>${git.commit.id.describe}.yaml</destName>
+												<destName>ihe-xds-api-${git.commit.id.describe}.yaml</destName>
+											</file>
+											<file>
+												<source>${project.basedir}/src/main/resources/credential-api.yaml</source>
+												<destName>credential-api-${git.commit.id.describe}.yaml</destName>
 											</file>
 											<file>
 												<source>${project.build.outputDirectory}/git.properties</source>
@@ -151,6 +155,7 @@
 				<version>6.0.1</version>
 				<executions>
 					<execution>
+						<id>ihe-xds-api</id>
 						<goals>
 							<goal>generate</goal>
 						</goals>
@@ -169,12 +174,52 @@
 						</configuration>
 					</execution>
 					<execution>
-						<id>server</id>
+						<id>server-ihe-xds-api</id>
 						<goals>
 							<goal>generate</goal>
 						</goals>
 						<configuration>
 							<inputSpec>${project.basedir}/src/main/resources/ihe-xds-api.yaml</inputSpec>
+							<generatorName>spring</generatorName>
+							<configOptions>
+								<sourceFolder>src/main/java</sourceFolder>
+								<dateLibrary>java8</dateLibrary>
+								<interfaceOnly>true</interfaceOnly>
+								<performBeanValidation>true</performBeanValidation>
+								<library>spring-cloud</library>
+							</configOptions>
+							<output>${project.build.directory}/generated-sources/openapi/main</output>
+							<generateApiDocumentation>false</generateApiDocumentation>
+							<generateApiTests>false</generateApiTests>
+							<generateModelTests>false</generateModelTests>
+						</configuration>
+					</execution>
+					<execution>
+						<id>credential-api</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/credential-api.yaml</inputSpec>
+							<generatorName>java</generatorName>
+							<configOptions>
+								<sourceFolder>src/test/java</sourceFolder>
+								<dateLibrary>java8</dateLibrary>
+							</configOptions>
+							<output>${project.build.directory}/generated-test-sources/openapi/test</output>
+							<generateApiTests>false</generateApiTests>
+							<generateModelTests>false</generateModelTests>
+							<addTestCompileSourceRoot>true</addTestCompileSourceRoot>
+							<addCompileSourceRoot>false</addCompileSourceRoot>
+						</configuration>
+					</execution>
+					<execution>
+						<id>server-credential-api</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/credential-api.yaml</inputSpec>
 							<generatorName>spring</generatorName>
 							<configOptions>
 								<sourceFolder>src/main/java</sourceFolder>

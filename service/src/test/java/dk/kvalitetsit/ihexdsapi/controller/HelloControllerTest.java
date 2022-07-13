@@ -1,4 +1,4 @@
-package dk.kvalitetsit.hello.controller;
+package dk.kvalitetsit.ihexdsapi.controller;
 
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;

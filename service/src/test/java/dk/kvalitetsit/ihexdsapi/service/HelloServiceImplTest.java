@@ -1,4 +1,4 @@
-package dk.kvalitetsit.hello.service;
+package dk.kvalitetsit.ihexdsapi.service;
 
 import dk.kvalitetsit.ihexdsapi.service.impl.IheXdsServiceImpl;
 import org.junit.Before;
