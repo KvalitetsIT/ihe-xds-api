@@ -1,7 +1,8 @@
-package dk.kvalitetsit.ihexdsapi.service;
+package dk.kvalitetsit.ihexdsapi.service.impl;
 
 import java.time.ZonedDateTime;
 
+import dk.kvalitetsit.ihexdsapi.service.IheXdsService;
 import dk.kvalitetsit.ihexdsapi.service.model.HelloServiceInput;
 import dk.kvalitetsit.ihexdsapi.service.model.HelloServiceOutput;
 

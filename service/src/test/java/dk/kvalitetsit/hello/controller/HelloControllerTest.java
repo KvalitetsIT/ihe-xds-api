@@ -7,6 +7,7 @@ import static org.mockito.Mockito.times;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+import dk.kvalitetsit.ihexdsapi.service.Iti18Service;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -22,11 +23,15 @@ public class HelloControllerTest {
     private IheXdsController iheXdsController;
     private IheXdsService iheXdsService;
 
+    private Iti18Service iti18Service;
+
     @Before
     public void setup() {
         iheXdsService = Mockito.mock(IheXdsService.class);
 
-        iheXdsController = new IheXdsController(iheXdsService);
+        iti18Service = Mockito.mock(Iti18Service.class);
+
+        iheXdsController = new IheXdsController(iti18Service);
     }
 
     @Test

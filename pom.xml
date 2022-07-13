@@ -10,6 +10,17 @@
 			<url>https://repo1.maven.org/maven2</url>
 		</repository>
 		<repository>
+			<id>NSP Nexus</id>
+			<url>https://nexus.nspop.dk/nexus/content/groups/public</url>
+		</repository>
+		<repository>
+			<id>oss-snapshots</id>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		</repository>
+		<repository>
 			<id>github-public</id>
 			<url>https://public:&#103;hp_Y6nRFazi9yNo0IMpxwTFIagW352c1539nyfn@maven.pkg.github.com/kvalitetsit/*</url>
 		</repository>

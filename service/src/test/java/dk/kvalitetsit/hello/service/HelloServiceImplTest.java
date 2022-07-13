@@ -1,10 +1,10 @@
 package dk.kvalitetsit.hello.service;
 
+import dk.kvalitetsit.ihexdsapi.service.impl.IheXdsServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 
 import dk.kvalitetsit.ihexdsapi.service.IheXdsService;
-import dk.kvalitetsit.ihexdsapi.service.IheXdsServiceImpl;
 import dk.kvalitetsit.ihexdsapi.service.model.HelloServiceInput;
 
 import java.util.UUID;
