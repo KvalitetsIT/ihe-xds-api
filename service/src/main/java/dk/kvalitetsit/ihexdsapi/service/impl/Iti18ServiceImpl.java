@@ -33,8 +33,8 @@ public class Iti18ServiceImpl implements Iti18Service {
 	public Iti18Response queryForDocument(Iti18Request iti18Request) {
 		
 		try {
-			DgwsClientInfo dgwsClientInfo = stsService.getDgwsClientInfo();
-			dgwsSoapDecorator.setDgwsClientInfo(dgwsClientInfo);
+			//DgwsClientInfo dgwsClientInfo = stsService.getDgwsClientInfoForSystem(credentialVault, cvr, organisation);
+			//dgwsSoapDecorator.setDgwsClientInfo(dgwsClientInfo);
 			
 			var response = iti18PortType.documentRegistryRegistryStoredQuery(createQuery(iti18Request));
 			return createResponse(response);

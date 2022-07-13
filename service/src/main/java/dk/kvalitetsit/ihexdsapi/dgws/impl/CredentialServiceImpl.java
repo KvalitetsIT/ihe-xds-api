@@ -29,8 +29,6 @@ public class CredentialServiceImpl implements CredentialService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CredentialServiceImpl.class);
 
-	
-
 	private KeyStore createKeystore(String alias, String password, String publicCertStr, String privateKeyStr) throws KeyStoreException, CertificateException, IOException, NoSuchAlgorithmException, InvalidKeySpecException {
 		// Create the keystore
 		KeyStore keyStore = KeyStore.getInstance("jks");
@@ -75,12 +73,12 @@ public class CredentialServiceImpl implements CredentialService {
 	}
 
 	@Override
-	public CredentialVault createCredentialVault(String alias, String password, String publicCertStr, String privateKeyStr) throws DgwsSecurityException {
+	public CredentialVault createCredentialVault(String password, String publicCertStr, String privateKeyStr) throws DgwsSecurityException {
 		
 		Properties properties = new Properties();
 		KeyStore keystore;
 		try {
-			keystore = createKeystore(alias, password, publicCertStr, privateKeyStr);
+			keystore = createKeystore(CredentialVault.ALIAS_SYSTEM, password, publicCertStr, privateKeyStr);
 		} catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | InvalidKeySpecException | IOException e) {
 			LOGGER.error("Error creating keystore", e);
 			throw new DgwsSecurityException(e);
@@ -89,6 +87,4 @@ public class CredentialServiceImpl implements CredentialService {
 		GenericCredentialVault generic = new GenericCredentialVault(properties, keystore, password);
 		return generic;
 	}
-
-
 }

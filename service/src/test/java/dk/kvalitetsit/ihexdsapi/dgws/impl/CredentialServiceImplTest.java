@@ -11,7 +11,7 @@ import org.junit.Test;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
 import dk.sosi.seal.vault.CredentialVault;
 
-public class CredentialServiceImplTest {
+public class CredentialServiceImplTest extends AbstractTest {
 
 
 	CredentialServiceImpl subject = new CredentialServiceImpl();
@@ -22,11 +22,10 @@ public class CredentialServiceImplTest {
 		// Given
 		String publicCertStr = getFileString("/certificates/public-cert1.cer");
 		String privateKeyStr = getFileString("/certificates/private-cert1.pem");
-		String alias = "sosi";
 		String password = "password";
 		
 		// When
-		CredentialVault vault = subject.createCredentialVault(alias, password, publicCertStr, privateKeyStr);
+		CredentialVault vault = subject.createCredentialVault(password, publicCertStr, privateKeyStr);
 		
 		// Then
 		Assert.assertNotNull(vault);
@@ -38,11 +37,10 @@ public class CredentialServiceImplTest {
 		// Given
 		String publicCertStr = "Not a cert";
 		String privateKeyStr = "Not a key";
-		String alias = "sosi";
 		String password = "password";
 		
 		// When
-		subject.createCredentialVault(alias, password, publicCertStr, privateKeyStr);
+		subject.createCredentialVault(password, publicCertStr, privateKeyStr);
 	}
 
 	@Test
@@ -51,19 +49,12 @@ public class CredentialServiceImplTest {
 		// Given
 		String publicCertStr = getFileString("/certificates/other-cert.cer");
 		String privateKeyStr = getFileString("/certificates/private-cert1.pem");
-		String alias = "sosi";
 		String password = "password";
 		
 		// When
-		CredentialVault vault = subject.createCredentialVault(alias, password, publicCertStr, privateKeyStr);
+		CredentialVault vault = subject.createCredentialVault(password, publicCertStr, privateKeyStr);
 		
 		// Then
 		Assert.assertNotNull(vault);
-	}
-
-	private String getFileString(String f) {
-		InputStream i = CredentialServiceImplTest.class.getResourceAsStream(f);
-		String text = new BufferedReader(new InputStreamReader(i)).lines().collect(Collectors.joining("\n"));
-		return text;
 	}
 }

@@ -3,6 +3,8 @@ package dk.kvalitetsit.ihexdsapi.dgws.impl;
 import java.io.IOException;
 import java.util.Properties;
 
+import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
+import dk.sosi.seal.model.*;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -13,14 +15,6 @@ import org.w3c.dom.Document;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsClientInfo;
 import dk.kvalitetsit.ihexdsapi.dgws.StsService;
 import dk.sosi.seal.SOSIFactory;
-import dk.sosi.seal.model.AuthenticationLevel;
-import dk.sosi.seal.model.CareProvider;
-import dk.sosi.seal.model.IDCard;
-import dk.sosi.seal.model.SecurityTokenRequest;
-import dk.sosi.seal.model.SecurityTokenResponse;
-import dk.sosi.seal.model.SignatureConfiguration;
-import dk.sosi.seal.model.SignatureUtil;
-import dk.sosi.seal.model.SystemIDCard;
 import dk.sosi.seal.model.constants.IDValues;
 import dk.sosi.seal.model.constants.SubjectIdentifierTypeValues;
 import dk.sosi.seal.pki.SOSITestFederation;
@@ -40,20 +34,21 @@ public class StsServiceImpl implements StsService {
 		this.stsUrl = stsUrl;
 		this.itSystem = "IheXdsApi";
 	}
-	
+
 	@Override
-	public DgwsClientInfo getDgwsClientInfo() {
-		// TODO Auto-generated method stub
-		return null;
+	public DgwsClientInfo getDgwsClientInfoForSystem(CredentialVault credentialVault, String cvr, String organisation) throws DgwsSecurityException {
+		Document systemCardDocument = getSystemIdCardFromSTS(credentialVault, cvr, organisation);
+		return new DgwsClientInfo(systemCardDocument);
 	}
 	
-	private IDCard getSystemIdCardFromSTS(CredentialVault credentialVault, String cvr, String organisation) throws IOException {
+	private Document getSystemIdCardFromSTS(CredentialVault credentialVault, String cvr, String organisation) throws DgwsSecurityException {
 		Properties properties = new Properties(System.getProperties());
 		properties.setProperty(SOSIFactory.PROPERTYNAME_SOSI_VALIDATE, Boolean.toString(true));
 		SOSIFactory sosiFactory = new SOSIFactory(new SOSITestFederation(properties), credentialVault, properties);
 		
 		CareProvider careProvider = new CareProvider(SubjectIdentifierTypeValues.CVR_NUMBER, cvr, organisation);
-		
+
+
 		SystemIDCard selfSignedUserIdCard = sosiFactory.createNewSystemIDCard(itSystem, careProvider, AuthenticationLevel.VOCES_TRUSTED_SYSTEM, null, null, credentialVault.getSystemCredentialPair().getCertificate(), null);
 
 		SecurityTokenRequest securityTokenRequest = sosiFactory.createNewSecurityTokenRequest();
@@ -61,18 +56,25 @@ public class StsServiceImpl implements StsService {
 		Document doc = securityTokenRequest.serialize2DOMDocument();
 
 		SignatureConfiguration signatureConfiguration = new SignatureConfiguration(new String[] { IDValues.IDCARD }, IDValues.IDCARD, IDValues.id);
-		SignatureUtil.sign(SignatureProviderFactory.fromCredentialVault(credentialVault), doc, signatureConfiguration);
+		//SignatureUtil.sign(SignatureProviderFactory.fromCredentialVault(credentialVault), doc, signatureConfiguration);
 		String requestXml = XmlUtil.node2String(doc, false, true);
-		
-		String responseXml = sendRequest(requestXml);
+
+		String responseXml = null;
+		try {
+			responseXml = sendRequest(requestXml);
+		} catch (IOException e) {
+			throw new DgwsSecurityException(e);
+		}
 		SecurityTokenResponse securityTokenResponse = sosiFactory.deserializeSecurityTokenResponse(responseXml);
 
 		if (securityTokenResponse.isFault() || securityTokenResponse.getIDCard() == null) {
-			throw new RuntimeException("No ID card :-(");
+			throw new DgwsSecurityException("No ID card :-(");
 		}
 		else {
 			SystemIDCard stsSignedIdCard = (SystemIDCard) securityTokenResponse.getIDCard();
-			return stsSignedIdCard;
+			Request request = sosiFactory.createNewRequest(false, null);
+			request.setIDCard(stsSignedIdCard);
+			return request.serialize2DOMDocument();
 		}
 	}
 /*
