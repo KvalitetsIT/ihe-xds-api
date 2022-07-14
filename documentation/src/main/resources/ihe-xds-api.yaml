@@ -26,26 +26,29 @@ servers:
           - 8080
         default: 8080
 paths:
-  /v1/iti18:
+  /v1/iti18/healthcareProfessional:
     get:
       tags:
         - IHEXDS
-      summary: Call the thugs service
-      description: Post your name and get some hugs or meet some thugs.
+      summary: search XDS as a healthcare professional
+      description: search XDS as a healthcare professional
       requestBody:
         description: Your name
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/iti18Request'
+              $ref: '#/components/schemas/iti18HealthCareProfessionalRequest'
       responses:
         '200':
-          description: Ok
+          description: Ok with list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/iti18Response'
+                type: array
+                items:
+                  $ref: '#/components/schemas/iti18Response'
+
 
 components:
   responses:
@@ -73,7 +76,35 @@ components:
           nullable: false
           example: "987598435735.54587493.454353"
 
-    iti18Request:
+    healthcareProfessionalContext:
+      type: object
+      required:
+        - actingUserId
+        - authorizationCode
+        - consentOverride
+      properties:
+        actingUserId:
+          description: The id of the person making the request
+          type: string
+          example: "2512489996"
+        responsibleUserId:
+          description: The id of the person responsible for the request (if different from actingUserId)
+          type: string
+          example: "2512489996"
+        authorizationCode:
+          description: The doctor authrization for the person responseible for the request
+          type: string
+          example: "CX8324"
+        consentOverride:
+          description: 'Break the glass'
+          type: boolean
+          example: "false"
+        organisationCode:
+          description: The code of the organisation where the responsible is located
+          type: string
+          example: "7879798789"
+
+    iti18QueryParameter:
       type: object
       required:
         - patientId
@@ -82,3 +113,21 @@ components:
           description: Patientens Id (CPR)
           type: string
           example: "2512489996"
+
+    iti18HealthCareProfessionalRequest:
+      type: object
+      required:
+        - queryParameters
+        - credentialId
+        - context
+      properties:
+        queryParameters:
+          description: query parameters related to iti-18 query
+          $ref: '#/components/schemas/iti18QueryParameter'
+        credentialId:
+          description: The credential to use (identified by id)
+          type: string
+          example: "credentialid"
+        context:
+          description: the context in which to make the query
+          $ref: '#/components/schemas/healthcareProfessionalContext'

@@ -28,8 +28,11 @@ import dk.sosi.seal.vault.GenericCredentialVault;
 public class CredentialServiceImpl implements CredentialService {
 
 	private static final String PASSWORD = "Test1234";
+
+	private static final String DEFAULT_OWNER = "  ";
 	private static final Logger LOGGER = LoggerFactory.getLogger(CredentialServiceImpl.class);
 
+	private Map<String, List<String>> registeredOwners = new HashMap<>();
 	private Map<String, CredentialInfo> registeredInfos = new HashMap<>();
 
 	private KeyStore createKeystore(String alias, String password, String publicCertStr, String privateKeyStr) throws KeyStoreException, CertificateException, IOException, NoSuchAlgorithmException, InvalidKeySpecException {
@@ -76,10 +79,22 @@ public class CredentialServiceImpl implements CredentialService {
 	}
 
 	@Override
-	public synchronized CredentialInfo createAndAddCredentialInfo(String id, String cvr, String organisation, String publicCertStr, String privateKeyStr) throws DgwsSecurityException {
+	public synchronized CredentialInfo createAndAddCredentialInfo(String owner, String id, String cvr, String organisation, String publicCertStr, String privateKeyStr) throws DgwsSecurityException {
 
 		if (registeredInfos.containsKey(id)) {
 			throw new DgwsSecurityException("A credential vault with id "+id+" is already registered.");
+		}
+
+		String ownerKey = DEFAULT_OWNER;
+		if (owner != null && owner.trim().length() >= 0) {
+			ownerKey = owner.trim();
+		}
+		List<String> owning = null;
+		if (!registeredOwners.containsKey(ownerKey)) {
+			owning = new LinkedList<>();
+			registeredOwners.put(ownerKey, owning);
+		} else {
+			owning = registeredOwners.get(ownerKey);
 		}
 
 		Properties properties = new Properties();
@@ -95,13 +110,27 @@ public class CredentialServiceImpl implements CredentialService {
 		CredentialInfo credentialInfo = new CredentialInfo(generic, cvr, organisation);
 
 		registeredInfos.put(id, credentialInfo);
+		owning.add(id);
 
 		return credentialInfo;
 	}
 
 	@Override
-	public Collection<String> getIds() {
-		return registeredInfos.keySet();
+	public Collection<String> getIds(String owner) {
+
+		List<String> result = new LinkedList<>();
+
+		String ownerKey = null;
+		if (owner != null && owner.trim().length() >= 0) {
+			ownerKey = owner.trim();
+		}
+		if (ownerKey != null && registeredOwners.containsKey(ownerKey)) {
+			result.addAll(registeredOwners.get(ownerKey));
+		}
+
+		result.addAll(registeredOwners.get(DEFAULT_OWNER));
+
+		return result;
 	}
 
 	@Override

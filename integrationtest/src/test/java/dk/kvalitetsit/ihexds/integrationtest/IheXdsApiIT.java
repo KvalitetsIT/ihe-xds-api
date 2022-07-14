@@ -3,10 +3,9 @@ package dk.kvalitetsit.ihexds.integrationtest;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
-import org.openapitools.api.IhexdsApi;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
-import org.openapitools.model.Iti18Request;
+import org.openapitools.model.Iti18HealthCareProfessionalRequest;
 
 public class IheXdsApiIT extends AbstractIntegrationTest {
 
@@ -21,7 +20,9 @@ public class IheXdsApiIT extends AbstractIntegrationTest {
 
     @Test
     public void testCallService() throws ApiException {
-        var input = new Iti18Request();
+        var iti18HealthCareProfessionalRequest = new Iti18HealthCareProfessionalRequest();
+//        iti18HealthCareProfessionalRequest.set
+
 //        input.setName("John Doe");
 
        // var result = iheXdsApi.v1Iti18Get(input);

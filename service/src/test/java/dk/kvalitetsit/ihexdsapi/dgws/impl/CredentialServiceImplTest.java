@@ -23,11 +23,12 @@ public class CredentialServiceImplTest extends AbstractTest {
 		// Given
 		String publicCertStr = getFileString("/certificates/public-cert1.cer");
 		String privateKeyStr = getFileString("/certificates/private-cert1.pem");
+		String owner = "me";
 		String cvr = "46837428";
 		String organisationName = "Statens Serum Institut";
 
 		// When
-		CredentialInfo info = subject.createAndAddCredentialInfo("id", cvr, organisationName, publicCertStr, privateKeyStr);
+		CredentialInfo info = subject.createAndAddCredentialInfo(owner,"id", cvr, organisationName, publicCertStr, privateKeyStr);
 		
 		// Then
 		Assert.assertNotNull(info);
@@ -39,11 +40,12 @@ public class CredentialServiceImplTest extends AbstractTest {
 		// Given
 		String publicCertStr = "Not a cert";
 		String privateKeyStr = "Not a key";
+		String owner = "me";
 		String cvr = "46837428";
 		String organisationName = "Statens Serum Institut";
 
 		// When
-		subject.createAndAddCredentialInfo("id", cvr, organisationName, publicCertStr, privateKeyStr);
+		subject.createAndAddCredentialInfo(owner,"id", cvr, organisationName, publicCertStr, privateKeyStr);
 	}
 
 	@Test
@@ -52,11 +54,12 @@ public class CredentialServiceImplTest extends AbstractTest {
 		// Given
 		String publicCertStr = getFileString("/certificates/other-cert.cer");
 		String privateKeyStr = getFileString("/certificates/private-cert1.pem");
+		String owner = "me";
 		String cvr = "46837428";
 		String organisationName = "Statens Serum Institut";
 
 		// When
-		CredentialInfo info = subject.createAndAddCredentialInfo("id", cvr, organisationName, publicCertStr, privateKeyStr);
+		CredentialInfo info = subject.createAndAddCredentialInfo(owner,"id", cvr, organisationName, publicCertStr, privateKeyStr);
 		
 		// Then
 		Assert.assertNotNull(info);

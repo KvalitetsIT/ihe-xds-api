@@ -33,7 +33,7 @@ fi
 JAR_FILE=web.jar
 
 echo "Starting service with the following command."
-echo "java $JVM_OPTS -jar $JAR_FILE"
+echo "java $JVM_OPTS --add-opens java.base/java.net=ALL-UNNAMED -jar $JAR_FILE"
 
 # start the application
-exec java $JVM_OPTS -jar $JAR_FILE
+exec java $JVM_OPTS --add-opens java.base/java.net=ALL-UNNAMED -jar $JAR_FILE

@@ -4,17 +4,67 @@ import org.w3c.dom.Document;
 
 public class DgwsClientInfo {
 
-	private Document sosi;
-	
-	public DgwsClientInfo(Document sosi) {
-		this.sosi = sosi;
-	}
+    private Document sosi;
+    private String patientId;
+    private boolean consentOverride = false;
+    private String actingUserId;
+    private String responsibleUserId;
+    private String authorizationCode;
+    private String organisationCode;
 
-	public Document getSosi() {
-		return sosi;
-	}
+    public DgwsClientInfo(Document sosi) {
+        this.sosi = sosi;
+    }
 
-	public void setSosi(Document sosi) {
-		this.sosi = sosi;
-	}
+    public Document getSosi() {
+        return sosi;
+    }
+
+    public void setSosi(Document sosi) {
+        this.sosi = sosi;
+    }
+
+    public String getPatientId() {
+        return patientId;
+    }
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
+    }
+    public boolean getConsentOverride() {
+        return consentOverride;
+    }
+    public void setConsentOverride(boolean consentOverride) {
+        this.consentOverride = consentOverride;
+    }
+
+    public String getActingUserId() {
+        return actingUserId;
+    }
+
+    public void setActingUserId(String actingUserId) {
+        this.actingUserId = actingUserId;
+    }
+
+    public String getResponsibleUserId() {
+        return responsibleUserId;
+    }
+    public void setResponsibleUserId(String responsibleUserId) {
+        this.responsibleUserId = responsibleUserId;
+    }
+
+    public String getAuthorizationCode() {
+        return authorizationCode;
+    }
+
+    public void setAuthorizationCode(String authorizationCode) {
+        this.authorizationCode = authorizationCode;
+    }
+
+    public String getOrganisationCode() {
+        return organisationCode;
+    }
+
+    public void setOrganisationCode(String organisationCode) {
+        this.organisationCode = organisationCode;
+    }
 }

@@ -23,7 +23,7 @@ public class StsServiceImplTest extends AbstractTest {
         String cvr = "46837428";
         String organisationName = "Statens Serum Institut";
         credentialService = new CredentialServiceImpl();
-        CredentialInfo credentialInfo = credentialService.createAndAddCredentialInfo(ID, cvr, organisationName, publicCertStr, privateKeyStr);
+        CredentialInfo credentialInfo = credentialService.createAndAddCredentialInfo(null, ID, cvr, organisationName, publicCertStr, privateKeyStr);
 
         stsServiceImpl = new StsServiceImpl("http://test1.ekstern-test.nspop.dk:8080/sts/services/NewSecurityTokenService");
     }
