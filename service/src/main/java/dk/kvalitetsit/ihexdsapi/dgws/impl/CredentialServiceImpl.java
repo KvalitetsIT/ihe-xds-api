@@ -24,6 +24,12 @@ import dk.kvalitetsit.ihexdsapi.dgws.CredentialService;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
 import dk.sosi.seal.vault.CredentialVault;
 import dk.sosi.seal.vault.GenericCredentialVault;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.web.context.annotation.ApplicationScope;
+
+
 
 public class CredentialServiceImpl implements CredentialService {
 
@@ -137,4 +143,5 @@ public class CredentialServiceImpl implements CredentialService {
 	public CredentialInfo getCredentialInfoFromId(String id) {
 		return registeredInfos.get(id);
 	}
+
 }
