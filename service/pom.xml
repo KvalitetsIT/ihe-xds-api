@@ -205,7 +205,7 @@
 		<dependency>
 			<groupId>org.openehealth.ipf.commons</groupId>
 			<artifactId>ipf-commons-core</artifactId>
-			<version>3.0.4</version>
+			<version>4.4.0</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>org.slf4j</artifactId>
