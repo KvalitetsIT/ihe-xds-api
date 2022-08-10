@@ -1,15 +1,22 @@
 package dk.kvalitetsit.ihexds.integrationtest;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
-import dk.kvalitetsit.ihexdsapi.controller.CredentialInfoController;
-import dk.kvalitetsit.ihexdsapi.dgws.impl.CredentialServiceImpl;
+
+import org.apache.http.HttpStatus;
 import org.junit.Test;
 import org.openapitools.client.api.CredentialsApi;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
-import org.openapitools.client.model.CreateCredentialResponse;
+import org.openapitools.client.model.CreateCredentialRequest;
 import org.openapitools.model.Iti18HealthCareProfessionalRequest;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+
+import java.nio.file.Paths;
 
 public class CredentialsAPIIT extends AbstractIntegrationTest {
 
@@ -22,45 +29,100 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
         credentialsApi = new CredentialsApi(apiClient);
 
 
+
+    }
+@Test
+    public void testCredentialinfoGetController() throws ApiException, IOException, URISyntaxException {
+    CreateCredentialRequest createCredentialRequest = new CreateCredentialRequest();
+
+    createCredentialRequest.setCvr("637283d");
+    createCredentialRequest.setId("1234ABA");
+    createCredentialRequest.setOrganisation("Statens Serum Institute");
+    createCredentialRequest.setOwner("Me");
+    createCredentialRequest.setPrivateKeyStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI())));
+    createCredentialRequest.setPublicCertStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/public-cert1.cer").toURI())));
+
+    try {
+        credentialsApi.v1CredentialinfoPut(createCredentialRequest);
+    }
+    catch(Exception e) {
+
+    }
+        var result = credentialsApi.v1CredentialinfoGet("Me");
+
+    // Expects to have a size of 1 (Changes in the future)
+    assertEquals(1, result.size());
+
+
     }
 
     @Test
-    public void testCredentialinfoPutController() throws ApiException{
+    public void testCredentialinfoPutController() throws ApiException, URISyntaxException, IOException {
+
+        CreateCredentialRequest createCredentialRequest = new CreateCredentialRequest();
+
+        createCredentialRequest.setCvr("637283d");
+        createCredentialRequest.setId("1234ABA");
+        createCredentialRequest.setOrganisation("Statens Serum Institute");
+        createCredentialRequest.setOwner("Me");
+        createCredentialRequest.setPrivateKeyStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI())));
+
+        createCredentialRequest.setPublicCertStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/public-cert1.cer").toURI())));
 
 
-        CreateCredentialResponse createCredentialResponse = new CreateCredentialResponse();
+        var result = credentialsApi.v1CredentialinfoPutWithHttpInfo(createCredentialRequest);
 
-        createCredentialResponse.setCvr("637283d");
-        createCredentialResponse.setId("1234ABA");
-        createCredentialResponse.setOrganisation("Statens Serum Institute");
-        createCredentialResponse.setOwner("Me");
-        createCredentialResponse.setPrivateKeyStr("Private key");
-        createCredentialResponse.setPublicCertStr("Certificate");
+        assertEquals(201, result.getStatusCode());
 
 
-        //var result = credentialsApi.v1CredentialinfoPut(createCredentialResponse);
 
-
-        //System.out.println(subject.credentialService);
     }
+@Test
+    public void testCredentialinfoPutControllerThrowsBadRequestExeceptionInvalidCert() throws ApiException, URISyntaxException, IOException {
+
+
+        CreateCredentialRequest createCredentialRequest = new CreateCredentialRequest();
+
+        createCredentialRequest.setCvr("637283d");
+        createCredentialRequest.setId("1234ABA");
+        createCredentialRequest.setOrganisation("Statens Serum Institute");
+        createCredentialRequest.setOwner("Me");
+    createCredentialRequest.setPrivateKeyStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI())));
+
+
+    createCredentialRequest.setPublicCertStr("Not a certificate");
+
+        ApiException apiException = assertThrows(ApiException.class, () -> credentialsApi.v1CredentialinfoPutWithHttpInfo(createCredentialRequest));
+        assertEquals(HttpStatus.SC_BAD_REQUEST, apiException.getCode());
+
+
+    }
+
     @Test
-    public void testCredentialinfoPutControllerFails() throws ApiException{
-
-        var subject = new CredentialInfoController();
-
-        CreateCredentialResponse createCredentialResponse = new CreateCredentialResponse();
-
-        createCredentialResponse.setCvr("637283d");
-        createCredentialResponse.setId("1234ABA");
-        createCredentialResponse.setOrganisation("Statens Serum Institute");
-        createCredentialResponse.setOwner("Me");
-        createCredentialResponse.setPrivateKeyStr("Private key");
-        createCredentialResponse.setPublicCertStr("Private key");
+    public void testCredentialinfoPutControllerThrowsBadRequestExeceptionInvalidKey() throws ApiException, URISyntaxException, IOException {
 
 
+        CreateCredentialRequest createCredentialRequest = new CreateCredentialRequest();
+
+        createCredentialRequest.setCvr("637283d");
+        createCredentialRequest.setId("1234ABA");
+        createCredentialRequest.setOrganisation("Statens Serum Institute");
+        createCredentialRequest.setOwner("Me");
+        createCredentialRequest.setPrivateKeyStr("Not a Key");
 
 
-        var result = subject.v1CredentialinfoPut(createCredentialResponse);
+        createCredentialRequest.setPublicCertStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/public-cert1.cer").toURI())));
+
+
+        ApiException apiException = assertThrows(ApiException.class, () -> credentialsApi.v1CredentialinfoPutWithHttpInfo(createCredentialRequest));
+        assertEquals(HttpStatus.SC_BAD_REQUEST, apiException.getCode());
+
+
+
+
+
+
+
 
 
     }
