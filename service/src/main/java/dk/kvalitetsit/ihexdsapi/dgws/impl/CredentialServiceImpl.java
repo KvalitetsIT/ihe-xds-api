@@ -134,8 +134,9 @@ public class CredentialServiceImpl implements CredentialService {
 			result.addAll(registeredOwners.get(ownerKey));
 		}
 
-		result.addAll(registeredOwners.get(DEFAULT_OWNER));
-
+		if (registeredOwners.containsKey(DEFAULT_OWNER)) {
+			result.addAll(registeredOwners.get(DEFAULT_OWNER));
+		}
 		return result;
 	}
 
