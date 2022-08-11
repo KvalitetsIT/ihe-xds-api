@@ -64,7 +64,7 @@ public class StsServiceImpl implements StsService {
 		try {
 			responseXml = sendRequest(requestXml);
 		} catch (IOException e) {
-			throw new DgwsSecurityException(e);
+			throw new DgwsSecurityException(e, 1000, "Something went wrong");
 		}
 		SecurityTokenResponse securityTokenResponse = sosiFactory.deserializeSecurityTokenResponse(responseXml);
 

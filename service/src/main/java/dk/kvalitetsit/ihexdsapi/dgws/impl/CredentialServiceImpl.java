@@ -107,9 +107,13 @@ public class CredentialServiceImpl implements CredentialService {
 		KeyStore keystore;
 		try {
 			keystore = createKeystore(CredentialVault.ALIAS_SYSTEM, PASSWORD, publicCertStr, privateKeyStr);
-		} catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | InvalidKeySpecException | IOException e) {
+		} catch (KeyStoreException  | NoSuchAlgorithmException | InvalidKeySpecException | IOException e) {
 			LOGGER.error("Error creating keystore", e);
-			throw new DgwsSecurityException(e);
+			throw new DgwsSecurityException(e, 2, "Invalid private key");
+		}
+		catch (CertificateException e)  {
+			LOGGER.error("Error creating keystore", e);
+			throw new DgwsSecurityException(e, 1, "Invalid certificate");
 		}
 		
 		GenericCredentialVault generic = new GenericCredentialVault(properties, keystore, PASSWORD);
