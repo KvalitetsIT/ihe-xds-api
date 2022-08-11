@@ -17,14 +17,20 @@ public class InitConfiguration {
     @Autowired
     private CredentialService credentialService;
 
+    @Value("${default.cert.private}")
+    private String keyPath;
+    @Value("${default.cert.public}")
+    private String publicPath;
+
+
 
     @PostConstruct
     public void setupDefaultCredentials() throws URISyntaxException, IOException, DgwsSecurityException {
-         String key1 = Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI()));
-         String cert1 = Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/public-cert1.cer").toURI()));
+         String key1 = Files.readString(Paths.get(getClass().getClassLoader().getResource(this.keyPath).toURI()));
+         String cert1 = Files.readString(Paths.get(getClass().getClassLoader().getResource(this.publicPath).toURI()));
 
          // Need better variable names
-        credentialService.createAndAddCredentialInfo("  ", "Standard1", " ", " ", cert1, key1
+        credentialService.createAndAddCredentialInfo(null, "Standard1", " ", " ", cert1, key1
                 );
 
     }
