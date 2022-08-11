@@ -142,6 +142,10 @@ public class CredentialServiceImpl implements CredentialService {
 
 	@Override
 	public CredentialInfo getCredentialInfoFromId(String id) {
+
+		if (id == null) {
+			return registeredInfos.get(DEFAULT_OWNER);
+		}
 		return registeredInfos.get(id);
 	}
 
