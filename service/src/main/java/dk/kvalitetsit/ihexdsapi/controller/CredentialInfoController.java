@@ -1,9 +1,9 @@
 package dk.kvalitetsit.ihexdsapi.controller;
 
 import dk.kvalitetsit.ihexdsapi.controller.exception.BadRequestException;
-import dk.kvalitetsit.ihexdsapi.controller.exception.ResourceNotFoundException;
 import dk.kvalitetsit.ihexdsapi.dgws.CredentialInfo;
 import dk.kvalitetsit.ihexdsapi.dgws.CredentialService;
+import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
 import org.openapitools.api.CredentialsApi;
 import org.openapitools.model.CreateCredentialRequest;
 import org.openapitools.model.CredentialInfoResponse;
@@ -48,19 +48,16 @@ public class CredentialInfoController implements CredentialsApi {
                     createCredentialResponse.getPublicCertStr(), createCredentialResponse.getPrivateKeyStr());
             return  ResponseEntity.created(null).body(null);
 
-        } catch (Exception e) {
-
-            if (e.getMessage().equals("java.security.cert.CertificateException: No certificate data found")) {
-                throw  BadRequestException.createException(BadRequestException.ERROR_CODE.INVALID_CERT, "Invalid certificate");
+        } catch (DgwsSecurityException e) {
+            if (e.getErrorCode() == 1) {
+                throw BadRequestException.createException(BadRequestException.ERROR_CODE.INVALID_CERT, "Invalid certificate");
             }
-            else if (e.getMessage().equals("java.security.spec.InvalidKeySpecException: java.security.InvalidKeyException: IOException : DerInputStream.getLength(): lengthTag=11, too big.")
-            || e.getMessage().equals("java.security.spec.InvalidKeySpecException: java.security.InvalidKeyException: IOException : null")) {
+            else if (e.getErrorCode() == 2) {
                 throw BadRequestException.createException(BadRequestException.ERROR_CODE.INVALID_KEY, "Invalid private key");
             }
-            else{
+            else {
                 throw BadRequestException.createException(BadRequestException.ERROR_CODE.GENERIC, "Something went wrong");
             }
-
 
         }
 
