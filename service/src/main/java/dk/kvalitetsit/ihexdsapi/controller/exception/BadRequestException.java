@@ -5,21 +5,40 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 public class BadRequestException extends RuntimeException {
     public enum ERROR_CODE {
     INVALID_CERT(1),
     INVALID_KEY(2),
+    EXISTING_CREDENTIAL_ID(3),
     GENERIC(1000);
 
     private final int errorCode;
 
+
     ERROR_CODE(int errorCode) {
         this.errorCode = errorCode;
     }
+        private final static Map<Integer, ERROR_CODE> intToMap = new HashMap<>();
+        static {
+            for (ERROR_CODE type : ERROR_CODE.values()) {
+                intToMap.put(type.errorCode, type);
+            }
+        }
+
+        public static ERROR_CODE fromInt(int i) {
+            ERROR_CODE type = intToMap.get(Integer.valueOf(i));
+            return type;
+        }
+
     }
+
     private final BasicError error;
+
+
     private BadRequestException(BasicError error) {
         this.error = error;
     }
