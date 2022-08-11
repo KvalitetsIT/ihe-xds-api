@@ -52,8 +52,8 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
 
     }
 */
-        // Checking for defualt/standard owner
-        var result = credentialsApi.v1CredentialinfoGet("  ");
+        // Checking for defualt/standard owner null
+        var result = credentialsApi.v1CredentialinfoGet(null);
 
     assertEquals(1, result.size());
 
