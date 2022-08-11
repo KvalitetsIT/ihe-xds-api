@@ -17,6 +17,7 @@ import org.openehealth.ipf.commons.ihe.xds.core.XdsClientFactory;
 import org.openehealth.ipf.commons.ihe.xds.iti18.Iti18PortType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -29,23 +30,21 @@ import dk.kvalitetsit.ihexdsapi.service.impl.Iti18ServiceImpl;
 @Configuration
 public class IheXdsConfiguration {
 
-    private String STSURL = "http://test1.ekstern-test.nspop.dk:8080/sts/services/NewSecurityTokenService";
+
+    @Value("${STSURL}")
+    private String STSURL;
 
     private static Logger LOGGER = LoggerFactory.getLogger(IheXdsConfiguration.class);
+@Value("${xdsIti18Endpoint}")
+    private String xdsIti18Endpoint;
 
-    private String xdsIti18Endpoint = "http://test1-cnsp.ekstern-test.nspop.dk:8080/ddsregistry";
 
 
-    @PostConstruct
-    public void setupDefaultCredentials() {
-
-    }
 
     @Bean
     public IheXdsService helloService() {
         return new IheXdsServiceImpl();
     }
-
     @Bean
     public StsService stsService() {
         return new StsServiceImpl(STSURL);
