@@ -7,6 +7,9 @@ public class DgwsSecurityException extends Exception {
 		super(cause);
 		this.errorCode = errorCode;
 		this.message = message;
+	}public DgwsSecurityException( int errorCode, String message) {
+		this.errorCode = errorCode;
+		this.message = message;
 	}
 
     public DgwsSecurityException(String message) {
