@@ -49,18 +49,8 @@ public class CredentialInfoController implements CredentialsApi {
             return  ResponseEntity.created(null).body(null);
 
         } catch (DgwsSecurityException e) {
-            if (e.getErrorCode() == 1) {
-                throw BadRequestException.createException(BadRequestException.ERROR_CODE.INVALID_CERT, e.getMessage());
-            }
-            else if (e.getErrorCode() == 2) {
-                throw BadRequestException.createException(BadRequestException.ERROR_CODE.INVALID_KEY, e.getMessage());
-            }
-            else {
-                throw BadRequestException.createException(BadRequestException.ERROR_CODE.GENERIC, "Something went wrong");
-            }
-
+            throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
         }
-
     }
 
 
