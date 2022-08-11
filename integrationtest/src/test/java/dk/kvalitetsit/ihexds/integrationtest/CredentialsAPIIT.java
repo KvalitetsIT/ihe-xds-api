@@ -35,23 +35,6 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
 @Test
     public void testCredentialinfoGetController() throws ApiException, IOException, URISyntaxException {
 
-/*
-        CreateCredentialRequest createCredentialRequest = new CreateCredentialRequest();
-
-   createCredentialRequest.setCvr("637283d");
-    createCredentialRequest.setId("1235ABA");
-    createCredentialRequest.setOrganisation("Statens Serum Institute");
-    createCredentialRequest.setOwner("Me");
-    createCredentialRequest.setPrivateKeyStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI())));
-    createCredentialRequest.setPublicCertStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/public-cert1.cer").toURI())));
-
-    try {
-        credentialsApi.v1CredentialinfoPut(createCredentialRequest);
-    }
-    catch(Exception e) {
-
-    }
-*/
         // Checking for defualt/standard owner null
         var result = credentialsApi.v1CredentialinfoGet(null);
 
