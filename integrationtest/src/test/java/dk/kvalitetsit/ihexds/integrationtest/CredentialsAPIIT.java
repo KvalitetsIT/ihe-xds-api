@@ -1,8 +1,5 @@
 package dk.kvalitetsit.ihexds.integrationtest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-
 
 import org.apache.http.HttpStatus;
 import org.junit.Test;
@@ -18,9 +15,13 @@ import java.nio.file.Files;
 
 import java.nio.file.Paths;
 
+import static org.junit.Assert.*;
+
 public class CredentialsAPIIT extends AbstractIntegrationTest {
 
    private final CredentialsApi credentialsApi;
+
+
 
     public CredentialsAPIIT() {
         var apiClient = new ApiClient();
@@ -33,10 +34,12 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
     }
 @Test
     public void testCredentialinfoGetController() throws ApiException, IOException, URISyntaxException {
-    /*CreateCredentialRequest createCredentialRequest = new CreateCredentialRequest();
+
+/*
+        CreateCredentialRequest createCredentialRequest = new CreateCredentialRequest();
 
    createCredentialRequest.setCvr("637283d");
-    createCredentialRequest.setId("1234ABA");
+    createCredentialRequest.setId("1235ABA");
     createCredentialRequest.setOrganisation("Statens Serum Institute");
     createCredentialRequest.setOwner("Me");
     createCredentialRequest.setPrivateKeyStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI())));
@@ -47,11 +50,13 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
     }
     catch(Exception e) {
 
-    }*/
-        var result = credentialsApi.v1CredentialinfoGet("Me");
+    }
+*/
+        // Checking for defualt/standard owner
+        var result = credentialsApi.v1CredentialinfoGet("");
 
-    // Expects to have a size of 1 (Changes in the future)
     assertEquals(0, result.size());
+
 
 
     }
@@ -84,7 +89,7 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
         CreateCredentialRequest createCredentialRequest = new CreateCredentialRequest();
 
         createCredentialRequest.setCvr("637283d");
-        createCredentialRequest.setId("1234ABA");
+        createCredentialRequest.setId("1234ABC");
         createCredentialRequest.setOrganisation("Statens Serum Institute");
         createCredentialRequest.setOwner("Me");
     createCredentialRequest.setPrivateKeyStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI())));
@@ -95,7 +100,7 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
 
         ApiException apiException = assertThrows(ApiException.class, () -> credentialsApi.v1CredentialinfoPutWithHttpInfo(createCredentialRequest));
         assertEquals(HttpStatus.SC_BAD_REQUEST, apiException.getCode());
-        assertEquals( "Invalid certificate", apiException.getResponseBody().substring(25, 44));
+        assertTrue(apiException.getResponseBody().contains("Invalid certificate"));
 
 
 
@@ -109,20 +114,44 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
         CreateCredentialRequest createCredentialRequest = new CreateCredentialRequest();
 
         createCredentialRequest.setCvr("637283d");
-        createCredentialRequest.setId("1234ABA");
+        createCredentialRequest.setId("1234ABd");
         createCredentialRequest.setOrganisation("Statens Serum Institute");
         createCredentialRequest.setOwner("Me");
-        createCredentialRequest.setPrivateKeyStr("Not a Key");
-
-
+        createCredentialRequest.setPrivateKeyStr("Not a key");
         createCredentialRequest.setPublicCertStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/public-cert1.cer").toURI())));
 
 
         ApiException apiException = assertThrows(ApiException.class, () -> credentialsApi.v1CredentialinfoPutWithHttpInfo(createCredentialRequest));
         assertEquals(HttpStatus.SC_BAD_REQUEST, apiException.getCode());
-        assertEquals( "Invalid private key", apiException.getResponseBody().substring(25, 44));
+        assertTrue(apiException.getResponseBody().contains("Invalid private key"));
+    }
 
+    @Test
+    public void testCredentialinfoPutControllerExistingID() throws ApiException, URISyntaxException, IOException {
+        String id = "1234AAADD";
+        // First time added
+        CreateCredentialRequest createCredentialRequest = new CreateCredentialRequest();
+        createCredentialRequest.setCvr("gfsr3");
+        createCredentialRequest.setId(id);
+        createCredentialRequest.setOrganisation("Statens Serum Institute");
+        createCredentialRequest.setOwner("Me");
+        createCredentialRequest.setPrivateKeyStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI())));
+        createCredentialRequest.setPublicCertStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/public-cert1.cer").toURI())));
 
+        // Adding 2nd time
+        CreateCredentialRequest createCredentialRequest2nd = new CreateCredentialRequest();
+        createCredentialRequest2nd.setCvr("637283d");
+        createCredentialRequest2nd.setId(id);
+        createCredentialRequest2nd.setOrganisation("Statens Serum Institute");
+        createCredentialRequest2nd.setOwner("Me");
+        createCredentialRequest2nd.setPrivateKeyStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI())));
+        createCredentialRequest2nd.setPublicCertStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/public-cert1.cer").toURI())));
+
+        credentialsApi.v1CredentialinfoPut(createCredentialRequest);
+
+        ApiException apiException = assertThrows(ApiException.class, () -> credentialsApi.v1CredentialinfoPutWithHttpInfo(createCredentialRequest2nd));
+        assertEquals(HttpStatus.SC_BAD_REQUEST, apiException.getCode());
+        assertTrue(apiException.getResponseBody().contains("A credential vault with id " +id + " is already registered"));
 
 
 
