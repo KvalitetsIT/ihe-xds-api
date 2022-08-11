@@ -50,10 +50,10 @@ public class CredentialInfoController implements CredentialsApi {
 
         } catch (DgwsSecurityException e) {
             if (e.getErrorCode() == 1) {
-                throw BadRequestException.createException(BadRequestException.ERROR_CODE.INVALID_CERT, "Invalid certificate");
+                throw BadRequestException.createException(BadRequestException.ERROR_CODE.INVALID_CERT, e.getMessage());
             }
             else if (e.getErrorCode() == 2) {
-                throw BadRequestException.createException(BadRequestException.ERROR_CODE.INVALID_KEY, "Invalid private key");
+                throw BadRequestException.createException(BadRequestException.ERROR_CODE.INVALID_KEY, e.getMessage());
             }
             else {
                 throw BadRequestException.createException(BadRequestException.ERROR_CODE.GENERIC, "Something went wrong");
