@@ -64,4 +64,5 @@ public class CredentialServiceImplTest extends AbstractTest {
 		// Then
 		Assert.assertNotNull(info);
 	}
+
 }

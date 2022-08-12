@@ -25,6 +25,8 @@ import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
 import dk.sosi.seal.vault.CredentialVault;
 import dk.sosi.seal.vault.GenericCredentialVault;
 
+
+
 public class CredentialServiceImpl implements CredentialService {
 
 	private static final String PASSWORD = "Test1234";
@@ -82,7 +84,7 @@ public class CredentialServiceImpl implements CredentialService {
 	public synchronized CredentialInfo createAndAddCredentialInfo(String owner, String id, String cvr, String organisation, String publicCertStr, String privateKeyStr) throws DgwsSecurityException {
 
 		if (registeredInfos.containsKey(id)) {
-			throw new DgwsSecurityException("A credential vault with id "+id+" is already registered.");
+			throw new DgwsSecurityException(3,"A credential vault with id "+id+" is already registered.");
 		}
 
 		String ownerKey = DEFAULT_OWNER;
@@ -101,9 +103,13 @@ public class CredentialServiceImpl implements CredentialService {
 		KeyStore keystore;
 		try {
 			keystore = createKeystore(CredentialVault.ALIAS_SYSTEM, PASSWORD, publicCertStr, privateKeyStr);
-		} catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | InvalidKeySpecException | IOException e) {
+		} catch (KeyStoreException  | NoSuchAlgorithmException | InvalidKeySpecException | IOException e) {
 			LOGGER.error("Error creating keystore", e);
-			throw new DgwsSecurityException(e);
+			throw new DgwsSecurityException(e, 2, "Invalid private key");
+		}
+		catch (CertificateException e)  {
+			LOGGER.error("Error creating keystore", e);
+			throw new DgwsSecurityException(e, 1, "Invalid certificate");
 		}
 		
 		GenericCredentialVault generic = new GenericCredentialVault(properties, keystore, PASSWORD);
@@ -128,13 +134,19 @@ public class CredentialServiceImpl implements CredentialService {
 			result.addAll(registeredOwners.get(ownerKey));
 		}
 
-		result.addAll(registeredOwners.get(DEFAULT_OWNER));
-
+		if (registeredOwners.containsKey(DEFAULT_OWNER)) {
+			result.addAll(registeredOwners.get(DEFAULT_OWNER));
+		}
 		return result;
 	}
 
 	@Override
 	public CredentialInfo getCredentialInfoFromId(String id) {
+
+		if (id == null) {
+			return registeredInfos.get(DEFAULT_OWNER);
+		}
 		return registeredInfos.get(id);
 	}
+
 }
