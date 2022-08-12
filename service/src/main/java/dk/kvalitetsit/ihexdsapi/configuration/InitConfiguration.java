@@ -26,9 +26,8 @@ public class InitConfiguration {
 
     @PostConstruct
     public void setupDefaultCredentials() throws URISyntaxException, IOException, DgwsSecurityException {
-         String key1 = Files.readString(Paths.get(getClass().getClassLoader().getResource(this.keyPath).toURI()));
-         String cert1 = Files.readString(Paths.get(getClass().getClassLoader().getResource(this.publicPath).toURI()));
-
+         String key1 = Files.readString(Paths.get(this.keyPath));
+         String cert1 = Files.readString(Paths.get(this.publicPath));
          // Need better variable names
         credentialService.createAndAddCredentialInfo(null, "Standard1", " ", " ", cert1, key1
                 );
