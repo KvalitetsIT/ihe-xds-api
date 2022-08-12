@@ -1,11 +1,14 @@
 package dk.kvalitetsit.ihexds.integrationtest;
 
+import java.io.IOException;
 import java.util.Collections;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
+import org.springframework.core.io.ClassPathResource;
 import org.testcontainers.DockerClientFactory;
+import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
@@ -23,10 +26,22 @@ public class ServiceStarter {
     private Network dockerNetwork;
     private String jdbcUrl;
 
-    public void startServices() {
+    public void startServices() throws IOException {
         dockerNetwork = Network.newNetwork();
 
+
+
         setupDatabaseContainer();
+        System.setProperty("STSURL","http://test1.ekstern-test.nspop.dk:8080/sts/services/NewSecurityTokenService");
+        System.setProperty("xdsIti18Endpoint", "http://test1-cnsp.ekstern-test.nspop.dk:8080/ddsregistry");
+
+        // Gets correct test paths
+        var privateKey = new ClassPathResource("/certificates/private-cert1.pem");
+        var publicKey = new ClassPathResource("/certificates/public-cert1.cer");
+
+        System.setProperty("default.cert.private", privateKey.getFile().getAbsolutePath());
+        System.setProperty("default.cert.public", publicKey.getFile().getAbsolutePath());
+
 
         SpringApplication.run((VideoLinkHandlerApplication.class));
     }
@@ -58,6 +73,12 @@ public class ServiceStarter {
                 .withNetworkAliases("ihe-xds-api")
 
                 .withEnv("LOG_LEVEL", "INFO")
+                .withClasspathResourceMapping("certificates/private-cert1.pem", "/certificates/private-cert1.pem", BindMode.READ_ONLY)
+                .withClasspathResourceMapping("certificates/public-cert1.cer", "/certificates/public-cert1.cer", BindMode.READ_ONLY)
+                .withEnv("STSURL","http://test1.ekstern-test.nspop.dk:8080/sts/services/NewSecurityTokenService")
+                .withEnv("xdsIti18Endpoint","http://test1-cnsp.ekstern-test.nspop.dk:8080/ddsregistry")
+                .withEnv("default.cert.private","/certificates/private-cert1.pem")
+                .withEnv("default.cert.public","/certificates/public-cert1.cer")
 
 //                .withEnv("JVM_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000")
 
