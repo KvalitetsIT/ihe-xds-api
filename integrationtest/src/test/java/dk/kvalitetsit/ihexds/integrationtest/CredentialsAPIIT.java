@@ -135,28 +135,21 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
         ApiException apiException = assertThrows(ApiException.class, () -> credentialsApi.v1CredentialinfoPutWithHttpInfo(createCredentialRequest2nd));
         assertEquals(HttpStatus.SC_BAD_REQUEST, apiException.getCode());
         assertTrue(apiException.getResponseBody().contains("A credential vault with id " +id + " is already registered"));
-
-
-
-
-
-
-
-
     }
 
     @Test
     public void testCallService() throws ApiException {
         var iti18HealthCareProfessionalRequest = new Iti18HealthCareProfessionalRequest();
-//        iti18HealthCareProfessionalRequest.set
+        /*
+        iti18HealthCareProfessionalRequest.set
 
-//        input.setName("John Doe");
+       input.setName("John Doe");
 
        // var result = iheXdsApi.v1Iti18Get(input);
 
         //assertNotNull(result);
-//        assertEquals(input.getName(), result.getName());
-  //      assertNull(result.getiCanBeNull());
-    //    assertNotNull(result.getNow());
+       assertEquals(input.getName(), result.getName());
+      assertNull(result.getiCanBeNull());
+       assertNotNull(result.getNow());*/
     }
 }
