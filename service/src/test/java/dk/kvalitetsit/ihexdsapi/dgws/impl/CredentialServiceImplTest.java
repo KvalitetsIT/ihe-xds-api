@@ -5,17 +5,26 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.stream.Collectors;
 
+import dk.kvalitetsit.ihexdsapi.dao.impl.CredentialRepositoryImpl;
 import dk.kvalitetsit.ihexdsapi.dgws.CredentialInfo;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
 import dk.sosi.seal.vault.CredentialVault;
+import org.mockito.Mockito;
 
 public class CredentialServiceImplTest extends AbstractTest {
 
+	private CredentialServiceImpl credentialService;
+	private CredentialRepositoryImpl credentialRepository;
 
-	CredentialServiceImpl subject = new CredentialServiceImpl();
+	@Before
+	public void setup() {
+		credentialRepository = Mockito.mock(CredentialRepositoryImpl.class);
+		credentialService = new CredentialServiceImpl(credentialRepository);
+	}
 
 	@Test
 	public void testCreateCredentialVaultWithLegalCertificatePair() throws DgwsSecurityException  {
@@ -26,10 +35,15 @@ public class CredentialServiceImplTest extends AbstractTest {
 		String owner = "me";
 		String cvr = "46837428";
 		String organisationName = "Statens Serum Institut";
+		String id = "id";
+		/*Mockito.when(credentialRepository.(Mockito.any())).then(a -> {
 
+		})
+
+*/
 		// When
-		CredentialInfo info = subject.createAndAddCredentialInfo(owner,"id", cvr, organisationName, publicCertStr, privateKeyStr);
-		
+		CredentialInfo info = credentialService.createAndAddCredentialInfo(owner,id, cvr, organisationName, publicCertStr, privateKeyStr);
+		System.out.println(info.getCredentialVault().getSystemCredentialPair().getCertificate());
 		// Then
 		Assert.assertNotNull(info);
 	}
@@ -45,7 +59,7 @@ public class CredentialServiceImplTest extends AbstractTest {
 		String organisationName = "Statens Serum Institut";
 
 		// When
-		subject.createAndAddCredentialInfo(owner,"id", cvr, organisationName, publicCertStr, privateKeyStr);
+		credentialService.createAndAddCredentialInfo(owner,"id", cvr, organisationName, publicCertStr, privateKeyStr);
 	}
 
 	@Test
@@ -59,7 +73,7 @@ public class CredentialServiceImplTest extends AbstractTest {
 		String organisationName = "Statens Serum Institut";
 
 		// When
-		CredentialInfo info = subject.createAndAddCredentialInfo(owner,"id", cvr, organisationName, publicCertStr, privateKeyStr);
+		CredentialInfo info = credentialService.createAndAddCredentialInfo(owner,"id", cvr, organisationName, publicCertStr, privateKeyStr);
 		
 		// Then
 		Assert.assertNotNull(info);
