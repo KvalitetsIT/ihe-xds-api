@@ -8,6 +8,8 @@ import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.model.CreateCredentialRequest;
 import org.openapitools.model.Iti18HealthCareProfessionalRequest;
+import org.testcontainers.containers.BindMode;
+import org.testcontainers.containers.GenericContainer;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -32,6 +34,20 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
 
 
     }
+    private static final int REDIS_PORT = 6379;
+
+    static {
+        GenericContainer<?> redis = new GenericContainer("redis:7.0.4")
+                .withExposedPorts(REDIS_PORT)
+                .withCommand("redis-server /usr/local/etc/redis/redis.conf")
+                .withClasspathResourceMapping("redis.conf", "/usr/local/etc/redis/redis.conf", BindMode.READ_ONLY);
+        redis.start();
+
+        Integer mappedRedisPort = redis.getMappedPort(REDIS_PORT);
+        System.setProperty("redis.host", "localhost");
+        System.setProperty("redis.port", mappedRedisPort.toString());
+    }
+
 @Test
     public void testCredentialinfoGetController() throws ApiException, IOException, URISyntaxException {
 
