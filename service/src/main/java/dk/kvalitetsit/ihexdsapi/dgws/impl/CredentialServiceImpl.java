@@ -16,6 +16,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.*;
 
+import dk.kvalitetsit.ihexdsapi.dao.CredentialRepository;
+import dk.kvalitetsit.ihexdsapi.dao.entity.CredentialInfoEntity;
 import dk.kvalitetsit.ihexdsapi.dgws.CredentialInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +28,17 @@ import dk.sosi.seal.vault.CredentialVault;
 import dk.sosi.seal.vault.GenericCredentialVault;
 
 
-
 public class CredentialServiceImpl implements CredentialService {
 
+
+	private CredentialRepository credentialRepository;
+
+	public CredentialServiceImpl(CredentialRepository credentialRepository) {
+		this.credentialRepository = credentialRepository;
+	}
+
+
+	private static final int TTL = 86400000;
 	private static final String PASSWORD = "Test1234";
 
 	private static final String DEFAULT_OWNER = "  ";
@@ -36,6 +46,8 @@ public class CredentialServiceImpl implements CredentialService {
 
 	private Map<String, List<String>> registeredOwners = new HashMap<>();
 	private Map<String, CredentialInfo> registeredInfos = new HashMap<>();
+
+
 
 	private KeyStore createKeystore(String alias, String password, String publicCertStr, String privateKeyStr) throws KeyStoreException, CertificateException, IOException, NoSuchAlgorithmException, InvalidKeySpecException {
 		// Create the keystore
@@ -83,7 +95,7 @@ public class CredentialServiceImpl implements CredentialService {
 	@Override
 	public synchronized CredentialInfo createAndAddCredentialInfo(String owner, String id, String cvr, String organisation, String publicCertStr, String privateKeyStr) throws DgwsSecurityException {
 
-		if (registeredInfos.containsKey(id)) {
+		if (registeredInfos.containsKey(id) || this.credentialRepository.findByID(id) != null) {
 			throw new DgwsSecurityException(3,"A credential vault with id "+id+" is already registered.");
 		}
 
@@ -92,11 +104,21 @@ public class CredentialServiceImpl implements CredentialService {
 			ownerKey = owner.trim();
 		}
 		List<String> owning = null;
+		if (ownerKey.equals(DEFAULT_OWNER) ) {
 		if (!registeredOwners.containsKey(ownerKey)) {
 			owning = new LinkedList<>();
 			registeredOwners.put(ownerKey, owning);
 		} else {
 			owning = registeredOwners.get(ownerKey);
+		}}
+		else {
+			if (credentialRepository.findByOwner(ownerKey) == null) {
+				owning = new LinkedList<>();
+				credentialRepository.saveListOfCertsForUser(ownerKey, owning, TTL);
+			}
+			else {
+				owning = credentialRepository.findByOwner(ownerKey);
+			}
 		}
 
 		Properties properties = new Properties();
@@ -115,8 +137,19 @@ public class CredentialServiceImpl implements CredentialService {
 		GenericCredentialVault generic = new GenericCredentialVault(properties, keystore, PASSWORD);
 		CredentialInfo credentialInfo = new CredentialInfo(generic, cvr, organisation);
 
-		registeredInfos.put(id, credentialInfo);
-		owning.add(id);
+		//registeredInfos.put(id, credentialInfo);
+
+		if (ownerKey.equals(DEFAULT_OWNER)) {
+			registeredInfos.put(id, credentialInfo);
+		}
+		else {
+			CredentialInfoEntity cie = new CredentialInfoEntity(ownerKey, id, cvr,organisation,
+					publicCertStr, privateKeyStr);
+			credentialRepository.saveCredentialsForID(cie, TTL);
+			// Tilføj repository
+			//RepositoryService.saveCredentials(id, credentialInfo);
+		}
+		//owning.add(id);
 
 		return credentialInfo;
 	}
