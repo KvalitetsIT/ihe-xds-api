@@ -79,6 +79,9 @@ public class ServiceStarter {
                 .withEnv("xdsIti18Endpoint","http://test1-cnsp.ekstern-test.nspop.dk:8080/ddsregistry")
                 .withEnv("default.cert.private","/certificates/private-cert1.pem")
                 .withEnv("default.cert.public","/certificates/public-cert1.cer")
+                // Maybe?
+                .withEnv("redis.host", "localhost")
+                .withEnv("redis.port", "6379")
 
 //                .withEnv("JVM_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000")
 
