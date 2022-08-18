@@ -1,5 +1,6 @@
 package dk.kvalitetsit.ihexdsapi.configuration;
 
+import dk.kvalitetsit.ihexdsapi.dao.CredentialRepository;
 import dk.kvalitetsit.ihexdsapi.dao.impl.CredentialRepositoryImpl;
 import dk.kvalitetsit.ihexdsapi.dgws.CredentialService;
 import dk.kvalitetsit.ihexdsapi.dgws.impl.CredentialServiceImpl;
@@ -18,6 +19,9 @@ public class RedisConfiguration {
     @Value("${redis.port}")
     private int redisPort;
 
+    @Value("${ttl}")
+    private int ttl;
+
     @Bean
     public JedisConnectionFactory jedisConnectionFactory()  {
         JedisConnectionFactory jedisConFactory
@@ -35,8 +39,8 @@ public class RedisConfiguration {
     }
 
     @Bean
-    public CredentialRepositoryImpl credentialRepository() {
-        return new CredentialRepositoryImpl(redisTemplate());
+    public CredentialRepository credentialRepository() {
+        return new CredentialRepositoryImpl(redisTemplate(), ttl);
     }
 
 
