@@ -46,6 +46,7 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
         Integer mappedRedisPort = redis.getMappedPort(REDIS_PORT);
         System.setProperty("redis.host", "localhost");
         System.setProperty("redis.port", mappedRedisPort.toString());
+        System.setProperty("ttl", "3000");
     }
 
 @Test
