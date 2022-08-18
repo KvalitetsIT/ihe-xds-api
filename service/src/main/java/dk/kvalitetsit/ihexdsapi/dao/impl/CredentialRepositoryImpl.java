@@ -12,43 +12,68 @@ import java.util.List;
 @Repository
 public class CredentialRepositoryImpl implements CredentialRepository {
 
+    private int ttl;
+
     private RedisTemplate redisTemplate;
 
-    public CredentialRepositoryImpl(RedisTemplate redisTemplate) {
+    public CredentialRepositoryImpl(RedisTemplate redisTemplate, int ttl) {
         this.redisTemplate = redisTemplate;
-     }
+        this.ttl = ttl;
+    }
 
 
     @Override
-    public boolean saveCredentialsForID(CredentialInfoEntity credentialInfo, int TTL) {
-        redisTemplate.opsForValue().set(credentialInfo.getId(), credentialInfo, Duration.ofMillis(TTL));
-        return true;
+    public boolean saveCredentialsForID(CredentialInfoEntity credentialInfo) {
+
+        List<String> newList = null;
+        try {
+            if (FindListOfIDsForOwner(credentialInfo.getOwner()) == null) {
+                newList = new LinkedList<>();
+                newList.add(credentialInfo.getId());
+                redisTemplate.opsForValue().set(credentialInfo.getId(), credentialInfo, Duration.ofMillis(ttl));
+                saveListOfIDsForOwner(credentialInfo.getOwner(), newList);
+            } else {
+                newList = FindListOfIDsForOwner(credentialInfo.getOwner());
+                newList.add(credentialInfo.getId());
+                redisTemplate.opsForValue().set(credentialInfo.getId(), credentialInfo,
+                        Duration.ofMillis(getExpiryTimeLeftInMilliSeconds(newList.get(0))));
+                saveListOfIDsForOwner(credentialInfo.getOwner(), newList);
+            }
+            return true;
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
+    }
+
+    private int getExpiryTimeLeftInMilliSeconds(String id) {
+        return 1000 * (redisTemplate.getExpire(id).intValue());
+    }
+
+    private boolean saveListOfIDsForOwner(String owner, List<String> list) {
+        try {
+            redisTemplate.opsForValue().set(owner, list, Duration.ofMillis(ttl));
+            return true;
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
     }
 
     @Override
-    public boolean saveListOfCertsForUser(String owner, List<String> list, int TTL) {
-        redisTemplate.opsForValue().set(owner, list, Duration.ofMillis(TTL));
-        return true;
+    public CredentialInfoEntity findCredentialInfoByID(String id) {
+
+        return ((CredentialInfoEntity) redisTemplate.opsForValue().get(id));
     }
 
     @Override
-    public CredentialInfoEntity findByID(String id) {
-
-        return ((CredentialInfoEntity)redisTemplate.opsForValue().get(id));
-    }
-
-    @Override
-    public List<String> findByOwner(String owner) {
+    public List<String> FindListOfIDsForOwner(String owner) {
         return ((LinkedList<String>) redisTemplate.opsForValue().get(owner));
     }
-
-    @Override
-    public boolean updateCerts(String owner, List<String> list, int TTL) {
-        this.saveListOfCertsForUser(owner, list, TTL);
-        return true;
-    }
-
-
 
 
 }
