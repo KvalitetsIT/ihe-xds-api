@@ -16,8 +16,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.LinkedList;
-import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {dk.kvalitetsit.ihexdsapi.configuration.RedisConfiguration.class})
@@ -35,10 +33,12 @@ public class RepositortyImplTest {
         Integer mappedRedisPort = redis.getMappedPort(REDIS_PORT);
         System.setProperty("redis.host", "localhost");
         System.setProperty("redis.port", mappedRedisPort.toString());
+
+        System.setProperty("ttl", "3000");
     }
 
 
-  @Autowired
+    @Autowired
     public RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
@@ -61,48 +61,65 @@ public class RepositortyImplTest {
 
         Assert.assertNull(redisTemplate.opsForValue().get(owner));
 
-        int ttl = 10;
-        subject.saveCredentialsForID(credentialInfoEntity, ttl);
+        subject.saveCredentialsForID(credentialInfoEntity);
 
-        CredentialInfoEntity result = ((CredentialInfoEntity)redisTemplate.opsForValue().get(id));
+
+        CredentialInfoEntity result = ((CredentialInfoEntity) redisTemplate.opsForValue().get(id));
+
 
         System.out.println(result.getOwner());
 
         Assert.assertNotNull(redisTemplate.opsForValue().get(id));
 
-        UtilityTest.waiter(ttl + 1);
+        UtilityTest.waiter(3000 + 1);
+
+
 
         System.out.println((redisTemplate.opsForValue().get(owner)));
         Assert.assertNull(redisTemplate.opsForValue().get(owner));
     }
 
     @Test
-    public void TestSaveCertEnitity() throws URISyntaxException, IOException {
+    public void TestSaveCredentialEntityToRedisTwice() throws URISyntaxException, IOException, InterruptedException {
 
-        List<String> list = new LinkedList<>();
+        // Owner as key
+        CredentialInfoEntity credentialInfoEntity;
+        String cvr = "637283d";
+        String id = "ID 1";
+        String id2 = "ID 2";
+        String org = "Statens Serum Institute";
+        String owner = "Test";
+        String privateKey = Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI()));
         String publicKey = Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/public-cert1.cer").toURI()));
-        String dummyKey = "This is dummy data";
 
-        list.add(publicKey);
-        list.add(dummyKey);
-
-        String owner = "John Doe";
-
-        int ttl = 10;
-
-        subject.saveListOfCertsForUser(owner, list, ttl);
-
-        LinkedList<String> result = ((LinkedList<String>) redisTemplate.opsForValue().get(owner));
-        System.out.println(result);
-        Assert.assertEquals(2, result.size());
-        Assert.assertNotNull(result);
-        UtilityTest.waiter(ttl + 1);
+        credentialInfoEntity = new CredentialInfoEntity(owner, id, cvr, org, publicKey, privateKey);
 
         Assert.assertNull(redisTemplate.opsForValue().get(owner));
 
+        subject.saveCredentialsForID(credentialInfoEntity);
+        CredentialInfoEntity result = ((CredentialInfoEntity) redisTemplate.opsForValue().get(id));
+        Assert.assertNotNull(result);
+
+        // Wait one second to test expiry
+        UtilityTest.waiter(1000 + 1);
+        credentialInfoEntity = new CredentialInfoEntity(owner, id2, cvr, org, publicKey, privateKey);
+
+        subject.saveCredentialsForID(credentialInfoEntity);
+        result = ((CredentialInfoEntity) redisTemplate.opsForValue().get(id2));
+        Assert.assertNotNull(result);
+        Assert.assertEquals(2000, redisTemplate.getExpire(id2).intValue() * 1000);
+        Assert.assertEquals(2, subject.FindListOfIDsForOwner(owner).size());
+
+
+        UtilityTest.waiter(1000 + 1);
+        UtilityTest.waiter(1000 + 1);
+
+        Assert.assertNull(redisTemplate.opsForValue().get(id));
+        Assert.assertNull(redisTemplate.opsForValue().get(id2));
+
+
     }
 
-    // Muligvis overflødig
     @Test
     public void TestGetCredentialByID() throws URISyntaxException, IOException {
         // Owner as key
@@ -118,65 +135,11 @@ public class RepositortyImplTest {
 
         Assert.assertNull(redisTemplate.opsForValue().get(owner));
 
-        int ttl = 10;
-        subject.saveCredentialsForID(credentialInfoEntity, ttl);
 
-        CredentialInfoEntity result = subject.findByID(id);
+        subject.saveCredentialsForID(credentialInfoEntity);
+
+        CredentialInfoEntity result = subject.findCredentialInfoByID(id);
         Assert.assertNotNull(result);
     }
-    // Også muligvis overflødig
-    @Test
-    public void TestGetCertsByOwner() throws URISyntaxException, IOException {
-        List<String> list = new LinkedList<>();
-        String publicKey = Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/public-cert1.cer").toURI()));
-        String dummyKey = "This is dummy data";
 
-        list.add(publicKey);
-        list.add(dummyKey);
-
-        String owner = "John Doe";
-
-        int ttl = 10;
-
-        subject.saveListOfCertsForUser(owner, list, ttl);
-
-        List<String> result = subject.findByOwner(owner);
-        System.out.println(result);
-        Assert.assertEquals(2, result.size());
-    }
-
-    @Test
-    public void TestUpdateCertsforOwner() throws URISyntaxException, IOException {
-        List<String> list = new LinkedList<>();
-        String publicKey = Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/public-cert1.cer").toURI()));
-        String dummyKey = "This is dummy data";
-        String dummyKey2 = "This is also dummy data";
-
-        list.add(publicKey);
-        list.add(dummyKey);
-
-        String owner = "John Doe";
-
-        int ttl = 5000;
-
-        subject.saveListOfCertsForUser(owner, list, ttl);
-
-        List<String> result = subject.findByOwner(owner);
-        System.out.println(result);
-        Assert.assertEquals(2, result.size());
-
-        list.add(dummyKey2);
-
-        subject.updateCerts(owner, list, ttl);
-
-         result = subject.findByOwner(owner);
-        System.out.println(result);
-        Assert.assertEquals(3, result.size());
-
-        UtilityTest.waiter(ttl + 100);
-
-        result = subject.findByOwner(owner);
-        Assert.assertNull(result);
-
-    }
 }
