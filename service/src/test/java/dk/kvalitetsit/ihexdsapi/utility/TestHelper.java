@@ -4,7 +4,7 @@ package dk.kvalitetsit.ihexdsapi.utility;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
-public class UtilityTest {
+public class TestHelper {
 
 
     public static void waiter(long time) {
