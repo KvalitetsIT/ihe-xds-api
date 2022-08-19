@@ -15,9 +15,9 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 import java.util.Properties;
 
-public class Utility {
+public class ValutGenerator {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Utility.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ValutGenerator.class);
     private static final String PASSWORD = "Test1234";
 
 
