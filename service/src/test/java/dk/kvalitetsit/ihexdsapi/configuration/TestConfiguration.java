@@ -4,7 +4,6 @@ import dk.kvalitetsit.ihexdsapi.dgws.CredentialInfo;
 import dk.kvalitetsit.ihexdsapi.dgws.CredentialService;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
 import dk.kvalitetsit.ihexdsapi.dgws.impl.AbstractTest;
-import dk.kvalitetsit.ihexdsapi.dgws.impl.CredentialServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +18,7 @@ import javax.annotation.PostConstruct;
 @PropertySource("application.properties")
 public class TestConfiguration extends AbstractTest {
 
-    @Autowired
+   @Autowired
     CredentialService credentialService;
 
     @PostConstruct
