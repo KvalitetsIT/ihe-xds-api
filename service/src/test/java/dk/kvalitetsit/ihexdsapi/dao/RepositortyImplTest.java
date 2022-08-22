@@ -68,7 +68,7 @@ public class RepositortyImplTest {
         redis.start();
     }
 
-   /* @Test
+    @Test
     public void TestSaveCredentialEntityToRedis() throws URISyntaxException, IOException, InterruptedException {
 
         // Owner as key
@@ -95,7 +95,7 @@ public class RepositortyImplTest {
         TestHelper.waiter(3000 + 1);
 
         Assert.assertNull(redisTemplate.opsForValue().get(owner));
-    }*/
+    }
 
     @Test
     public void TestSaveCredentialEntityToRedisTwice() throws URISyntaxException, IOException, InterruptedException {
