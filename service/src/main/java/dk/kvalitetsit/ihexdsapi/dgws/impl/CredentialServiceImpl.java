@@ -1,31 +1,16 @@
 package dk.kvalitetsit.ihexdsapi.dgws.impl;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.security.KeyFactory;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.*;
 
 import dk.kvalitetsit.ihexdsapi.dao.CredentialRepository;
 import dk.kvalitetsit.ihexdsapi.dao.entity.CredentialInfoEntity;
 import dk.kvalitetsit.ihexdsapi.dgws.CredentialInfo;
-import dk.kvalitetsit.ihexdsapi.utility.Utility;
+import dk.kvalitetsit.ihexdsapi.utility.ValutGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.kvalitetsit.ihexdsapi.dgws.CredentialService;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
-import dk.sosi.seal.vault.CredentialVault;
 import dk.sosi.seal.vault.GenericCredentialVault;
 
 
@@ -39,7 +24,7 @@ public class CredentialServiceImpl implements CredentialService {
 	}
 
 
-	private static final String DEFAULT_OWNER = "  ";
+	private static final String DEFAULT_OWNER = " ";
 	private static final Logger LOGGER = LoggerFactory.getLogger(CredentialServiceImpl.class);
 
 	private Map<String, List<String>> registeredOwners = new HashMap<>();
@@ -63,10 +48,11 @@ public class CredentialServiceImpl implements CredentialService {
 			List<String> owning = null;
 			if (!registeredOwners.containsKey(ownerKey)) {
 				owning = new LinkedList<>();
-				registeredOwners.put(ownerKey, owning);
 			} else {
 				owning = registeredOwners.get(ownerKey);
 			}
+			owning.add(id);
+			registeredOwners.put(ownerKey, owning);
 		}
 
 		CredentialInfo credentialInfo = generateCredientialInfoFromKeys(cvr, organisation, publicCertStr, privateKeyStr);
@@ -85,7 +71,7 @@ public class CredentialServiceImpl implements CredentialService {
 
 	private CredentialInfo generateCredientialInfoFromKeys(String cvr, String organisation, String publicCertStr,
 														   String privateKeyStr) throws DgwsSecurityException {
-		GenericCredentialVault generic = Utility.generateGenericCredentialVault(publicCertStr, privateKeyStr);
+		GenericCredentialVault generic = ValutGenerator.generateGenericCredentialVault(publicCertStr, privateKeyStr);
 		CredentialInfo credentialInfo = new CredentialInfo(generic, cvr, organisation);
 
 		return  credentialInfo;
@@ -132,5 +118,6 @@ public class CredentialServiceImpl implements CredentialService {
 
 		}
 	}
+
 
 }
