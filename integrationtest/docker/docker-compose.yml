@@ -2,7 +2,7 @@ version: '3'
 services:
   redis-server:
     container_name: redis
-    image: 'redis'
+    image: 'redis:7.0.4'
     ports:
       - "6379:6379"
   java-service:
