@@ -2,7 +2,7 @@ package dk.kvalitetsit.ihexdsapi.dao;
 
 import dk.kvalitetsit.ihexdsapi.dao.entity.CredentialInfoEntity;
 import dk.kvalitetsit.ihexdsapi.dao.impl.CredentialRepositoryImpl;
-import dk.kvalitetsit.ihexdsapi.utility.UtilityTest;
+import dk.kvalitetsit.ihexdsapi.utility.TestHelper;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,15 +67,10 @@ public class RepositortyImplTest {
         CredentialInfoEntity result = ((CredentialInfoEntity) redisTemplate.opsForValue().get(id));
 
 
-        System.out.println(result.getOwner());
-
         Assert.assertNotNull(redisTemplate.opsForValue().get(id));
 
-        UtilityTest.waiter(3000 + 1);
+        TestHelper.waiter(3000 + 1);
 
-
-
-        System.out.println((redisTemplate.opsForValue().get(owner)));
         Assert.assertNull(redisTemplate.opsForValue().get(owner));
     }
 
@@ -101,7 +96,7 @@ public class RepositortyImplTest {
         Assert.assertNotNull(result);
 
         // Wait one second to test expiry
-        UtilityTest.waiter(1000 + 1);
+        TestHelper.waiter(1000 + 1);
         credentialInfoEntity = new CredentialInfoEntity(owner, id2, cvr, org, publicKey, privateKey);
 
         subject.saveCredentialsForID(credentialInfoEntity);
@@ -111,8 +106,8 @@ public class RepositortyImplTest {
         Assert.assertEquals(2, subject.FindListOfIDsForOwner(owner).size());
 
 
-        UtilityTest.waiter(1000 + 1);
-        UtilityTest.waiter(1000 + 1);
+        TestHelper.waiter(1000 + 1);
+        TestHelper.waiter(1000 + 1);
 
         Assert.assertNull(redisTemplate.opsForValue().get(id));
         Assert.assertNull(redisTemplate.opsForValue().get(id2));
