@@ -1,6 +1,7 @@
 package dk.kvalitetsit.ihexdsapi.dao;
 
 import dk.kvalitetsit.ihexdsapi.dao.entity.CredentialInfoEntity;
+import dk.kvalitetsit.ihexdsapi.dao.exception.ConnectionFailedExecption;
 import dk.kvalitetsit.ihexdsapi.dao.impl.CredentialRepositoryImpl;
 import dk.kvalitetsit.ihexdsapi.utility.TestHelper;
 import org.junit.*;
@@ -23,8 +24,10 @@ public class RepositortyImplTest {
 
     private static final int REDIS_PORT = 6379;
 
-    static {
-        GenericContainer<?> redis = new GenericContainer("redis:7.0.4")
+    private static GenericContainer<?> redis;
+
+     static  {
+        redis = new GenericContainer("redis:7.0.4")
                 .withExposedPorts(REDIS_PORT)
                 .withCommand("redis-server /usr/local/etc/redis/redis.conf")
                 .withClasspathResourceMapping("redis.conf", "/usr/local/etc/redis/redis.conf", BindMode.READ_ONLY);
@@ -44,6 +47,26 @@ public class RepositortyImplTest {
     @Autowired
     CredentialRepositoryImpl subject;
 
+    @Test (expected = ConnectionFailedExecption.class)
+    public void TestConnectionToRedisFailed() throws ConnectionFailedExecption, URISyntaxException, IOException {
+        redis.close();
+
+        //When
+        CredentialInfoEntity credentialInfoEntity;
+        String cvr = "637283d";
+        String id = "7w7777w";
+        String org = "Statens Serum Institute";
+        String owner = "Me";
+        String privateKey = Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI()));
+        String publicKey = Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/public-cert1.cer").toURI()));
+
+        credentialInfoEntity = new CredentialInfoEntity(owner, id, cvr, org, publicKey, privateKey);
+
+
+        subject.saveCredentialsForID(credentialInfoEntity);
+
+        redis.start();
+    }
 
     @Test
     public void TestSaveCredentialEntityToRedis() throws URISyntaxException, IOException, InterruptedException {

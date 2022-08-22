@@ -2,6 +2,7 @@ package dk.kvalitetsit.ihexdsapi.dao.impl;
 
 import dk.kvalitetsit.ihexdsapi.dao.CredentialRepository;
 import dk.kvalitetsit.ihexdsapi.dao.entity.CredentialInfoEntity;
+import dk.kvalitetsit.ihexdsapi.dao.exception.ConnectionFailedExecption;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -15,6 +16,9 @@ public class CredentialRepositoryImpl implements CredentialRepository {
     private int ttl;
 
     private RedisTemplate redisTemplate;
+
+    private final String ERROR_MESSAGE = "Failed to connect to Redis";
+    private final int ERROR_CODE = 1;
 
     public CredentialRepositoryImpl(RedisTemplate redisTemplate, int ttl) {
         this.redisTemplate = redisTemplate;
@@ -45,11 +49,8 @@ public class CredentialRepositoryImpl implements CredentialRepository {
                 saveListOfIDsForOwner(credentialInfo.getOwner(), newList);
             }
             return true;
-        }
-        catch (Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException();
+        } catch (RuntimeException e) {
+            throw new ConnectionFailedExecption(ERROR_CODE, ERROR_MESSAGE);
         }
     }
 
@@ -61,24 +62,29 @@ public class CredentialRepositoryImpl implements CredentialRepository {
         try {
             redisTemplate.opsForValue().set(owner, list, Duration.ofMillis(ttl));
             return true;
-        }
-        catch (Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException();
+        } catch (RuntimeException e) {
+            throw new ConnectionFailedExecption(ERROR_CODE, ERROR_MESSAGE);
+
         }
     }
 
     @Override
     public CredentialInfoEntity findCredentialInfoByID(String id) {
-
-        return ((CredentialInfoEntity) redisTemplate.opsForValue().get(id));
+        try {
+            return ((CredentialInfoEntity) redisTemplate.opsForValue().get(id));
+        } catch (RuntimeException e) {
+            throw new ConnectionFailedExecption(ERROR_CODE, ERROR_MESSAGE);
+        }
     }
 
     @Override
     public List<String> FindListOfIDsForOwner(String owner) {
-        return ((LinkedList<String>) redisTemplate.opsForValue().get(owner));
+
+        try {
+            return ((LinkedList<String>) redisTemplate.opsForValue().get(owner));
+        } catch (RuntimeException e) {
+            throw new ConnectionFailedExecption(ERROR_CODE, ERROR_MESSAGE);
+        }
+
     }
-
-
 }
