@@ -2,9 +2,6 @@ package dk.kvalitetsit.ihexdsapi.configuration;
 
 import dk.kvalitetsit.ihexdsapi.dao.CredentialRepository;
 import dk.kvalitetsit.ihexdsapi.dao.impl.CredentialRepositoryImpl;
-import dk.kvalitetsit.ihexdsapi.dgws.CredentialService;
-import dk.kvalitetsit.ihexdsapi.dgws.impl.CredentialServiceImpl;
-import org.apache.bcel.Repository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,7 +37,7 @@ public class RedisConfiguration {
 
     @Bean
     public CredentialRepository credentialRepository() {
-        return new CredentialRepositoryImpl(redisTemplate(), ttl);
+        return new CredentialRepositoryImpl(redisTemplate(),ttl);
     }
 
 
