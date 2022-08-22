@@ -7,7 +7,6 @@ import dk.kvalitetsit.ihexdsapi.dgws.CredentialInfo;
 import dk.kvalitetsit.ihexdsapi.dgws.CredentialService;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsClientInfo;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
-import dk.sosi.seal.vault.CredentialVault;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
