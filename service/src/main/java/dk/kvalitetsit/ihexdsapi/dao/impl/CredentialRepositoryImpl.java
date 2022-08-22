@@ -21,6 +21,11 @@ public class CredentialRepositoryImpl implements CredentialRepository {
         this.ttl = ttl;
     }
 
+    // Might be a fix for ttl not loading??
+    public CredentialRepositoryImpl() {
+
+    }
+
 
     @Override
     public boolean saveCredentialsForID(CredentialInfoEntity credentialInfo) {
