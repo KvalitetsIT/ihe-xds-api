@@ -37,7 +37,7 @@ public class RepositortyImplTest {
         System.setProperty("redis.host", "localhost");
         System.setProperty("redis.port", mappedRedisPort.toString());
 
-        System.setProperty("ttl", "3000");
+        System.setProperty("redis.data.ttl", "3000");
     }
 
 

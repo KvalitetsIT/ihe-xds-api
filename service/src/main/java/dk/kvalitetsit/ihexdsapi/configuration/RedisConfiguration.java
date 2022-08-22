@@ -16,7 +16,7 @@ public class RedisConfiguration {
     @Value("${redis.port}")
     private int redisPort;
 
-    @Value("${ttl}")
+    @Value("${redis.data.ttl}")
     private int ttl;
 
     @Bean

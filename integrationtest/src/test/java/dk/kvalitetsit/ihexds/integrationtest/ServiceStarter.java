@@ -50,7 +50,7 @@ public class ServiceStarter {
         System.setProperty("redis.host", "localhost");
         System.setProperty("redis.port", Integer.toString(mappedRedisPort));
 
-        System.setProperty("ttl", Integer.toString(ttl));
+        System.setProperty("redis.data.ttl", Integer.toString(ttl));
 
 
         SpringApplication.run((VideoLinkHandlerApplication.class));
@@ -93,7 +93,7 @@ public class ServiceStarter {
                 .withEnv("default.cert.public", "/certificates/public-cert1.cer")
                 .withEnv("redis.host", "redis")
                 .withEnv("redis.port", "6379")
-                .withEnv("ttl", Integer.toString(ttl))
+                .withEnv("redis.data.ttl", Integer.toString(ttl))
 
 //                .withEnv("JVM_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000")
 
