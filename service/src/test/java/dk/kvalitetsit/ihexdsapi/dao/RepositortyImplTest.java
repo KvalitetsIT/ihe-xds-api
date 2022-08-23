@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 
@@ -31,10 +32,12 @@ public class RepositortyImplTest {
                 .withExposedPorts(REDIS_PORT)
                 .withCommand("redis-server /usr/local/etc/redis/redis.conf")
                 .withClasspathResourceMapping("redis.conf", "/usr/local/etc/redis/redis.conf", BindMode.READ_ONLY);
+
         redis.start();
 
         Integer mappedRedisPort = redis.getMappedPort(REDIS_PORT);
-        System.setProperty("redis.host", "localhost");
+         ;
+        System.setProperty("redis.host", DockerClientFactory.instance().dockerHostIpAddress());
         System.setProperty("redis.port", mappedRedisPort.toString());
 
         System.setProperty("redis.data.ttl", "3000");
