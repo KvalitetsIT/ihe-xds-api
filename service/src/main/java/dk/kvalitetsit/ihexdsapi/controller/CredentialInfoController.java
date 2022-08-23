@@ -17,7 +17,7 @@ import java.util.*;
 
 @RestController
 // CORS - Consider if this is needed in your application. Only here to make Swagger UI work.
-@CrossOrigin(origins = "http://localhost")
+@CrossOrigin(origins = "http://localhost:3000")
 public class CredentialInfoController implements CredentialsApi {
 
     @Autowired
