@@ -22,17 +22,23 @@ public class ServiceStarter {
     private static final Logger logger = LoggerFactory.getLogger(ServiceStarter.class);
     private static final Logger serviceLogger = LoggerFactory.getLogger("ihe-xds-api");
     private static final Logger mariadbLogger = LoggerFactory.getLogger("mariadb");
+    private static final Logger redisLogger = LoggerFactory.getLogger("redis");
+
+    private static final int ttl = 3000;
 
     private Network dockerNetwork;
     private String jdbcUrl;
+
+    private int mappedRedisPort;
 
     public void startServices() throws IOException {
         dockerNetwork = Network.newNetwork();
 
 
-
         setupDatabaseContainer();
-        System.setProperty("STSURL","http://test1.ekstern-test.nspop.dk:8080/sts/services/NewSecurityTokenService");
+        setupRedisContainer();
+
+        System.setProperty("STSURL", "http://test1.ekstern-test.nspop.dk:8080/sts/services/NewSecurityTokenService");
         System.setProperty("xdsIti18Endpoint", "http://test1-cnsp.ekstern-test.nspop.dk:8080/ddsregistry");
 
         // Gets correct test paths
@@ -41,6 +47,10 @@ public class ServiceStarter {
 
         System.setProperty("default.cert.private", privateKey.getFile().getAbsolutePath());
         System.setProperty("default.cert.public", publicKey.getFile().getAbsolutePath());
+        System.setProperty("redis.host", "localhost");
+        System.setProperty("redis.port", Integer.toString(mappedRedisPort));
+
+        System.setProperty("redis.data.ttl", Integer.toString(ttl));
 
 
         SpringApplication.run((VideoLinkHandlerApplication.class));
@@ -50,6 +60,8 @@ public class ServiceStarter {
         dockerNetwork = Network.newNetwork();
 
         setupDatabaseContainer();
+        setupRedisContainer();
+
 
         var resourcesContainerName = "ihe-xds-api-resources";
         var resourcesRunning = containerRunning(resourcesContainerName);
@@ -75,17 +87,22 @@ public class ServiceStarter {
                 .withEnv("LOG_LEVEL", "INFO")
                 .withClasspathResourceMapping("certificates/private-cert1.pem", "/certificates/private-cert1.pem", BindMode.READ_ONLY)
                 .withClasspathResourceMapping("certificates/public-cert1.cer", "/certificates/public-cert1.cer", BindMode.READ_ONLY)
-                .withEnv("STSURL","http://test1.ekstern-test.nspop.dk:8080/sts/services/NewSecurityTokenService")
-                .withEnv("xdsIti18Endpoint","http://test1-cnsp.ekstern-test.nspop.dk:8080/ddsregistry")
-                .withEnv("default.cert.private","/certificates/private-cert1.pem")
-                .withEnv("default.cert.public","/certificates/public-cert1.cer")
+                .withEnv("STSURL", "http://test1.ekstern-test.nspop.dk:8080/sts/services/NewSecurityTokenService")
+                .withEnv("xdsIti18Endpoint", "http://test1-cnsp.ekstern-test.nspop.dk:8080/ddsregistry")
+                .withEnv("default.cert.private", "/certificates/private-cert1.pem")
+                .withEnv("default.cert.public", "/certificates/public-cert1.cer")
+                .withEnv("redis.host", "redis")
+                .withEnv("redis.port", "6379")
+                .withEnv("redis.data.ttl", Integer.toString(ttl))
 
 //                .withEnv("JVM_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000")
 
-                .withExposedPorts(8081,8080)
+                .withExposedPorts(8081, 8080)
                 .waitingFor(Wait.forHttp("/actuator").forPort(8081).forStatusCode(200));
         service.start();
         attachLogger(serviceLogger, service);
+
+
 
         return service;
     }
@@ -112,6 +129,26 @@ public class ServiceStarter {
         jdbcUrl = mariadb.getJdbcUrl();
         attachLogger(mariadbLogger, mariadb);*/
     }
+
+    private void setupRedisContainer() {
+
+        int REDIS_PORT = 6379;
+        GenericContainer<?> redis = new GenericContainer("redis:7.0.4")
+                .withExposedPorts(REDIS_PORT)
+                .withCommand("redis-server /usr/local/etc/redis/redis.conf")
+                .withClasspathResourceMapping("redis.conf", "/usr/local/etc/redis/redis.conf", BindMode.READ_ONLY)
+                .withNetwork(dockerNetwork)
+                .withNetworkAliases("redis");
+
+
+        redis.start();
+
+        this.mappedRedisPort = redis.getMappedPort(REDIS_PORT);
+
+        attachLogger(redisLogger, redis);
+
+    }
+
 
     private void attachLogger(Logger logger, GenericContainer container) {
         ServiceStarter.logger.info("Attaching logger to container: " + container.getContainerInfo().getName());

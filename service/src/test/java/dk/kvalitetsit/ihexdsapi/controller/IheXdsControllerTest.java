@@ -1,43 +1,40 @@
-package dk.kvalitetsit.ihexdsapi.service;
+package dk.kvalitetsit.ihexdsapi.controller;
 
-import dk.kvalitetsit.ihexdsapi.controller.IheXdsController;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsService;
-import dk.kvalitetsit.ihexdsapi.service.impl.IheXdsServiceImpl;
+import dk.kvalitetsit.ihexdsapi.service.Iti18Service;
+import dk.kvalitetsit.ihexdsapi.service.impl.DgwsServiceImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.openapitools.model.HealthcareProfessionalContext;
 import org.openapitools.model.Iti18HealthCareProfessionalRequest;
 import org.openapitools.model.Iti18QueryParameter;
 import org.openapitools.model.Iti18Response;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.validation.Valid;
 import java.util.List;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {dk.kvalitetsit.ihexdsapi.configuration.TestConfiguration.class})
-public class Iti18ServiceTest {
 
-    @Autowired
+public class IheXdsControllerTest {
+
+
     DgwsService dgwsService;
-
-    @Autowired
     Iti18Service iti18Service;
     IheXdsController subject;
 
     @Before
     public void setup() {
+        // Configure mocks senere
+        this.dgwsService = Mockito.mock(DgwsServiceImpl.class);
+        this.iti18Service = Mockito.mock(Iti18Service.class);
+
 
         subject = new IheXdsController(dgwsService, iti18Service);
     }
 
-    @Test
+   @Test
     public void testv1Iti18HealthcareProfessionalGet() {
         // Given
         Iti18HealthCareProfessionalRequest request = new Iti18HealthCareProfessionalRequest();

@@ -248,7 +248,28 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
+		<!-- Redis dependencies 2.7.2 4.3.0-m1 -->
+
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-redis</artifactId>
+			<version>2.7.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>3.8.0</version>
+		</dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>1.17.3</version>
+            <scope>test</scope>
+        </dependency>
+
+
+    </dependencies>
 	<build>
 		<plugins>
 			<plugin>

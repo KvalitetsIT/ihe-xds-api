@@ -3,6 +3,7 @@ package dk.kvalitetsit.ihexdsapi.configuration;
 import javax.annotation.PostConstruct;
 import javax.xml.namespace.QName;
 
+import dk.kvalitetsit.ihexdsapi.dao.CredentialRepository;
 import dk.kvalitetsit.ihexdsapi.dgws.CredentialService;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsService;
 import dk.kvalitetsit.ihexdsapi.dgws.impl.CredentialServiceImpl;
@@ -51,8 +52,8 @@ public class IheXdsConfiguration {
     }
 
     @Bean
-    public CredentialService credentialService() {
-        CredentialServiceImpl credentialService = new CredentialServiceImpl();
+    public CredentialService credentialService(CredentialRepository credentialRepository) {
+        CredentialServiceImpl credentialService = new CredentialServiceImpl(credentialRepository);
         return credentialService;
     }
 

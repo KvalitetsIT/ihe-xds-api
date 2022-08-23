@@ -31,6 +31,5 @@ public class InitConfiguration {
          // Need better variable names
         credentialService.createAndAddCredentialInfo(null, "Standard1", " ", " ", cert1, key1
                 );
-
     }
 }

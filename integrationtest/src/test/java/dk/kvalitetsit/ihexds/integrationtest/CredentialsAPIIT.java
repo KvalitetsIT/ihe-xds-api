@@ -9,6 +9,7 @@ import org.openapitools.client.ApiException;
 import org.openapitools.client.model.CreateCredentialRequest;
 import org.openapitools.model.Iti18HealthCareProfessionalRequest;
 
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -29,9 +30,8 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
 
         credentialsApi = new CredentialsApi(apiClient);
 
-
-
     }
+
 @Test
     public void testCredentialinfoGetController() throws ApiException, IOException, URISyntaxException {
 
