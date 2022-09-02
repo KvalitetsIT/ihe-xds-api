@@ -11,13 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 
 @RestController
 // CORS - Consider if this is needed in your application. Only here to make Swagger UI work.
-@CrossOrigin(origins = "http://localhost:3000")
+//@CrossOrigin(origins = "http://localhost:3000", methods =  {RequestMethod.GET,  RequestMethod.PUT})
 public class CredentialInfoController implements CredentialsApi {
 
     @Autowired

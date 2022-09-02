@@ -1,6 +1,7 @@
 package dk.kvalitetsit.ihexdsapi.controller;
 
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsService;
+import dk.kvalitetsit.ihexdsapi.service.IheXdsService;
 import dk.kvalitetsit.ihexdsapi.service.Iti18Service;
 import dk.kvalitetsit.ihexdsapi.service.impl.DgwsServiceImpl;
 import org.junit.Assert;
@@ -22,6 +23,7 @@ public class IheXdsControllerTest {
 
     DgwsService dgwsService;
     Iti18Service iti18Service;
+
     IheXdsController subject;
 
     @Before
@@ -29,6 +31,7 @@ public class IheXdsControllerTest {
         // Configure mocks senere
         this.dgwsService = Mockito.mock(DgwsServiceImpl.class);
         this.iti18Service = Mockito.mock(Iti18Service.class);
+
 
 
         subject = new IheXdsController(dgwsService, iti18Service);

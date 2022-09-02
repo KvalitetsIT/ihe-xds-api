@@ -3,8 +3,10 @@ package dk.kvalitetsit.ihexdsapi.controller;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsClientInfo;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsService;
+import dk.kvalitetsit.ihexdsapi.service.IheXdsService;
 import dk.kvalitetsit.ihexdsapi.service.Iti18Service;
-import org.openapitools.api.IhexdsApi;
+import org.openapitools.api.*;
+import org.openapitools.model.Code;
 import org.openapitools.model.Iti18HealthCareProfessionalRequest;
 import org.openapitools.model.Iti18Response;
 import org.slf4j.Logger;
@@ -20,14 +22,15 @@ import java.util.List;
 
 @RestController
 // CORS - Consider if this is needed in your application. Only here to make Swagger UI work.
-@CrossOrigin(origins = "http://localhost")
-public class IheXdsController implements IhexdsApi {
+//@CrossOrigin(origins = "http://localhost:*")
+public class IheXdsController  implements IhexdsApi {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(IheXdsController.class);
 
 	private Iti18Service iti18Service;
 
 	private DgwsService dgwsService;
+
     public IheXdsController(DgwsService dgwsService, Iti18Service iti18Service) {
         this.dgwsService = dgwsService;
 		this.iti18Service = iti18Service;
@@ -45,4 +48,7 @@ public class IheXdsController implements IhexdsApi {
 			throw new RuntimeException(e);
 		}
 	}
+
+
+
 }

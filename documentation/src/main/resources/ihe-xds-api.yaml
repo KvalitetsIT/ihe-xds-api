@@ -49,6 +49,133 @@ paths:
                 items:
                   $ref: '#/components/schemas/iti18Response'
 
+  /v1/codes/classCode:
+    get:
+      tags:
+        - Class codes
+      summary: Get class code and name of class code
+      description: Get class code and name of class code
+      responses:
+        '200':
+          description: Ok with list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/code'
+
+  /v1/codes/availabilityStatusCode:
+    get:
+      tags:
+        - Availability codes
+      summary: Get code and name of availability
+      description: Get code and name of availability
+      responses:
+        '200':
+          description: Ok with list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/code'
+
+  /v1/codes/formatCode:
+    get:
+      tags:
+        - Format codes
+      summary: Get code and name of format codes
+      description: Get code and name of format codes
+      responses:
+        '200':
+          description: Ok with list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/code'
+  /v1/codes/healthCareFacilityType:
+    get:
+      tags:
+        - Health Care Facility Type Codes
+      summary: Get code and name of healthCareFacilityType codes
+      description: Get code and name of healthCareFacilityType codes
+      responses:
+        '200':
+          description: Ok with list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/code'
+
+  /v1/codes/practiceSettingCode:
+    get:
+      tags:
+        - Practice setting code
+      summary: Get code and name of practiceSettingCode
+      description: Get code and name of practiceSettingCode
+      responses:
+        '200':
+          description: Ok with list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/code'
+
+  /v1/codes/objectTypeCode:
+    get:
+      tags:
+        - Object type code
+      summary: Get code and name of objectType
+      description: Get code and name of objectType
+      responses:
+        '200':
+          description: Ok with list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/code'
+
+  /v1/codes/eventCode:
+    get:
+      tags:
+        - Event code
+        - Event code scheme
+      summary: Get code and name of event code and scheme
+      description: Get code and name of event code and scheme
+      responses:
+        '200':
+          description: Ok with list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/code'
+
+  /v1/codes/typeCode:
+    get:
+      tags:
+        - Type code
+      summary: Get code and name of type code and scheme
+      description: Get code and name of type code and scheme
+      responses:
+        '200':
+          description: Ok with list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/code'
 
 components:
   responses:
@@ -75,6 +202,24 @@ components:
           type: string
           nullable: false
           example: "987598435735.54587493.454353"
+    code:
+      type: object
+      required:
+        - name
+        - code
+      properties:
+        name:
+          description: The name of the code
+          type: string
+          example: "Clinical report"
+        code:
+          description: The code value
+          type: string
+          example: "001"
+        scheme:
+          description: the scheme for the code
+          type: string
+          example: "1.2.208.184.100.10"
 
     healthcareProfessionalContext:
       type: object
