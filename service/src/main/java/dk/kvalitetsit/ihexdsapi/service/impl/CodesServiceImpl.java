@@ -157,6 +157,8 @@ public class CodesServiceImpl implements CodesService {
         c.setCode("ON-DEMAND");
         c.setName("On-demand");
         c.setScheme(" ");
+        codesCollection.add(c);
+
         return codesCollection;
 
     }
