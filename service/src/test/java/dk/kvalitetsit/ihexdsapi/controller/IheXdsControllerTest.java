@@ -9,8 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.openapitools.model.HealthcareProfessionalContext;
-import org.openapitools.model.Iti18HealthCareProfessionalRequest;
 import org.openapitools.model.Iti18QueryParameter;
+import org.openapitools.model.Iti18Request;
 import org.openapitools.model.Iti18Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +40,7 @@ public class IheXdsControllerTest {
    @Test
     public void testv1Iti18HealthcareProfessionalGet() {
         // Given
-        Iti18HealthCareProfessionalRequest request = new Iti18HealthCareProfessionalRequest();
+        Iti18Request request = new Iti18Request();
         HealthcareProfessionalContext context = new HealthcareProfessionalContext();
         context.setActingUserId("0804569723");
         context.setAuthorizationCode("CBNH1");
@@ -53,7 +53,7 @@ public class IheXdsControllerTest {
         request.setCredentialId("DEFAULT");
 
         // When
-        ResponseEntity<List<Iti18Response>> responseEntity = subject.v1Iti18HealthcareProfessionalGet(request);
+        ResponseEntity<List<Iti18Response>> responseEntity = subject.v1Iti18Post(request);
 
         // Then
         Assert.assertNotNull(responseEntity);

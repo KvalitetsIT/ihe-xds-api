@@ -7,7 +7,7 @@ import org.openapitools.client.api.CredentialsApi;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.model.CreateCredentialRequest;
-import org.openapitools.model.Iti18HealthCareProfessionalRequest;
+import org.openapitools.client.model.Iti18Request;
 
 
 import java.io.IOException;
@@ -139,7 +139,7 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
 
     @Test
     public void testCallService() throws ApiException {
-        var iti18HealthCareProfessionalRequest = new Iti18HealthCareProfessionalRequest();
+        var iti18Request = new Iti18Request();
         /*
         iti18HealthCareProfessionalRequest.set
 

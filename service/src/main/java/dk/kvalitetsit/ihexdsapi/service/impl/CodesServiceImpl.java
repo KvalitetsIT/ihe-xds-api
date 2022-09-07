@@ -73,6 +73,8 @@ public class CodesServiceImpl implements CodesService {
         this.objectTypeCodes = splitStringToArray(objectTypeCodes);
         this.objectTypeNames = splitStringToArray(objectTypeNames);
 
+        // Generate lister her.
+
     }
 
     public CodesServiceImpl() {

@@ -7,7 +7,6 @@ import dk.kvalitetsit.ihexdsapi.service.impl.CodesServiceImpl;
 import org.openapitools.api.*;
 import org.openapitools.model.Code;
 import org.openapitools.model.CredentialInfoResponse;
-import org.openapitools.model.Iti18HealthCareProfessionalRequest;
 import org.openapitools.model.Iti18Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

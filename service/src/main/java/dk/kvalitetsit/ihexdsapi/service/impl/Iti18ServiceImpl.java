@@ -64,6 +64,8 @@ public class Iti18ServiceImpl implements Iti18Service {
 		return ebXMLFactory;
 	}
 
+
+	// Måske denne ?
 	private AdhocQueryRequest createQuery(Iti18QueryParameter iti18Request) {
 
 		FindDocumentsQuery fdq = new FindDocumentsQuery();
