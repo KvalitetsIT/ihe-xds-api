@@ -5,14 +5,18 @@ import org.openapitools.model.Code;
 import java.util.List;
 
 public interface CodesService {
-    List<Code> generateListOfTypeCodes() throws CodesExecption;
-    List<Code> generateListOfFormatCodes() throws CodesExecption;
-    List<Code> generateListOfHealthcareFacilityTypeCodes() throws CodesExecption;
-    List<Code> generateListOfEventCodes() throws CodesExecption;
-    List<Code> generateListOfPractiseSettingCodes() throws CodesExecption;
-    List<Code> generateListOfAvailabilityStatus() ;
 
-    List<Code> generateDocumentType() ;
+
+    List<Code> getFormatCodesList();
+    List<Code> getHealthcareFacilityTypeCodesList();
+    List<Code> getEventCodesList();
+    List<Code> getPractiseSettingCodesList();
+    List<Code> getAvailabilityStatusList();
+    List<Code> getDocumentTypeList();
+    List<Code> getTypeCodesList();
+
+
+
 
 
 

@@ -1,5 +1,6 @@
 package dk.kvalitetsit.ihexdsapi.configuration;
 
+import dk.kvalitetsit.ihexdsapi.dgws.CredentialInfo;
 import dk.kvalitetsit.ihexdsapi.dgws.CredentialService;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
 import org.springframework.beans.factory.annotation.Autowired;

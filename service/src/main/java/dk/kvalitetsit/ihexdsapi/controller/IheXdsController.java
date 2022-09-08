@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -39,18 +40,37 @@ public class IheXdsController  implements IhexdsApi {
 	@Override
 	public ResponseEntity<List<Iti18Response>> v1Iti18Post(@Valid Iti18Request iti18Request) {
 		LOGGER.info("iti18 mere meningsfyldt TODO");
+		//System.out.println(iti18Request);
+
+		Iti18Response ir = new Iti18Response();
+		ir.setPatientId("HELOLOLO");
+		ir.setDocumentId("Dock");
+
+		List<Iti18Response> iti18Response = new ArrayList<>();
+		iti18Response.add(ir);
+
+		return new ResponseEntity<>( iti18Response, HttpStatus.OK);
+/*
 		try {
+			//DgwsClientInfo clientInfo = dgwsService.getHealthCareProfessionalClientInfo(iti18Request.getQueryParameters().getPatientId(), iti18Request.getCredentialId(), iti18Request.getContext());
+		} catch (DgwsSecurityException e) {
+			throw new RuntimeException(e);
+		}
+
+		return null;
+		/*try {
 
 
 			System.out.println(iti18Request);
-			DgwsClientInfo clientInfo = dgwsService.getHealthCareProfessionalClientInfo(iti18Request.getQueryParameters().getPatientId(), iti18Request.getCredentialId(), iti18Request.getContext());
-			List<Iti18Response> iti18Response = iti18Service.queryForDocument(iti18Request.getQueryParameters(), clientInfo);
-			return new ResponseEntity<List<Iti18Response>>(iti18Response, HttpStatus.OK);
+			//DgwsClientInfo clientInfo = dgwsService.getHealthCareProfessionalClientInfo(iti18Request.getQueryParameters().getPatientId(), iti18Request.getCredentialId(), iti18Request.getContext());
+			//List<Iti18Response> iti18Response = iti18Service.queryForDocument(iti18Request.getQueryParameters(), clientInfo);
+			//return new ResponseEntity<List<Iti18Response>>(iti18Response, HttpStatus.OK);
+			return null;
 		} catch (DgwsSecurityException e) {
 			System.out.println(iti18Request);
 
 			throw new RuntimeException(e);
-		}
+		}*/
 	}
 
 

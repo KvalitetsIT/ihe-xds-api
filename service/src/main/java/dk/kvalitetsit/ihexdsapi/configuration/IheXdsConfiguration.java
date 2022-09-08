@@ -7,6 +7,7 @@ import dk.kvalitetsit.ihexdsapi.dgws.CredentialService;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsService;
 import dk.kvalitetsit.ihexdsapi.dgws.impl.CredentialServiceImpl;
 import dk.kvalitetsit.ihexdsapi.dgws.impl.StsServiceImpl;
+import dk.kvalitetsit.ihexdsapi.service.CodesExecption;
 import dk.kvalitetsit.ihexdsapi.service.impl.CodesServiceImpl;
 import dk.kvalitetsit.ihexdsapi.service.impl.DgwsServiceImpl;
 import dk.kvalitetsit.ihexdsapi.service.CodesService;
@@ -156,7 +157,7 @@ public class IheXdsConfiguration {
 
 
     @Bean
-    public CodesService codesService() {
+    public CodesService codesService() throws CodesExecption {
         CodesServiceImpl codeService = new CodesServiceImpl( typeCodeCodes,  typeCodeNames,  typeCodeScheme,
                  formatCodeCodes,  formatCodeNames,  formatCodeScheme,
                 eventCodeSchemeCodes,  eventCodeSchemeNames,  eventCodeScheme

@@ -11,4 +11,6 @@ public interface CredentialService {
 	public Collection<String> getIds(String owner);
 
 	public CredentialInfo getCredentialInfoFromId(String id);
+
+
 }

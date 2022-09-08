@@ -27,7 +27,7 @@ public class CredentialInfoController implements CredentialsApi {
 @Override
     public ResponseEntity<List<CredentialInfoResponse>> v1CredentialinfoGet(String owner) {
 
-        Collection<String> ids = credentialService.getIds(owner);
+    Collection<String> ids = credentialService.getIds(owner);
         List<CredentialInfoResponse> responses = new LinkedList<>();
         for (String id : ids) {
             CredentialInfoResponse credentialInfoResponse = new CredentialInfoResponse();

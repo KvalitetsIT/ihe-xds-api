@@ -27,14 +27,14 @@ public class CredentialServiceImpl implements CredentialService {
     private static final String DEFAULT_OWNER = " ";
     private static final Logger LOGGER = LoggerFactory.getLogger(CredentialServiceImpl.class);
 
-    private Map<String, List<String>> registeredOwners = new HashMap<>();
-    private Map<String, CredentialInfo> registeredInfos = new HashMap<>();
+    private Map<String, List<String>> idsForOwner = new HashMap<>();
+    private Map<String, CredentialInfo> credentialInfoForID = new HashMap<>();
 
 
     @Override
     public synchronized CredentialInfo createAndAddCredentialInfo(String owner, String id, String cvr, String organisation, String publicCertStr, String privateKeyStr) throws DgwsSecurityException {
 
-        if (registeredInfos.containsKey(id) || this.credentialRepository.findCredentialInfoByID(id) != null) {
+        if (credentialInfoForID.containsKey(id) || this.credentialRepository.findCredentialInfoByID(id) != null) {
             throw new DgwsSecurityException(3, "A credential vault with id " + id + " is already registered.");
         }
 
@@ -45,24 +45,24 @@ public class CredentialServiceImpl implements CredentialService {
 
         if (ownerKey.equals(DEFAULT_OWNER)) {
             List<String> owning = null;
-            if (!registeredOwners.containsKey(ownerKey)) {
+            if (!idsForOwner.containsKey(ownerKey)) {
                 owning = new LinkedList<>();
             } else {
-                owning = registeredOwners.get(ownerKey);
+                owning = idsForOwner.get(ownerKey);
             }
             owning.add(id);
-            registeredOwners.put(ownerKey, owning);
+            idsForOwner.put(ownerKey, owning);
         }
 
         CredentialInfo credentialInfo = generateCredientialInfoFromKeys(cvr, organisation, publicCertStr, privateKeyStr);
 
 
         if (ownerKey.equals(DEFAULT_OWNER)) {
-            registeredInfos.put(id, credentialInfo);
-        } else {
-            credentialRepository.saveCredentialsForID(new CredentialInfoEntity(ownerKey,
-                    id, cvr, organisation, publicCertStr, privateKeyStr));
+            credentialInfoForID.put(id, credentialInfo);
         }
+        credentialRepository.saveCredentialsForID(new CredentialInfoEntity(ownerKey,
+                id, cvr, organisation, publicCertStr, privateKeyStr));
+
 
         return credentialInfo;
     }
@@ -82,12 +82,12 @@ public class CredentialServiceImpl implements CredentialService {
         String ownerKey = null;
 
 
-        result.addAll(registeredOwners.get(DEFAULT_OWNER));
+        result.addAll(idsForOwner.get(DEFAULT_OWNER));
 
 
         if (owner != null) {
             ownerKey = owner.trim();
-            if (registeredOwners.containsKey(ownerKey)) {
+            if (idsForOwner.containsKey(ownerKey)) {
                 result.addAll(credentialRepository.FindListOfIDsForOwner(owner));
             }
         }
@@ -98,10 +98,16 @@ public class CredentialServiceImpl implements CredentialService {
     public CredentialInfo getCredentialInfoFromId(String id) {
 
         if (id == null) {
-            return registeredInfos.get(DEFAULT_OWNER);
+            return credentialInfoForID.get(idsForOwner.get(DEFAULT_OWNER).get(0));
         }
 
         CredentialInfoEntity credsEnitity = credentialRepository.findCredentialInfoByID(id);
+
+        // get standard
+        if (credsEnitity == null) {
+            return credentialInfoForID.get(idsForOwner.get(DEFAULT_OWNER).get(0));
+        }
+
 
         CredentialInfo credentialInfo = null;
         try {
@@ -114,6 +120,8 @@ public class CredentialServiceImpl implements CredentialService {
 
         }
     }
+
+
 
 
 }

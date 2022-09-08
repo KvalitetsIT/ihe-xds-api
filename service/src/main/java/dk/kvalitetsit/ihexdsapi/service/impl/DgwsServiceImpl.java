@@ -18,6 +18,8 @@ public class DgwsServiceImpl implements DgwsService {
 
         CredentialInfo credentialInfo = credentialService.getCredentialInfoFromId(credentialId);
 
+        System.out.println(credentialInfo.getCredentialVault());
+
         DgwsClientInfo dgwsClientInfo = stsService.getDgwsClientInfoForSystem(credentialInfo);
         dgwsClientInfo.setPatientId(patientId);
         dgwsClientInfo.setActingUserId(context.getActingUserId());

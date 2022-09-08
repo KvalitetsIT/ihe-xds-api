@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 @RestController
 public class CodesController implements TypeCodeApi, AvailabilityCodesApi, ClassCodesApi, EventCodeApi, FormatCodesApi, HealthCareFacilityTypeCodesApi, ObjectTypeCodeApi, PracticeSettingCodeApi{
@@ -24,11 +23,11 @@ public class CodesController implements TypeCodeApi, AvailabilityCodesApi, Class
         this.codesService = codesService;
     }
 
-
+//TODO Fix exception
     @Override
     public ResponseEntity<List<Code>> v1CodesAvailabilityStatusCodeGet() {
         try {
-            Collection<Code> codes = codesService.generateListOfAvailabilityStatus();
+            Collection<Code> codes = codesService.getAvailabilityStatusList();
             ResponseEntity<List<Code>> responseEntity = new ResponseEntity(codes, HttpStatus.OK);
             return responseEntity;
         } catch (Exception e) {
@@ -45,10 +44,10 @@ public class CodesController implements TypeCodeApi, AvailabilityCodesApi, Class
     @Override
     public ResponseEntity<List<Code>> v1CodesEventCodeGet() {
         try {
-            Collection<Code> codes = codesService.generateListOfEventCodes();
+            Collection<Code> codes = codesService.getEventCodesList();
             ResponseEntity<List<Code>> responseEntity = new ResponseEntity(codes, HttpStatus.OK);
             return responseEntity;
-        } catch (CodesExecption e) {
+        } catch (Exception e) {
             // Add correct error InternaL??
             throw new RuntimeException(e);
         }
@@ -57,10 +56,10 @@ public class CodesController implements TypeCodeApi, AvailabilityCodesApi, Class
     @Override
     public ResponseEntity<List<Code>> v1CodesFormatCodeGet() {
         try {
-            Collection<Code> codes = codesService.generateListOfFormatCodes();
+            Collection<Code> codes = codesService.getFormatCodesList();
             ResponseEntity<List<Code>> responseEntity = new ResponseEntity(codes, HttpStatus.OK);
             return responseEntity;
-        } catch (CodesExecption e) {
+        } catch (Exception e) {
             // Add correct error InternaL??
             throw new RuntimeException(e);
         }
@@ -69,10 +68,10 @@ public class CodesController implements TypeCodeApi, AvailabilityCodesApi, Class
     @Override
     public ResponseEntity<List<Code>> v1CodesHealthCareFacilityTypeGet() {
         try {
-            Collection<Code> codes = codesService.generateListOfHealthcareFacilityTypeCodes();
+            Collection<Code> codes = codesService.getHealthcareFacilityTypeCodesList();
             ResponseEntity<List<Code>> responseEntity = new ResponseEntity(codes, HttpStatus.OK);
             return responseEntity;
-        } catch (CodesExecption e) {
+        } catch (Exception e) {
             // Add correct error InternaL??
             throw new RuntimeException(e);
         }
@@ -82,7 +81,7 @@ public class CodesController implements TypeCodeApi, AvailabilityCodesApi, Class
     @Override
     public ResponseEntity<List<Code>> v1CodesObjectTypeCodeGet() {
         try {
-            Collection<Code> codes = codesService.generateDocumentType();
+            Collection<Code> codes = codesService.getDocumentTypeList();
             ResponseEntity<List<Code>> responseEntity = new ResponseEntity(codes, HttpStatus.OK);
             return responseEntity;
         } catch (Exception e) {
@@ -94,12 +93,12 @@ public class CodesController implements TypeCodeApi, AvailabilityCodesApi, Class
     @Override
     public ResponseEntity<List<Code>> v1CodesPracticeSettingCodeGet() {
         try {
-            Collection<Code> codes = codesService.generateListOfPractiseSettingCodes();
+            Collection<Code> codes = codesService.getPractiseSettingCodesList();
 
 
             ResponseEntity<List<Code>> responseEntity = new ResponseEntity(codes, HttpStatus.OK);
             return responseEntity;
-        } catch (CodesExecption e) {
+        } catch (Exception e) {
             // Add correct error InternaL??
             throw new RuntimeException(e);
         }
@@ -108,12 +107,12 @@ public class CodesController implements TypeCodeApi, AvailabilityCodesApi, Class
     @Override
     public ResponseEntity<List<Code>> v1CodesTypeCodeGet() {
         try {
-            Collection<Code> codes = codesService.generateListOfTypeCodes();
+            Collection<Code> codes = codesService.getTypeCodesList();
 
 
         ResponseEntity<List<Code>> responseEntity = new ResponseEntity(codes, HttpStatus.OK);
         return responseEntity;
-        } catch (CodesExecption e) {
+        } catch (Exception e) {
             // Add correct error InternaL??
             throw new RuntimeException(e);
         }

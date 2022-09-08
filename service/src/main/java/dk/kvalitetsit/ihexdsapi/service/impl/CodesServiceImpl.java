@@ -37,6 +37,16 @@ public class CodesServiceImpl implements CodesService {
     private String[] objectTypeCodes;
     private String[] objectTypeNames;
 
+    // Code lists variables
+
+    private List<Code> typeCodesList;
+    private List<Code> formatCodesList;
+    private List<Code> healthcareFacilityTypeCodesList;
+    private List<Code> eventCodesList;
+    private List<Code> practiseSettingCodesList;
+    private List<Code> availabilityStatusList;
+    private List<Code> documentTypeList;
+
 
     // utility;
     public CodesServiceImpl(String typeCodeCodes, String typeCodeNames, String typeCodeScheme,
@@ -45,7 +55,7 @@ public class CodesServiceImpl implements CodesService {
             , String healthcareFacilityTypeCodeCodes, String healthcareFacilityTypeCodeNames, String healthcareFacilityTypeCodeScheme,
                             String practiceSettingCodeCodes, String practiceSettingCodeNames, String practiceSettingCodeScheme
             , String classCodeCodes, String classCodeNames, String classCodeScheme,
-                            String objectTypeCodes, String objectTypeNames) {
+                            String objectTypeCodes, String objectTypeNames) throws CodesExecption {
         this.typeCodeCodes = splitStringToArray(typeCodeCodes);
         this.typeCodeScheme = typeCodeScheme;
         this.typeCodeNames = splitStringToArray(typeCodeNames);
@@ -73,8 +83,18 @@ public class CodesServiceImpl implements CodesService {
         this.objectTypeCodes = splitStringToArray(objectTypeCodes);
         this.objectTypeNames = splitStringToArray(objectTypeNames);
 
-        // Generate lister her.
 
+
+        // Generate lister her.
+        typeCodesList = this.generateListOfCodes(this.typeCodeCodes,
+                this.typeCodeNames, typeCodeScheme,
+                "Amount of type codes doesn't match amount of type codes names");
+        formatCodesList = this.generateListOfCodes(this.formatCodeCodes, this.formatCodeNames, formatCodeScheme, "msg");
+        healthcareFacilityTypeCodesList = this.generateListOfCodes(this.healthcareFacilityTypeCodeCodes, this.healthcareFacilityTypeCodeNames, this.healthcareFacilityTypeCodeScheme, "msg");
+        eventCodesList = this.generateListOfCodes(this.eventCodeCodes, this.eventCodeNames, "", "msg");
+        practiseSettingCodesList =  this.generateListOfCodes(this.practiceSettingCodeCodes, this.practiceSettingCodeNames, this.practiceSettingCodeScheme, "msg");
+        availabilityStatusList = this.generateListOfAvailabilityStatus();
+        documentTypeList = this.generateDocumentType();
     }
 
     public CodesServiceImpl() {
@@ -84,39 +104,9 @@ public class CodesServiceImpl implements CodesService {
         return inputString.split(";");
     }
 
-    @Override
-    public List<Code> generateListOfTypeCodes() throws CodesExecption {
 
-        String msg = "Amount of type codes doesn't match amount of type codes names";
-        return this.generateListOfCodes(this.typeCodeCodes, this.typeCodeNames, typeCodeScheme, msg);
-    }
 
-    @Override
-    public List<Code> generateListOfFormatCodes() throws CodesExecption {
-        String msg = "Format code execption";
-        return this.generateListOfCodes(this.formatCodeCodes, this.formatCodeNames, formatCodeScheme, msg);
-    }
-
-    @Override
-    public List<Code> generateListOfHealthcareFacilityTypeCodes() throws CodesExecption {
-        String msg = "Healthcare facility code execption";
-        return this.generateListOfCodes(this.healthcareFacilityTypeCodeCodes, this.healthcareFacilityTypeCodeNames, this.healthcareFacilityTypeCodeScheme, msg);
-    }
-
-    @Override
-    public List<Code> generateListOfEventCodes() throws CodesExecption {
-        String msg = "Event scheme execption";
-        return this.generateListOfCodes(this.eventCodeCodes, this.eventCodeNames, "", msg);
-    }
-
-    @Override
-    public List<Code> generateListOfPractiseSettingCodes() throws CodesExecption {
-        String msg = "Practice setting codes execption";
-        return this.generateListOfCodes(this.practiceSettingCodeCodes, this.practiceSettingCodeNames, this.practiceSettingCodeScheme, msg);
-    }
-
-    @Override
-    public List<Code> generateListOfAvailabilityStatus()  {
+    private List<Code> generateListOfAvailabilityStatus()  {
         List<Code> codesCollection = new LinkedList<>();
 
         // Approved
@@ -143,8 +133,8 @@ public class CodesServiceImpl implements CodesService {
         return codesCollection;
     }
 
-    @Override
-    public List<Code> generateDocumentType() {
+
+    private List<Code> generateDocumentType() {
         List<Code> codesCollection = new LinkedList<>();
 
         // Approved
@@ -180,6 +170,34 @@ public class CodesServiceImpl implements CodesService {
             codesCollection.add(temp);
         }
         return codesCollection;
+    }
+
+    public List<Code> getTypeCodesList() {
+        return List.copyOf(typeCodesList);
+    }
+
+    public List<Code> getFormatCodesList() {
+        return List.copyOf(formatCodesList);
+    }
+
+    public List<Code> getHealthcareFacilityTypeCodesList() {
+        return List.copyOf(healthcareFacilityTypeCodesList);
+    }
+
+    public List<Code> getEventCodesList() {
+        return List.copyOf(eventCodesList);
+    }
+
+    public List<Code> getPractiseSettingCodesList() {
+        return List.copyOf(practiseSettingCodesList);
+    }
+
+    public List<Code> getAvailabilityStatusList() {
+        return List.copyOf(availabilityStatusList);
+    }
+
+    public List<Code> getDocumentTypeList() {
+        return List.copyOf(documentTypeList);
     }
 
 
