@@ -24,7 +24,8 @@ public class ServiceStarter {
     private static final Logger mariadbLogger = LoggerFactory.getLogger("mariadb");
     private static final Logger redisLogger = LoggerFactory.getLogger("redis");
 
-    private static final int ttl = 3000;
+   // 3000 3 seconds
+    private static final int ttl = 86400000;
 
     private Network dockerNetwork;
     private String jdbcUrl;

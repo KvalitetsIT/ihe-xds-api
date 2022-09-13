@@ -198,10 +198,35 @@ components:
           nullable: false
           example: "2512489996"
         documentId:
-          description: Dokumentets Id
+          description: Dokumentets Id Or unique ID
           type: string
           nullable: false
           example: "987598435735.54587493.454353"
+        repositoryID:
+          description: Repostory ID
+          type: string
+          nullable: false
+          example : "1.2.208.192.100.101"
+        documentType:
+          description: Document type
+          type: string
+          nullable: false
+          example: "Dato og tidspunkt for møde mellem patient og sundhedsperson"
+        serviceStart:
+          description: The start service from date-time
+          type: string
+          format: date-time
+          example: "2021-01-30T08:30:00Z"
+        serviceEnd:
+          description: The start service to date-time
+          type: string
+          format: date-time
+          example: "2021-01-30T08:30:00Z"
+        document:
+          description: The uploaded document
+          type: object
+          $ref: '#/components/schemas/document'
+
     code:
       type: object
       required:
@@ -337,3 +362,12 @@ components:
           description: Code scheme from the search query
           type: string
           example: "2.16.840.1.113883.6.1"
+
+
+    document:
+      type: object
+      properties:
+        prop1:
+          description: The first property
+          type: string
+          example: "test"
