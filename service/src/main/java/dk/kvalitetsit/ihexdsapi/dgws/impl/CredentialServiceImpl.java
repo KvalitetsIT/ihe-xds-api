@@ -87,10 +87,14 @@ public class CredentialServiceImpl implements CredentialService {
 
         result.addAll(idsForOwner.get(DEFAULT_OWNER));
 
-
+    // FInd proper fix
         if (owner != null) {
             ownerKey = owner.trim();
-            result.addAll(credentialRepository.FindListOfIDsForOwner(ownerKey));
+            try {
+            result.addAll(credentialRepository.FindListOfIDsForOwner(ownerKey)); }
+            catch (Exception e) {
+
+            }
 
         }
         return result;

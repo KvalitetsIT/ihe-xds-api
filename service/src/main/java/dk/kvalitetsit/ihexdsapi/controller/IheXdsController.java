@@ -7,6 +7,7 @@ import dk.kvalitetsit.ihexdsapi.service.IheXdsService;
 import dk.kvalitetsit.ihexdsapi.service.Iti18Service;
 import org.openapitools.api.*;
 import org.openapitools.model.Code;
+import org.openapitools.model.Document;
 import org.openapitools.model.Iti18Request;
 import org.openapitools.model.Iti18Response;
 import org.slf4j.Logger;
@@ -18,7 +19,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @RestController
@@ -41,16 +44,38 @@ public class IheXdsController  implements IhexdsApi {
 	public ResponseEntity<List<Iti18Response>> v1Iti18Post(@Valid Iti18Request iti18Request) {
 
 
-		try {
 
-			DgwsClientInfo clientInfo = dgwsService.getHealthCareProfessionalClientInfo(iti18Request.getQueryParameters().getPatientId(), iti18Request.getCredentialId(), iti18Request.getContext());
-			List<Iti18Response> iti18Response = iti18Service.queryForDocument(iti18Request.getQueryParameters(), clientInfo);
+
+			//DgwsClientInfo clientInfo = dgwsService.getHealthCareProfessionalClientInfo(iti18Request.getQueryParameters().getPatientId(), iti18Request.getCredentialId(), iti18Request.getContext());
+			//List<Iti18Response> iti18Response = iti18Service.queryForDocument(iti18Request.getQueryParameters(), clientInfo);
+
+
+			// Generate 3 responses
+			Iti18Response res = null;
+			List<Iti18Response> iti18Response = new LinkedList<>();
+
+			for (int i = 1; i <= 3; i++) {
+				Document document = new Document();
+				document.setProp1("Data for set: " + i);
+				res = new Iti18Response();
+
+				res.setDocument(document);
+				res.setDocumentType("Approved");
+				res.setRepositoryID("Some ID for: " + i );
+				res.setPatientId("patient: " + i);
+				res.setDocumentId("Some ID for: " + i);
+				res.setServiceStart(OffsetDateTime.parse("2007-12-03T10:15:30Z"));
+				res.setServiceEnd(OffsetDateTime.parse("2007-12-07T10:15:30Z"));
+
+				iti18Response.add(res);
+			}
+
 			return new ResponseEntity<List<Iti18Response>>(iti18Response, HttpStatus.OK);
-		} catch (DgwsSecurityException e) {
+		/*catch (DgwsSecurityException e) {
 			System.out.println(iti18Request);
 
 			throw new RuntimeException(e);
-		}
+		}*/
 	}
 
 
