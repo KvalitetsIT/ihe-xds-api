@@ -25,10 +25,11 @@ public class Iti18IT extends AbstractIntegrationTest{
         apiClient.setBasePath(getApiBasePath());
         ihexdsApi = new IhexdsApi(apiClient);
     }
-
+/*
     // post
     @Test
     public void testV1Iti18PostController() throws ApiException {
+
 
         Iti18QueryParameter iti18QueryParameter = new Iti18QueryParameter();
         iti18QueryParameter.setAvailabilityStatus("APPROVED");
@@ -74,6 +75,6 @@ public class Iti18IT extends AbstractIntegrationTest{
         assertEquals(200, result.getStatusCode());
 
         // add result?
-    }
+    }*/
 
 }

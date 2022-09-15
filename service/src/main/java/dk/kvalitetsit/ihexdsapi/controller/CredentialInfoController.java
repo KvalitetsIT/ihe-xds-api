@@ -27,11 +27,12 @@ public class CredentialInfoController implements CredentialsApi {
 @Override
     public ResponseEntity<List<CredentialInfoResponse>> v1CredentialinfoGet(String owner) {
 
-    Collection<String> ids = credentialService.getIds(owner);
+    Collection<String[]> ids = credentialService.getIds(owner);
         List<CredentialInfoResponse> responses = new LinkedList<>();
-        for (String id : ids) {
+        for (String[] id : ids) {
             CredentialInfoResponse credentialInfoResponse = new CredentialInfoResponse();
-            credentialInfoResponse.setId(id);
+            credentialInfoResponse.setId(id[0]);
+            credentialInfoResponse.displayName(id[1]);
             responses.add(credentialInfoResponse);
         }
         ResponseEntity<List<CredentialInfoResponse>> responseEntity = new ResponseEntity(responses, HttpStatus.OK);
@@ -43,16 +44,15 @@ public class CredentialInfoController implements CredentialsApi {
 
 
         try {
-            CredentialInfo  credential = credentialService.createAndAddCredentialInfo(
-                    createCredentialResponse.getOwner(), createCredentialResponse.getId(),
-                    createCredentialResponse.getCvr(), createCredentialResponse.getOrganisation(),
+            CredentialInfo credential = credentialService.createAndAddCredentialInfo(
+                    createCredentialResponse.getOwner(), createCredentialResponse.getDisplayName(),
                     createCredentialResponse.getPublicCertStr(), createCredentialResponse.getPrivateKeyStr());
-            return  ResponseEntity.created(null).body(null);
+
+            return ResponseEntity.created(null).body(null);
 
         } catch (DgwsSecurityException e) {
             throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
         }
+
     }
-
-
 }

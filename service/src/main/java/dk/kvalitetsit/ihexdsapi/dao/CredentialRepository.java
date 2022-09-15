@@ -2,6 +2,7 @@ package dk.kvalitetsit.ihexdsapi.dao;
 
 import dk.kvalitetsit.ihexdsapi.dao.entity.CredentialInfoEntity;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface CredentialRepository {
@@ -10,7 +11,7 @@ public interface CredentialRepository {
 
     CredentialInfoEntity findCredentialInfoByID(String id);
 
-    List<String> FindListOfIDsForOwner(String owner);
+    List<String[]> FindListOfIDsForOwner(String owner);
 
 
 }

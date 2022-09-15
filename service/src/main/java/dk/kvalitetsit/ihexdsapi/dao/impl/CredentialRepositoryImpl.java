@@ -7,6 +7,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.time.Duration;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,18 +35,22 @@ public class CredentialRepositoryImpl implements CredentialRepository {
     @Override
     public boolean saveCredentialsForID(CredentialInfoEntity credentialInfo) {
 
-        List<String> newList = null;
+        List<String[]> newList = null;
+
+        String[] idAndDisplayName = new String[] {credentialInfo.getId(), credentialInfo.getDisplayName()};
         try {
             if (FindListOfIDsForOwner(credentialInfo.getOwner()) == null) {
                 newList = new LinkedList<>();
-                newList.add(credentialInfo.getId());
+
+
+                newList.add(idAndDisplayName);
                 redisTemplate.opsForValue().set(credentialInfo.getId(), credentialInfo, Duration.ofMillis(ttl));
                 saveListOfIDsForOwner(credentialInfo.getOwner(), newList);
             } else {
                 newList = FindListOfIDsForOwner(credentialInfo.getOwner());
-                newList.add(credentialInfo.getId());
+                newList.add(idAndDisplayName);
                 redisTemplate.opsForValue().set(credentialInfo.getId(), credentialInfo,
-                        Duration.ofMillis(getExpiryTimeLeftInMilliSeconds(newList.get(0))));
+                        Duration.ofMillis(getExpiryTimeLeftInMilliSeconds(newList.get(0)[0])));
                 saveListOfIDsForOwner(credentialInfo.getOwner(), newList);
             }
             return true;
@@ -58,7 +63,7 @@ public class CredentialRepositoryImpl implements CredentialRepository {
         return 1000 * (redisTemplate.getExpire(id).intValue());
     }
 
-    private boolean saveListOfIDsForOwner(String owner, List<String> list) {
+    private boolean saveListOfIDsForOwner(String owner, List<String[]> list) {
         try {
             redisTemplate.opsForValue().set(owner, list, Duration.ofMillis(ttl));
             return true;
@@ -78,10 +83,10 @@ public class CredentialRepositoryImpl implements CredentialRepository {
     }
 
     @Override
-    public List<String> FindListOfIDsForOwner(String owner) {
+    public List<String[]> FindListOfIDsForOwner(String owner) {
 
         try {
-            return ((LinkedList<String>) redisTemplate.opsForValue().get(owner));
+            return ((LinkedList<String[]>) redisTemplate.opsForValue().get(owner));
         } catch (RuntimeException e) {
             throw new ConnectionFailedExecption(ERROR_CODE, ERROR_MESSAGE);
         }

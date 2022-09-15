@@ -20,8 +20,7 @@ import static org.junit.Assert.*;
 
 public class CredentialsAPIIT extends AbstractIntegrationTest {
 
-   private final CredentialsApi credentialsApi;
-
+    private final CredentialsApi credentialsApi;
 
 
     public CredentialsAPIIT() {
@@ -32,14 +31,13 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
 
     }
 
-@Test
+    @Test
     public void testCredentialinfoGetController() throws ApiException, IOException, URISyntaxException {
 
         // Checking for defualt/standard owner null
         var result = credentialsApi.v1CredentialinfoGet(null);
 
-    assertEquals(1, result.size());
-
+        assertEquals(1, result.size());
 
 
     }
@@ -49,9 +47,8 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
 
         CreateCredentialRequest createCredentialRequest = new CreateCredentialRequest();
 
-        createCredentialRequest.setCvr("637283d");
-        createCredentialRequest.setId("1234ABA");
-        createCredentialRequest.setOrganisation("Statens Serum Institute");
+
+        createCredentialRequest.setDisplayName("My cerificate");
         createCredentialRequest.setOwner("Me");
         createCredentialRequest.setPrivateKeyStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI())));
 
@@ -63,29 +60,28 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
         assertEquals(201, result.getStatusCode());
 
 
-
     }
-@Test
+
+    @Test
     public void testCredentialinfoPutControllerThrowsBadRequestExeceptionInvalidCert() throws ApiException, URISyntaxException, IOException {
 
 
         CreateCredentialRequest createCredentialRequest = new CreateCredentialRequest();
 
-        createCredentialRequest.setCvr("637283d");
-        createCredentialRequest.setId("1234ABC");
-        createCredentialRequest.setOrganisation("Statens Serum Institute");
+
+        createCredentialRequest.setDisplayName("My cerificate");
         createCredentialRequest.setOwner("Me");
-    createCredentialRequest.setPrivateKeyStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI())));
+        ;
+        createCredentialRequest.setOwner("Me");
+        createCredentialRequest.setPrivateKeyStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI())));
 
 
-    createCredentialRequest.setPublicCertStr("Not a certificate");
+        createCredentialRequest.setPublicCertStr("Not a certificate");
 
 
         ApiException apiException = assertThrows(ApiException.class, () -> credentialsApi.v1CredentialinfoPutWithHttpInfo(createCredentialRequest));
         assertEquals(HttpStatus.SC_BAD_REQUEST, apiException.getCode());
         assertTrue(apiException.getResponseBody().contains("Invalid certificate"));
-
-
 
 
     }
@@ -96,9 +92,9 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
 
         CreateCredentialRequest createCredentialRequest = new CreateCredentialRequest();
 
-        createCredentialRequest.setCvr("637283d");
-        createCredentialRequest.setId("1234ABd");
-        createCredentialRequest.setOrganisation("Statens Serum Institute");
+
+        createCredentialRequest.setDisplayName("My cerificate");
+        createCredentialRequest.setOwner("Me");
         createCredentialRequest.setOwner("Me");
         createCredentialRequest.setPrivateKeyStr("Not a key");
         createCredentialRequest.setPublicCertStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/public-cert1.cer").toURI())));
@@ -108,24 +104,24 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
         assertEquals(HttpStatus.SC_BAD_REQUEST, apiException.getCode());
         assertTrue(apiException.getResponseBody().contains("Invalid private key"));
     }
-
+/*
     @Test
     public void testCredentialinfoPutControllerExistingID() throws ApiException, URISyntaxException, IOException {
         String id = "1234AAADD";
         // First time added
         CreateCredentialRequest createCredentialRequest = new CreateCredentialRequest();
-        createCredentialRequest.setCvr("gfsr3");
-        createCredentialRequest.setId(id);
-        createCredentialRequest.setOrganisation("Statens Serum Institute");
+
+        createCredentialRequest.setDisplayName("My cerificate");
         createCredentialRequest.setOwner("Me");
+        createCredentialRequest.set
         createCredentialRequest.setPrivateKeyStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI())));
         createCredentialRequest.setPublicCertStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/public-cert1.cer").toURI())));
 
         // Adding 2nd time
         CreateCredentialRequest createCredentialRequest2nd = new CreateCredentialRequest();
-        createCredentialRequest2nd.setCvr("637283d");
-        createCredentialRequest2nd.setId(id);
-        createCredentialRequest2nd.setOrganisation("Statens Serum Institute");
+
+        createCredentialRequest.setDisplayName("My cerificate");
+        createCredentialRequest.setOwner("Me");
         createCredentialRequest2nd.setOwner("Me");
         createCredentialRequest2nd.setPrivateKeyStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI())));
         createCredentialRequest2nd.setPublicCertStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/public-cert1.cer").toURI())));
@@ -134,9 +130,9 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
 
         ApiException apiException = assertThrows(ApiException.class, () -> credentialsApi.v1CredentialinfoPutWithHttpInfo(createCredentialRequest2nd));
         assertEquals(HttpStatus.SC_BAD_REQUEST, apiException.getCode());
-        assertTrue(apiException.getResponseBody().contains("A credential vault with id " +id + " is already registered"));
+        assertTrue(apiException.getResponseBody().contains("A credential vault with id " + id + " is already registered"));
     }
-
+*/
     @Test
     public void testCallService() throws ApiException {
         var iti18Request = new Iti18Request();

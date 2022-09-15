@@ -30,7 +30,7 @@ public class InitConfiguration {
          String key1 = Files.readString(Paths.get(this.keyPath));
          String cert1 = Files.readString(Paths.get(this.publicPath));
          // Need better variable names
-        credentialService.createAndAddCredentialInfo(null, "Default MOCES", "46837428", "LAKESIDE A/S", cert1, key1
+        credentialService.createAndAddCredentialInfo(null, "Default MOCES", cert1, key1
                 );
     }
 }

@@ -38,7 +38,7 @@ public class StsServiceImpl implements StsService {
 
 	@Override
 	public DgwsClientInfo getDgwsClientInfoForSystem(CredentialInfo credentialInfo) throws DgwsSecurityException {
-		Document systemCardDocument = getSystemIdCardFromSTS(credentialInfo.getCredentialVault(), credentialInfo.getCvr(), credentialInfo.getOrganisationName());
+		Document systemCardDocument = getSystemIdCardFromSTS(credentialInfo.getCredentialVault(), "565656", "My org");
 		return new DgwsClientInfo(systemCardDocument);
 	}
 	
@@ -46,7 +46,10 @@ public class StsServiceImpl implements StsService {
 		Properties properties = new Properties(System.getProperties());
 		properties.setProperty(SOSIFactory.PROPERTYNAME_SOSI_VALIDATE, Boolean.toString(true));
 		SOSIFactory sosiFactory = new SOSIFactory(new SOSITestFederation(properties), credentialVault, properties);
-		
+
+
+		// cvr ? ?? orgnin???
+
 		CareProvider careProvider = new CareProvider(SubjectIdentifierTypeValues.CVR_NUMBER, cvr, organisation);
 
 
