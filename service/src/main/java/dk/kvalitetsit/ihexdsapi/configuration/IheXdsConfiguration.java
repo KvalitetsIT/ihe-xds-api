@@ -1,6 +1,5 @@
 package dk.kvalitetsit.ihexdsapi.configuration;
 
-import javax.annotation.PostConstruct;
 import javax.xml.namespace.QName;
 
 import dk.kvalitetsit.ihexdsapi.dao.CredentialRepository;
@@ -8,7 +7,10 @@ import dk.kvalitetsit.ihexdsapi.dgws.CredentialService;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsService;
 import dk.kvalitetsit.ihexdsapi.dgws.impl.CredentialServiceImpl;
 import dk.kvalitetsit.ihexdsapi.dgws.impl.StsServiceImpl;
+import dk.kvalitetsit.ihexdsapi.service.CodesExecption;
+import dk.kvalitetsit.ihexdsapi.service.impl.CodesServiceImpl;
 import dk.kvalitetsit.ihexdsapi.service.impl.DgwsServiceImpl;
+import dk.kvalitetsit.ihexdsapi.service.CodesService;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.interceptor.LoggingInInterceptor;
@@ -36,16 +38,86 @@ public class IheXdsConfiguration {
     private String STSURL;
 
     private static Logger LOGGER = LoggerFactory.getLogger(IheXdsConfiguration.class);
-@Value("${xdsIti18Endpoint}")
+    @Value("${xdsIti18Endpoint}")
     private String xdsIti18Endpoint;
 
 
+// Codes
+
+    @Value("${type.code.scheme}")
+    private String typeCodeScheme;
+
+    @Value("${format.code.scheme}")
+    private String formatCodeScheme;
+
+    @Value("${event.code.scheme}")
+    private String eventCodeScheme;
+
+    @Value("${event.code.scheme.codes}")
+    private String eventCodeSchemeCodes;
+
+    @Value("${event.code.scheme.names}")
+    private String eventCodeSchemeNames;
+
+    @Value("${healthcarefacilitytype.code.scheme}")
+    private String healthcareFacilityTypeCodeScheme;
+
+    @Value("${practicesetting.code.scheme}")
+    private String practicesettingCodeScheme;
+
+    @Value("${class.code.scheme}")
+    private String classCodeScheme;
+
+
+    // Dropdown lists
+/*
+    @Value("${availabilitystatus.codes}")
+    private String availabilityStatusCodes;
+
+    @Value("${availabilitystatus.names}")
+    private String availabilityStatusNames;
+*/
+    @Value("${format.code.codes}")
+    private String formatCodeCodes;
+
+    @Value("${format.code.names}")
+    private String formatCodeNames;
+
+    @Value("${class.code.codes}")
+    private String classCodeCodes;
+
+    @Value("${class.code.names}")
+    private String classCodeNames;
+
+    @Value("${healthcarefacilitytype.code.codes}")
+    private String healthcareFacilityTypeCodeCodes;
+
+    @Value("${healthcarefacilitytype.code.names}")
+    private String healthcareFacilityTypeCodeNames;
+
+    @Value("${practicesetting.code.codes}")
+    private String practiceSettingCodeCodes;
+
+    @Value("${practicesetting.code.names}")
+    private String practiceSettingCodeNames;
+
+    @Value("${object.type.codes}")
+    private String objectTypeCodes;
+
+    @Value("${object.type.names}")
+    private String objectTypeNames;
+    @Value("${type.code.codes}")
+    private String typeCodeCodes;
+
+    @Value("${type.code.names}")
+    private String typeCodeNames;
 
 
     @Bean
     public IheXdsService helloService() {
         return new IheXdsServiceImpl();
     }
+
     @Bean
     public StsService stsService() {
         return new StsServiceImpl(STSURL);
@@ -80,6 +152,22 @@ public class IheXdsConfiguration {
         proxy.getInInterceptors().add(new LoggingInInterceptor());
         return client;
     }
+
+
+
+
+    @Bean
+    public CodesService codesService() throws CodesExecption {
+        CodesServiceImpl codeService = new CodesServiceImpl( typeCodeCodes,  typeCodeNames,  typeCodeScheme,
+                 formatCodeCodes,  formatCodeNames,  formatCodeScheme,
+                eventCodeSchemeCodes,  eventCodeSchemeNames,  eventCodeScheme
+                ,  healthcareFacilityTypeCodeCodes,  healthcareFacilityTypeCodeNames,  healthcareFacilityTypeCodeScheme,
+                 practiceSettingCodeCodes,  practiceSettingCodeNames,  practicesettingCodeScheme
+                ,  classCodeCodes,  classCodeNames,  classCodeScheme,
+                 objectTypeCodes,  objectTypeNames);
+        return codeService;
+    }
+
 
     private void initProxy(Object o, boolean dgwsEnabled, boolean addRequestInterceptor) {
         Client proxy = ClientProxy.getClient(o);

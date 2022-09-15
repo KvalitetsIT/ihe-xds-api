@@ -26,8 +26,8 @@ public class TestConfiguration extends AbstractTest {
 
         String publicCertStr = getFileString("/certificates/public-cert1.cer");
         String privateKeyStr = getFileString("/certificates/private-cert1.pem");
-        String cvr = "46837428";
-        String organisationName = "Statens Serum Institut";
-        CredentialInfo credentialInfo = credentialService.createAndAddCredentialInfo(null, "DEFAULT", cvr, organisationName, publicCertStr, privateKeyStr);
+        String displayName =  "My certificate";
+
+        CredentialInfo credentialInfo = credentialService.createAndAddCredentialInfo(null, displayName, publicCertStr, privateKeyStr);
     }
 }

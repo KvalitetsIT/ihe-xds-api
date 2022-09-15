@@ -26,8 +26,8 @@ servers:
           - 8080
         default: 8080
 paths:
-  /v1/iti18/healthcareProfessional:
-    get:
+  /v1/iti18:
+    post:
       tags:
         - IHEXDS
       summary: search XDS as a healthcare professional
@@ -38,7 +38,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/iti18HealthCareProfessionalRequest'
+              $ref: '#/components/schemas/iti18Request'
       responses:
         '200':
           description: Ok with list
@@ -49,6 +49,133 @@ paths:
                 items:
                   $ref: '#/components/schemas/iti18Response'
 
+  /v1/codes/classCode:
+    get:
+      tags:
+        - Class codes
+      summary: Get class code and name of class code
+      description: Get class code and name of class code
+      responses:
+        '200':
+          description: Ok with list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/code'
+
+  /v1/codes/availabilityStatusCode:
+    get:
+      tags:
+        - Availability codes
+      summary: Get code and name of availability
+      description: Get code and name of availability
+      responses:
+        '200':
+          description: Ok with list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/code'
+
+  /v1/codes/formatCode:
+    get:
+      tags:
+        - Format codes
+      summary: Get code and name of format codes
+      description: Get code and name of format codes
+      responses:
+        '200':
+          description: Ok with list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/code'
+  /v1/codes/healthCareFacilityType:
+    get:
+      tags:
+        - Health Care Facility Type Codes
+      summary: Get code and name of healthCareFacilityType codes
+      description: Get code and name of healthCareFacilityType codes
+      responses:
+        '200':
+          description: Ok with list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/code'
+
+  /v1/codes/practiceSettingCode:
+    get:
+      tags:
+        - Practice setting code
+      summary: Get code and name of practiceSettingCode
+      description: Get code and name of practiceSettingCode
+      responses:
+        '200':
+          description: Ok with list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/code'
+
+  /v1/codes/objectTypeCode:
+    get:
+      tags:
+        - Object type code
+      summary: Get code and name of objectType
+      description: Get code and name of objectType
+      responses:
+        '200':
+          description: Ok with list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/code'
+
+  /v1/codes/eventCode:
+    get:
+      tags:
+        - Event code
+        - Event code scheme
+      summary: Get code and name of event code and scheme
+      description: Get code and name of event code and scheme
+      responses:
+        '200':
+          description: Ok with list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/code'
+
+  /v1/codes/typeCode:
+    get:
+      tags:
+        - Type code
+      summary: Get code and name of type code and scheme
+      description: Get code and name of type code and scheme
+      responses:
+        '200':
+          description: Ok with list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/code'
 
 components:
   responses:
@@ -71,10 +198,53 @@ components:
           nullable: false
           example: "2512489996"
         documentId:
-          description: Dokumentets Id
+          description: Dokumentets Id Or unique ID
           type: string
           nullable: false
           example: "987598435735.54587493.454353"
+        repositoryID:
+          description: Repostory ID
+          type: string
+          nullable: false
+          example : "1.2.208.192.100.101"
+        documentType:
+          description: Document type
+          type: string
+          nullable: false
+          example: "Dato og tidspunkt for møde mellem patient og sundhedsperson"
+        serviceStart:
+          description: The start service from date-time
+          type: string
+          format: date-time
+          example: "2021-01-30T08:30:00Z"
+        serviceEnd:
+          description: The start service to date-time
+          type: string
+          format: date-time
+          example: "2021-01-30T08:30:00Z"
+        document:
+          description: The uploaded document
+          type: object
+          $ref: '#/components/schemas/document'
+
+    code:
+      type: object
+      required:
+        - name
+        - code
+      properties:
+        name:
+          description: The name of the code
+          type: string
+          example: "Clinical report"
+        code:
+          description: The code value
+          type: string
+          example: "001"
+        scheme:
+          description: the scheme for the code
+          type: string
+          example: "1.2.208.184.100.10"
 
     healthcareProfessionalContext:
       type: object
@@ -108,13 +278,59 @@ components:
       type: object
       required:
         - patientId
+        - availabilityStatus
       properties:
         patientId:
           description: Patientens Id (CPR)
           type: string
           example: "2512489996"
+        typeCode:
+          description: Type Code
+          $ref: '#/components/schemas/codeQuery'
+        formatCode:
+          description: Format Code
+          $ref: '#/components/schemas/codeQuery'
+        healthcareFacilityTypeCode:
+          description: Healthcare facility code
+          $ref: '#/components/schemas/codeQuery'
+        eventCode:
+          description: Event Code
+          $ref: '#/components/schemas/codeQuery'
+        practiceSettingCode:
+          description: Practice setting code
+          $ref: '#/components/schemas/codeQuery'
+        documentType:
+          description: Document type
+          type: array
+          items:
+            type: string
+        startFromDate:
+          description: The start service from date-time
+          type: string
+          format: date-time
+          example: "2021-01-30T08:30:00Z"
+        startToDate:
+          description: The start service to date-time
+          type: string
+          format: date-time
+          example: "2021-01-30T08:30:00Z"
+        endFromDate:
+          description: The end service from date-time
+          type: string
+          format: date-time
+          example: "2021-01-30T08:30:00Z"
+        endToDate:
+          description: The end service to date-time
+          type: string
+          format: date-time
+          example: "2021-01-30T08:30:00Z"
+        availabilityStatus:
+          description: The availability result
+          type: string
 
-    iti18HealthCareProfessionalRequest:
+
+
+    iti18Request:
       type: object
       required:
         - queryParameters
@@ -131,3 +347,27 @@ components:
         context:
           description: the context in which to make the query
           $ref: '#/components/schemas/healthcareProfessionalContext'
+
+    codeQuery:
+      type: object
+      required:
+        - code
+        - codeScheme
+      properties:
+        code:
+          description: Code value from the search query
+          type: string
+          example: "74468-0"
+        codeScheme:
+          description: Code scheme from the search query
+          type: string
+          example: "2.16.840.1.113883.6.1"
+
+
+    document:
+      type: object
+      properties:
+        prop1:
+          description: The first property
+          type: string
+          example: "test"

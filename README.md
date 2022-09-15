@@ -48,11 +48,31 @@ In the docker-compose setup is also an example on how to set custom endpoints fo
 
 ## Configuration
 
-| Environment variable | Description | Required |
-|----------------------|-------------|---------- |
-| JDBC_URL | JDBC connection URL | Yes |
-| JDBC_USER | JDBC user          | Yes |
-| JDBC_PASS | JDBC password      | Yes |
-| LOG_LEVEL | Log Level for applikation  log. Defaults to INFO. | No |
-| LOG_LEVEL_FRAMEWORK | Log level for framework. Defaults to INFO. | No |
-| CORRELATION_ID | HTTP header to take correlation id from. Used to correlate log messages. Defaults to "x-request-id". | No
+| Environment variable | Description                                                                                                                                                                       | Required |
+|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| LOG_LEVEL            | Log Level for applikation  log. Defaults to INFO.                                                                                                                                 | No       |
+| LOG_LEVEL_FRAMEWORK  | Log level for framework. Defaults to INFO.                                                                                                                                        | No       |
+| CORRELATION_ID       | HTTP header to take correlation id from. Used to correlate log messages. Defaults to "x-request-id".                                                                              | No       |
+| redis.host           | Name for the redis host. Defaults t0 "redis"                                                                                                                                      | No       |
+| redis.port           | The port that Redis is running on. Defaults to "6973"                                                                                                                             | No       |
+| redis.host           | Redis objects time to live. Defaults to 86400000 miliseconds / 1 day                                                                                                              | No       |
+| type.code.codes      | 	Example: 53576-5;74468-0;74465-6;11502-2;56446-8                                                                                                                                 | No       |
+| type.code.names      | 	Example: Personal health monitoring report Document;Questionnaire Form Definition Document;Questionnaire Response Document;LABORATORY REPORT.TOTAL;Appointment Summary Document; | No       |
+| type.code.scheme     | 	Example: 2.16.840.1.113883.6.1                                                                                                                                                   | No       |
+| format.code.codes    | 	Example: urn:ad:dk:medcom:phmr:full;urn:ad:dk:medcom:qfdd:full                                                                                                                   | No       |
+| format.code.names    | 	Example: DK PHMR schema;DK QFDD schema;DK QRD schema;                                                                                                                            | No       |
+| format.code.scheme   | 	Example:  1.2.208.184.100.10                                                                                                                                                     | No       |
+| event.code.scheme.codes    | 	Example: 1.2.208.176.2.1;1.2.208.176.2.4;                                                                                                                                        | No       |
+| event.code.scheme.names     | 	Example: NPU;Episode of care label;                                                                                                                                              | No       |
+| event.code.scheme     | 	Example: 2.16.840.1.113883.6.1                                                                                                                                                   | No       |
+| healthcarefacilitytype.code.codes | 	Example: N/A;264372000;20078004;554221000005108;554031000005103;                                                                                                                 | No       |
+| healthcarefacilitytype.code.names  | 	Example: N/A;apotek;behandlingscenter for stofmisbrugere;bosted;diætistklinik;ergoterapiklinik;                                                                                  | No       |
+| healthcarefacilitytype.code.scheme   | 	Example: 2.16.840.1.113883.6.96                                                                                                                                                  | No       |
+| practicesetting.code.codes     | 	Example: N/A;408443003;394577000;                                                                                                                                                | No       |
+| practicesetting.code.names    | 	Example: N/A;almen medicin;anæstesiologi;arbejdsmedicin;børne- og ungdomspsykiatri;                                                                                              | No       |
+| practicesetting.code.scheme   | 	Example: 2.16.840.1.113883.6.96                                                                                                                                                  | No       |
+| class.code.codes    | 	Example: 001                                                                                                                                                                     | No       |
+| class.code.names    | 	Example: Clinical report;                                                                                                                                                        | No       |
+| class.code.scheme     | 	Example: 1.2.208.184.100.9                                                                                                                                                       | No       |
+| object.type.codes   | 	Example: STABLE                                                                                                                                                                  | No       |
+| object.type.names   | 	Example: Stable                                                                                                                                                                  | No       |

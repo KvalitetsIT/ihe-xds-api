@@ -6,25 +6,19 @@ public class CredentialInfo {
 
     private CredentialVault credentialVault;
 
-    private String cvr;
+    private String displayName;
 
-    private String organisationName;
 
-    public CredentialInfo(CredentialVault credentialVault, String cvr, String organisationName) {
+    public CredentialInfo(CredentialVault credentialVault, String displayName) {
         this.credentialVault = credentialVault;
-        this.cvr = cvr;
-        this.organisationName = organisationName;
+        this.displayName = displayName;
     }
 
     public CredentialVault getCredentialVault() {
         return credentialVault;
     }
-
-    public String getCvr() {
-        return cvr;
-    }
-
-    public String getOrganisationName() {
-        return organisationName;
+    public String getDisplayName() {
+        return displayName;
     }
 }
+

@@ -17,107 +17,112 @@ import dk.sosi.seal.vault.GenericCredentialVault;
 public class CredentialServiceImpl implements CredentialService {
 
 
-	private CredentialRepository credentialRepository;
+    private CredentialRepository credentialRepository;
 
-	public CredentialServiceImpl(CredentialRepository credentialRepository) {
-		this.credentialRepository = credentialRepository;
-	}
-
-
-	private static final String DEFAULT_OWNER = " ";
-	private static final Logger LOGGER = LoggerFactory.getLogger(CredentialServiceImpl.class);
-
-	private Map<String, List<String>> registeredOwners = new HashMap<>();
-	private Map<String, CredentialInfo> registeredInfos = new HashMap<>();
+    public CredentialServiceImpl(CredentialRepository credentialRepository) {
+        this.credentialRepository = credentialRepository;
+    }
 
 
+    private static final String DEFAULT_OWNER = " ";
+    private static final Logger LOGGER = LoggerFactory.getLogger(CredentialServiceImpl.class);
 
-	@Override
-	public synchronized CredentialInfo createAndAddCredentialInfo(String owner, String id, String cvr, String organisation, String publicCertStr, String privateKeyStr) throws DgwsSecurityException {
-
-		if (registeredInfos.containsKey(id) || this.credentialRepository.findCredentialInfoByID(id) != null) {
-			throw new DgwsSecurityException(3,"A credential vault with id "+id+" is already registered.");
-		}
-
-		String ownerKey = DEFAULT_OWNER;
-		if (owner != null && owner.trim().length() >= 0) {
-			ownerKey = owner.trim();
-		}
-
-		if (ownerKey.equals(DEFAULT_OWNER) ) {
-			List<String> owning = null;
-			if (!registeredOwners.containsKey(ownerKey)) {
-				owning = new LinkedList<>();
-			} else {
-				owning = registeredOwners.get(ownerKey);
-			}
-			owning.add(id);
-			registeredOwners.put(ownerKey, owning);
-		}
-
-		CredentialInfo credentialInfo = generateCredientialInfoFromKeys(cvr, organisation, publicCertStr, privateKeyStr);
+    private Map<String, List<String[]>> idsForOwner = new HashMap<>();
+    private Map<String, CredentialInfo> credentialInfoForID = new HashMap<>();
 
 
-		if (ownerKey.equals(DEFAULT_OWNER)) {
-			registeredInfos.put(id, credentialInfo);
-		}
-		else {
-			credentialRepository.saveCredentialsForID(new CredentialInfoEntity(ownerKey,
-					id, cvr,organisation,publicCertStr, privateKeyStr));
-		}
+    @Override
+    public synchronized CredentialInfo createAndAddCredentialInfo(String owner, String displayName, String publicCertStr, String privateKeyStr) throws DgwsSecurityException {
 
-		return credentialInfo;
-	}
+        String id = UUID.randomUUID().toString();
 
-	private CredentialInfo generateCredientialInfoFromKeys(String cvr, String organisation, String publicCertStr,
-														   String privateKeyStr) throws DgwsSecurityException {
-		GenericCredentialVault generic = ValutGenerator.generateGenericCredentialVault(publicCertStr, privateKeyStr);
-		CredentialInfo credentialInfo = new CredentialInfo(generic, cvr, organisation);
+        if (credentialInfoForID.containsKey(id) || this.credentialRepository.findCredentialInfoByID(id) != null) {
+            throw new DgwsSecurityException(3, "A credential vault with id " + id + " is already registered.");
+        }
 
-		return  credentialInfo;
-	}
+        String ownerKey = DEFAULT_OWNER;
+        if (owner != null && owner.trim().length() >= 0) {
+            ownerKey = owner.trim();
+        }
 
-	@Override
-	public Collection<String> getIds(String owner) {
+        if (ownerKey.equals(DEFAULT_OWNER)) {
+            List<String[]> owning = null;
+            if (!idsForOwner.containsKey(ownerKey)) {
+                owning = new LinkedList<>();
+            } else {
+                owning = idsForOwner.get(ownerKey);
+            }
+            owning.add(new String[] {id, displayName});
+            idsForOwner.put(ownerKey, owning);
+        }
 
-		List<String> result = new LinkedList<>();
-		String ownerKey = null;
+        // Need displayName??
+        CredentialInfo credentialInfo = generateCredientialInfoFromKeys(displayName, publicCertStr, privateKeyStr);
 
-		if (owner == null) {
-			ownerKey = DEFAULT_OWNER;
-			if (registeredOwners.containsKey(ownerKey)) {
-				result.addAll(registeredOwners.get(ownerKey));
-			}
-		}
-		if (owner != null ) {
-			ownerKey = owner.trim();
-			if (registeredOwners.containsKey(ownerKey)) {
-				result.addAll(credentialRepository.FindListOfIDsForOwner(owner));
-			}
-		}
-		return result;
-	}
 
-	@Override
-	public CredentialInfo getCredentialInfoFromId(String id) {
+        if (ownerKey.equals(DEFAULT_OWNER)) {
+            credentialInfoForID.put(id, credentialInfo);
+        }
+        credentialRepository.saveCredentialsForID(new CredentialInfoEntity(ownerKey,
+                id, displayName, publicCertStr, privateKeyStr));
 
-		if (id == null) {
-			return registeredInfos.get(DEFAULT_OWNER);
-		}
 
-		CredentialInfoEntity credsEnitity = credentialRepository.findCredentialInfoByID(id);
+        return credentialInfo;
+    }
 
-		CredentialInfo credentialInfo = null;
-		try {
-			credentialInfo = generateCredientialInfoFromKeys(credsEnitity.getCvr(),
-					credsEnitity.getOrganisation(), credsEnitity.getPublicCertStr(), credsEnitity.getPrivateKeyStr());
-			return credentialInfo;
+    private CredentialInfo generateCredientialInfoFromKeys(String displayName, String publicCertStr,
+                                                           String privateKeyStr) throws DgwsSecurityException {
+        GenericCredentialVault generic = ValutGenerator.generateGenericCredentialVault(publicCertStr, privateKeyStr);
+        CredentialInfo credentialInfo = new CredentialInfo(generic, displayName);
 
-		} catch (DgwsSecurityException e) {
-			throw new RuntimeException();
+        return credentialInfo;
+    }
 
-		}
-	}
+    @Override
+    public List<String[]> getIds(String owner) {
+
+        List<String[]> result = new LinkedList<>();
+        String ownerKey = null;
+
+
+        result.addAll(idsForOwner.get(DEFAULT_OWNER));
+
+
+        if (owner != null) {
+            ownerKey = owner.trim();
+            result.addAll(credentialRepository.FindListOfIDsForOwner(ownerKey));
+
+        }
+        return result;
+    }
+
+    @Override
+    public CredentialInfo getCredentialInfoFromId(String id) {
+
+        if (id == null) {
+            return credentialInfoForID.get(idsForOwner.get(DEFAULT_OWNER).get(0));
+        }
+
+        CredentialInfoEntity credsEnitity = credentialRepository.findCredentialInfoByID(id);
+
+        // get standard
+        if (credsEnitity == null) {
+            return credentialInfoForID.get(idsForOwner.get(DEFAULT_OWNER).get(0));
+        }
+
+
+        CredentialInfo credentialInfo = null;
+        try {
+            credentialInfo = generateCredientialInfoFromKeys(credsEnitity.getDisplayName(),credsEnitity.getPublicCertStr(), credsEnitity.getPrivateKeyStr());
+            return credentialInfo;
+
+        } catch (DgwsSecurityException e) {
+            throw new RuntimeException();
+
+        }
+    }
+
+
 
 
 }

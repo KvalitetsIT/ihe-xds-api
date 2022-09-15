@@ -11,13 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 
 @RestController
 // CORS - Consider if this is needed in your application. Only here to make Swagger UI work.
-@CrossOrigin(origins = "http://localhost")
+//@CrossOrigin(origins = "http://localhost:3000", methods =  {RequestMethod.GET,  RequestMethod.PUT})
 public class CredentialInfoController implements CredentialsApi {
 
     @Autowired
@@ -26,11 +27,12 @@ public class CredentialInfoController implements CredentialsApi {
 @Override
     public ResponseEntity<List<CredentialInfoResponse>> v1CredentialinfoGet(String owner) {
 
-        Collection<String> ids = credentialService.getIds(owner);
+    Collection<String[]> ids = credentialService.getIds(owner);
         List<CredentialInfoResponse> responses = new LinkedList<>();
-        for (String id : ids) {
+        for (String[] id : ids) {
             CredentialInfoResponse credentialInfoResponse = new CredentialInfoResponse();
-            credentialInfoResponse.setId(id);
+            credentialInfoResponse.setId(id[0]);
+            credentialInfoResponse.displayName(id[1]);
             responses.add(credentialInfoResponse);
         }
         ResponseEntity<List<CredentialInfoResponse>> responseEntity = new ResponseEntity(responses, HttpStatus.OK);
@@ -42,16 +44,15 @@ public class CredentialInfoController implements CredentialsApi {
 
 
         try {
-            CredentialInfo  credential = credentialService.createAndAddCredentialInfo(
-                    createCredentialResponse.getOwner(), createCredentialResponse.getId(),
-                    createCredentialResponse.getCvr(), createCredentialResponse.getOrganisation(),
+            CredentialInfo credential = credentialService.createAndAddCredentialInfo(
+                    createCredentialResponse.getOwner(), createCredentialResponse.getDisplayName(),
                     createCredentialResponse.getPublicCertStr(), createCredentialResponse.getPrivateKeyStr());
-            return  ResponseEntity.created(null).body(null);
+
+            return ResponseEntity.created(null).body(null);
 
         } catch (DgwsSecurityException e) {
             throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
         }
+
     }
-
-
 }

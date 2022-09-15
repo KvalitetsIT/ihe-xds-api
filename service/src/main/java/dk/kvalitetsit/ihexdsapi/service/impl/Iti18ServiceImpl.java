@@ -50,19 +50,31 @@ public class Iti18ServiceImpl implements Iti18Service {
 		EbXMLQueryResponse30 ebXmlresponse = new EbXMLQueryResponse30(response);
 		QueryResponse queryResponse = queryResponseTransformer.fromEbXML(ebXmlresponse);
 
+		System.out.println(queryResponse);
 		List<Iti18Response> result = new LinkedList<>();
 		for (DocumentEntry documentEntry : queryResponse.getDocumentEntries()) {
 			Iti18Response iti18Response = new Iti18Response();
 			iti18Response.setPatientId(patientId);
 			iti18Response.setDocumentId(documentEntry.getUniqueId());
+			iti18Response.setRepositoryID(documentEntry.getRepositoryUniqueId());
+			iti18Response.setDocumentType(documentEntry.getDocumentAvailability().toString());
+			//iti18Response.setServiceStart(documentEntry.getServiceStartTime().);
+			formatTime(documentEntry.getServiceStartTime().toString());
 			result.add(iti18Response);
 		}
 		return result;
 	}
 
+	private void formatTime(String time) {
+		System.out.println("#################");
+		System.out.println(time);
+//////
+	}
+
 	private EbXMLFactory getEbXmlFactory() {
 		return ebXMLFactory;
 	}
+
 
 	private AdhocQueryRequest createQuery(Iti18QueryParameter iti18Request) {
 

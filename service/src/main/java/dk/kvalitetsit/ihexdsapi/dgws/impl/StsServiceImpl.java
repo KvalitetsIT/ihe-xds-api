@@ -38,7 +38,7 @@ public class StsServiceImpl implements StsService {
 
 	@Override
 	public DgwsClientInfo getDgwsClientInfoForSystem(CredentialInfo credentialInfo) throws DgwsSecurityException {
-		Document systemCardDocument = getSystemIdCardFromSTS(credentialInfo.getCredentialVault(), credentialInfo.getCvr(), credentialInfo.getOrganisationName());
+		Document systemCardDocument = getSystemIdCardFromSTS(credentialInfo.getCredentialVault(), "565656", "My org");
 		return new DgwsClientInfo(systemCardDocument);
 	}
 	
@@ -46,10 +46,14 @@ public class StsServiceImpl implements StsService {
 		Properties properties = new Properties(System.getProperties());
 		properties.setProperty(SOSIFactory.PROPERTYNAME_SOSI_VALIDATE, Boolean.toString(true));
 		SOSIFactory sosiFactory = new SOSIFactory(new SOSITestFederation(properties), credentialVault, properties);
-		
+
+
+		// cvr ? ?? orgnin???
+
 		CareProvider careProvider = new CareProvider(SubjectIdentifierTypeValues.CVR_NUMBER, cvr, organisation);
 
 
+		// User info / createNew USERIDCARD
 		SystemIDCard selfSignedUserIdCard = sosiFactory.createNewSystemIDCard(itSystem, careProvider, AuthenticationLevel.VOCES_TRUSTED_SYSTEM, null, null, credentialVault.getSystemCredentialPair().getCertificate(), null);
 
 		SecurityTokenRequest securityTokenRequest = sosiFactory.createNewSecurityTokenRequest();
@@ -69,7 +73,7 @@ public class StsServiceImpl implements StsService {
 		SecurityTokenResponse securityTokenResponse = sosiFactory.deserializeSecurityTokenResponse(responseXml);
 
 		if (securityTokenResponse.isFault() || securityTokenResponse.getIDCard() == null) {
-			throw new DgwsSecurityException("No ID card :-(");
+			throw  new DgwsSecurityException(1000, "No ID card :-(");
 		}
 		else {
 			SystemIDCard stsSignedIdCard = (SystemIDCard) securityTokenResponse.getIDCard();

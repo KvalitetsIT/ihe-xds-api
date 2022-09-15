@@ -17,7 +17,7 @@ public class HelloServiceImplTest {
 
     @Before
     public void setup() {
-        helloService = new IheXdsServiceImpl();
+        helloService = new IheXdsServiceImpl   ();
     }
 
     @Test

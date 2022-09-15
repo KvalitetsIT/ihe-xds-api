@@ -51,19 +51,20 @@ public class RepositortyImplTest {
     CredentialRepositoryImpl subject;
 
     @Test (expected = ConnectionFailedExecption.class)
+
     public void TestConnectionToRedisFailed() throws ConnectionFailedExecption, URISyntaxException, IOException {
         redis.close();
 
         //When
         CredentialInfoEntity credentialInfoEntity;
-        String cvr = "637283d";
+
         String id = "7w7777w";
-        String org = "Statens Serum Institute";
+        String displayName =  "My certificate";
         String owner = "Me";
         String privateKey = Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI()));
         String publicKey = Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/public-cert1.cer").toURI()));
 
-        credentialInfoEntity = new CredentialInfoEntity(owner, id, cvr, org, publicKey, privateKey);
+        credentialInfoEntity = new CredentialInfoEntity(owner, id, displayName,   publicKey, privateKey);
 
 
         subject.saveCredentialsForID(credentialInfoEntity);
@@ -76,14 +77,14 @@ public class RepositortyImplTest {
 
         // Owner as key
         CredentialInfoEntity credentialInfoEntity;
-        String cvr = "637283d";
+
         String id = "7w7777w";
-        String org = "Statens Serum Institute";
+        String displayName =  "My certificate";
         String owner = "Me";
         String privateKey = Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI()));
         String publicKey = Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/public-cert1.cer").toURI()));
 
-        credentialInfoEntity = new CredentialInfoEntity(owner, id, cvr, org, publicKey, privateKey);
+        credentialInfoEntity = new CredentialInfoEntity(owner, id, displayName, publicKey, privateKey);
 
         Assert.assertNull(redisTemplate.opsForValue().get(owner));
 
@@ -105,15 +106,15 @@ public class RepositortyImplTest {
 
         // Owner as key
         CredentialInfoEntity credentialInfoEntity;
-        String cvr = "637283d";
+
         String id = "ID 1";
         String id2 = "ID 2";
-        String org = "Statens Serum Institute";
+        String displayName =  "My certificate";
         String owner = "Test";
         String privateKey = Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI()));
         String publicKey = Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/public-cert1.cer").toURI()));
 
-        credentialInfoEntity = new CredentialInfoEntity(owner, id, cvr, org, publicKey, privateKey);
+        credentialInfoEntity = new CredentialInfoEntity(owner, id, displayName, publicKey, privateKey);
 
         Assert.assertNull(redisTemplate.opsForValue().get(owner));
 
@@ -123,7 +124,7 @@ public class RepositortyImplTest {
 
         // Wait one second to test expiry
         TestHelper.waiter(1000 + 1);
-        credentialInfoEntity = new CredentialInfoEntity(owner, id2, cvr, org, publicKey, privateKey);
+        credentialInfoEntity = new CredentialInfoEntity(owner, id2, displayName, publicKey, privateKey);
 
         subject.saveCredentialsForID(credentialInfoEntity);
         result = ((CredentialInfoEntity) redisTemplate.opsForValue().get(id2));
@@ -145,14 +146,13 @@ public class RepositortyImplTest {
     public void TestGetCredentialByID() throws URISyntaxException, IOException {
         // Owner as key
         CredentialInfoEntity credentialInfoEntity;
-        String cvr = "637283d";
         String id = "7w7777w";
-        String org = "Statens Serum Institute";
+        String displayName =  "My certificate";
         String owner = "Me";
         String privateKey = Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI()));
         String publicKey = Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/public-cert1.cer").toURI()));
 
-        credentialInfoEntity = new CredentialInfoEntity(owner, id, cvr, org, publicKey, privateKey);
+        credentialInfoEntity = new CredentialInfoEntity(owner, id, displayName, publicKey, privateKey);
 
         Assert.assertNull(redisTemplate.opsForValue().get(owner));
 

@@ -8,17 +8,21 @@ import java.io.Serializable;
 public class CredentialInfoEntity implements Serializable {
 
     private String owner;
+    private String id;
+    private String displayName;
+    private String publicCertStr;
 
-    public CredentialInfoEntity(String owner, String id, String cvr, String organisation, String publicCertStr, String privateKeyStr) {
+    private String privateKeyStr;
+
+    public CredentialInfoEntity(String owner, String id, String displayName, String publicCertStr, String privateKeyStr) {
         this.owner = owner;
         this.id = id;
-        this.cvr = cvr;
-        this.organisation = organisation;
+        this.displayName = displayName;
         this.publicCertStr = publicCertStr;
         this.privateKeyStr = privateKeyStr;
     }
 
-    private String id;
+
 
     public String getOwner() {
         return owner;
@@ -28,13 +32,10 @@ public class CredentialInfoEntity implements Serializable {
         return id;
     }
 
-    public String getCvr() {
-        return cvr;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public String getOrganisation() {
-        return organisation;
-    }
 
     public String getPublicCertStr() {
         return publicCertStr;
@@ -44,11 +45,5 @@ public class CredentialInfoEntity implements Serializable {
         return privateKeyStr;
     }
 
-    private String cvr;
 
-    private String organisation;
-
-    private String publicCertStr;
-
-    private String privateKeyStr;
 }
