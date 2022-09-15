@@ -24,7 +24,7 @@ public class TestConfiguration extends AbstractTest {
     @PostConstruct
     public void setupDefaultCredentials() throws DgwsSecurityException {
 
-        String publicCertStr = getFileString("/certificates/public-cert13.cer");
+        String publicCertStr = getFileString("/certificates/public-cert1.cer");
         String privateKeyStr = getFileString("/certificates/private-cert1.pem");
         String displayName =  "My certificate";
 

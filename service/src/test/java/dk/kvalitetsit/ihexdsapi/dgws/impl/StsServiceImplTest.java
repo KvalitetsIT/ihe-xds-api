@@ -11,7 +11,7 @@ import org.mockito.Mockito;
 public class StsServiceImplTest extends AbstractTest {
 
     public static final String ID = "id";
-    String publicCertStr = getFileString("/certificates/public-cert13.cer");
+    String publicCertStr = getFileString("/certificates/public-cert1.cer");
     String privateKeyStr = getFileString("/certificates/private-cert1.pem");
     String displayName = "My certificate";
     String organisationName = "Statens Serum Institut";
