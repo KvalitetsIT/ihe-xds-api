@@ -7,10 +7,8 @@ import dk.kvalitetsit.ihexdsapi.dgws.CredentialService;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsService;
 import dk.kvalitetsit.ihexdsapi.dgws.impl.CredentialServiceImpl;
 import dk.kvalitetsit.ihexdsapi.dgws.impl.StsServiceImpl;
-import dk.kvalitetsit.ihexdsapi.service.CodesExecption;
-import dk.kvalitetsit.ihexdsapi.service.impl.CodesServiceImpl;
-import dk.kvalitetsit.ihexdsapi.service.impl.DgwsServiceImpl;
-import dk.kvalitetsit.ihexdsapi.service.CodesService;
+import dk.kvalitetsit.ihexdsapi.service.*;
+import dk.kvalitetsit.ihexdsapi.service.impl.*;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.interceptor.LoggingInInterceptor;
@@ -25,10 +23,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import dk.kvalitetsit.ihexdsapi.dgws.StsService;
-import dk.kvalitetsit.ihexdsapi.service.IheXdsService;
-import dk.kvalitetsit.ihexdsapi.service.Iti18Service;
-import dk.kvalitetsit.ihexdsapi.service.impl.IheXdsServiceImpl;
-import dk.kvalitetsit.ihexdsapi.service.impl.Iti18ServiceImpl;
 
 @Configuration
 public class IheXdsConfiguration {
@@ -166,6 +160,13 @@ public class IheXdsConfiguration {
                 ,  classCodeCodes,  classCodeNames,  classCodeScheme,
                  objectTypeCodes,  objectTypeNames);
         return codeService;
+    }
+    @Bean
+    public ConfigsService configsService() {
+
+        ConfigsServiceImpl configsService = new ConfigsServiceImpl(STSURL, xdsIti18Endpoint);
+        return configsService;
+
     }
 
 
