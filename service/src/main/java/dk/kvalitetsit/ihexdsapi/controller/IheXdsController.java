@@ -44,7 +44,7 @@ public class IheXdsController  implements IhexdsApi {
 	public ResponseEntity<List<Iti18Response>> v1Iti18Post(@Valid Iti18Request iti18Request) {
 
 
-
+			dgwsService.getHealthCareProfessionalClientInfo()
 
 			//DgwsClientInfo clientInfo = dgwsService.getHealthCareProfessionalClientInfo(iti18Request.getQueryParameters().getPatientId(), iti18Request.getCredentialId(), iti18Request.getContext());
 			//List<Iti18Response> iti18Response = iti18Service.queryForDocument(iti18Request.getQueryParameters(), clientInfo);
