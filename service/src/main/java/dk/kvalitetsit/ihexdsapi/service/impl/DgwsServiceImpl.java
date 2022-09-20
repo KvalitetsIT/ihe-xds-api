@@ -18,18 +18,9 @@ public class DgwsServiceImpl implements DgwsService {
 
         CredentialInfo credentialInfo = credentialService.getCredentialInfoFromId(credentialId);
 
-        DgwsClientInfo dgwsClientInfo = stsService.getDgwsClientInfoForSystem(credentialInfo);
-        dgwsClientInfo.setPatientId(patientId);
-        //dgwsClientInfo.setActingUserId(context.getActingUserId());
-        dgwsClientInfo.setActingUserId("0804569723");
-       /* dgwsClientInfo.setResponsibleUserId(context.getResponsibleUserId());
-        dgwsClientInfo.setAuthorizationCode(context.getAuthorizationCode());
-        dgwsClientInfo.setConsentOverride(context.getConsentOverride());
-        dgwsClientInfo.setOrganisationCode(context.getOrganisationCode());*/
-        dgwsClientInfo.setResponsibleUserId("0804569723");
-        dgwsClientInfo.setAuthorizationCode("CBNH1");
-        dgwsClientInfo.setConsentOverride(true);
-        dgwsClientInfo.setOrganisationCode("MyOrganisation");
+        DgwsClientInfo dgwsClientInfo = stsService.getDgwsClientInfoForSystem(credentialInfo, patientId);
+
+
         return dgwsClientInfo;
     }
 }

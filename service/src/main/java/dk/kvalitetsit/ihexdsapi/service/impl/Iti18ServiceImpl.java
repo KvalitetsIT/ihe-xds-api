@@ -50,7 +50,6 @@ public class Iti18ServiceImpl implements Iti18Service {
 		EbXMLQueryResponse30 ebXmlresponse = new EbXMLQueryResponse30(response);
 		QueryResponse queryResponse = queryResponseTransformer.fromEbXML(ebXmlresponse);
 
-		System.out.println(queryResponse);
 		List<Iti18Response> result = new LinkedList<>();
 		for (DocumentEntry documentEntry : queryResponse.getDocumentEntries()) {
 			Iti18Response iti18Response = new Iti18Response();

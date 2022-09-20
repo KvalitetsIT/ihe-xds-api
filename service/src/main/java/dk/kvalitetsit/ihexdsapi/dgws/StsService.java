@@ -4,6 +4,6 @@ import dk.sosi.seal.vault.CredentialVault;
 
 public interface StsService {
 
-	DgwsClientInfo getDgwsClientInfoForSystem(CredentialInfo credentialInfo) throws DgwsSecurityException;
+	DgwsClientInfo getDgwsClientInfoForSystem(CredentialInfo credentialInfo, String patientId) throws DgwsSecurityException;
 
 }

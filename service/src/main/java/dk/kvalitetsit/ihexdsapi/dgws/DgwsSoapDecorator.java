@@ -86,10 +86,10 @@ public class DgwsSoapDecorator extends AbstractSoapInterceptor {
 
     private Header getHsuid(DgwsClientInfo clientInfo) throws JAXBException, ParserConfigurationException {
 
-        String cpr = clientInfo.getPatientId();
-        Boolean vaerdispring = clientInfo.getConsentOverride();
 
-        HsuidHeader hsuidHeader = getHsuidHeaderForHealthCareProfessionalWithAuthorization(clientInfo.getPatientId(), clientInfo.getActingUserId(), clientInfo.getResponsibleUserId(), clientInfo.getAuthorizationCode(), clientInfo.getOrganisationCode(), clientInfo.getConsentOverride());
+        Boolean vaerdispring = false; //clientInfo.getConsentOverride();
+
+        HsuidHeader hsuidHeader = getHsuidHeaderForHealthCareProfessionalWithAuthorization(clientInfo.getPatientId(), clientInfo.getCpr(), clientInfo.getCpr(), clientInfo.getAuthorizationCode(), clientInfo.getOrganisationCode(), vaerdispring);
 
         Document doc = dbf.newDocumentBuilder().newDocument();
         JAXBContext jaxbContext = JAXBContext.newInstance(HsuidHeader.class);

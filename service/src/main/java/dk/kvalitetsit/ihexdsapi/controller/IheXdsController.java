@@ -42,13 +42,18 @@ public class IheXdsController  implements IhexdsApi {
 
 	@Override
 	public ResponseEntity<List<Iti18Response>> v1Iti18Post(@Valid Iti18Request iti18Request) {
+		System.out.println(iti18Request.getContext());
 
+			//dgwsService.getHealthCareProfessionalClientInfo()
 
-			dgwsService.getHealthCareProfessionalClientInfo()
+		try {
+			DgwsClientInfo clientInfo = dgwsService.getHealthCareProfessionalClientInfo(iti18Request.getQueryParameters().getPatientId(), iti18Request.getCredentialId(), iti18Request.getContext());
+			List<Iti18Response> iti18Response = iti18Service.queryForDocument(iti18Request.getQueryParameters(), clientInfo);
 
-			//DgwsClientInfo clientInfo = dgwsService.getHealthCareProfessionalClientInfo(iti18Request.getQueryParameters().getPatientId(), iti18Request.getCredentialId(), iti18Request.getContext());
-			//List<Iti18Response> iti18Response = iti18Service.queryForDocument(iti18Request.getQueryParameters(), clientInfo);
-
+		} catch (DgwsSecurityException e) {
+			throw new RuntimeException(e);
+		}
+		//
 
 			// Generate 3 responses
 			Iti18Response res = null;

@@ -39,7 +39,7 @@ public class ServiceStarter {
         setupDatabaseContainer();
         setupRedisContainer();
 
-        System.setProperty("STSURL", "http://http://test1.ekstern-test.nspop.dk:8080test1.ekstern-test.nspop.dk:8080/sts/services/NewSecurityTokenService");
+        System.setProperty("STSURL", "http://test1.ekstern-test.nspop.dk:8080/sts/services/NewSecurityTokenService");
         System.setProperty("xdsIti18Endpoint", "http://test1-cnsp.ekstern-test.nspop.dk:8080/ddsregistry");
 
         // Gets correct test paths

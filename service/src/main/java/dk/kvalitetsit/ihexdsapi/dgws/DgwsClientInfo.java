@@ -12,8 +12,16 @@ public class DgwsClientInfo {
     private String authorizationCode;
     private String organisationCode;
 
-    public DgwsClientInfo(Document sosi) {
+
+    private String cpr;
+
+    public DgwsClientInfo(Document sosi, String cpr, String patientId, String authorizationCode, String organisationCode) {
         this.sosi = sosi;
+        this.cpr = cpr;
+        this.patientId = patientId;
+        this.authorizationCode = authorizationCode;
+        this.organisationCode = organisationCode;
+
     }
 
     public Document getSosi() {
@@ -26,7 +34,7 @@ public class DgwsClientInfo {
 
     public String getPatientId() {
         return patientId;
-    }
+    }/*
     public void setPatientId(String patientId) {
         this.patientId = patientId;
     }
@@ -67,4 +75,18 @@ public class DgwsClientInfo {
     public void setOrganisationCode(String organisationCode) {
         this.organisationCode = organisationCode;
     }
+
+*/
+    public String getCpr() {
+        return cpr;
+    }
+
+    public String getAuthorizationCode() {
+        return  this.authorizationCode;
+    }
+
+    public String getOrganisationCode() {
+        return  this.organisationCode;
+    }
 }
+
