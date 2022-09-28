@@ -1,5 +1,7 @@
 package dk.kvalitetsit.ihexdsapi.configuration;
 
+
+import javax.annotation.PostConstruct;
 import javax.xml.namespace.QName;
 
 import dk.kvalitetsit.ihexdsapi.dao.CredentialRepository;
@@ -7,24 +9,28 @@ import dk.kvalitetsit.ihexdsapi.dgws.CredentialService;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsService;
 import dk.kvalitetsit.ihexdsapi.dgws.impl.CredentialServiceImpl;
 import dk.kvalitetsit.ihexdsapi.dgws.impl.StsServiceImpl;
+import dk.kvalitetsit.ihexdsapi.interceptors.CacheRequestResponseHandle;
+import dk.kvalitetsit.ihexdsapi.interceptors.impl.CacheRequestResponseHandleImpl;
+import dk.kvalitetsit.ihexdsapi.interceptors.InResponseInterceptor;
+import dk.kvalitetsit.ihexdsapi.interceptors.OutResponseInterceptor;
 import dk.kvalitetsit.ihexdsapi.service.*;
 import dk.kvalitetsit.ihexdsapi.service.impl.*;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
-import org.apache.cxf.interceptor.LoggingInInterceptor;
-import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.openehealth.ipf.commons.ihe.ws.WsTransactionConfiguration;
 import org.openehealth.ipf.commons.ihe.xds.core.XdsClientFactory;
 import org.openehealth.ipf.commons.ihe.xds.iti18.Iti18PortType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.*;
 
 import dk.kvalitetsit.ihexdsapi.dgws.StsService;
+import org.springframework.data.redis.core.RedisTemplate;
 
 @Configuration
+@Import(RedisConfiguration.class)
 public class IheXdsConfiguration {
 
 
@@ -107,6 +113,7 @@ public class IheXdsConfiguration {
     private String typeCodeNames;
 
 
+   
     @Bean
     public IheXdsService helloService() {
         return new IheXdsServiceImpl();
@@ -135,18 +142,31 @@ public class IheXdsConfiguration {
         return iti18ServiceImpl;
     }
 
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
     @Bean
+    @DependsOn("redisTemplate")
+    CacheRequestResponseHandle cacheRequestResponseHandle() {
+        CacheRequestResponseHandleImpl cacheRequestResponseHandleimpl = new CacheRequestResponseHandleImpl(redisTemplate);
+        return cacheRequestResponseHandleimpl;
+    }
+
+
+    @Bean
+    @DependsOn(value = "cacheRequestResponseHandle")
     public Iti18PortType getDocumentRegistryServiceIti18() {
         LOGGER.info("Creating Iti18PortType for url: " + xdsIti18Endpoint);
 
         XdsClientFactory xdsClientFactory = generateXdsRegistryClientFactory("wsdl/iti18.wsdl", xdsIti18Endpoint, Iti18PortType.class);
         Iti18PortType client = (Iti18PortType) xdsClientFactory.getClient();
         Client proxy = ClientProxy.getClient(client);
-        proxy.getOutInterceptors().add(new LoggingOutInterceptor());
-        proxy.getInInterceptors().add(new LoggingInInterceptor());
+        //proxy.getOutInterceptors().add(new LoggingOutInterceptor());
+        proxy.getOutInterceptors().add(new OutResponseInterceptor(cacheRequestResponseHandle()));
+       // proxy.getInInterceptors().add(new LoggingInInterceptor());
+        proxy.getInInterceptors().add(new InResponseInterceptor(cacheRequestResponseHandle()));
         return client;
     }
-
 
 
 
@@ -171,22 +191,25 @@ public class IheXdsConfiguration {
 
 
     private void initProxy(Object o, boolean dgwsEnabled, boolean addRequestInterceptor) {
-        Client proxy = ClientProxy.getClient(o);
-		
-		
-/*		if (dgwsEnabled) {
+        /*Client proxy = ClientProxy.getClient(o);
+
+        System.out.println("Hello");
+        System.out.println(proxy.getContexts());
+
+		/*
+		if (dgwsEnabled) {
 			HsuidSoapDecorator hsuidSoapDecorator = appContext.getBean(HsuidSoapDecorator.class);
 			proxy.getOutInterceptors().add(hsuidSoapDecorator);
 		}*/
 		
-		
-	/*	if (addRequestInterceptor) {
+		/*
+		if (addRequestInterceptor) {
 			InResponseInterceptor in = appContext.getBean(InResponseInterceptor.class);
 			proxy.getInInterceptors().add(in);
 			
 			OutRequestInterceptor out = appContext.getBean(OutRequestInterceptor.class);
 			proxy.getOutInterceptors().add(out);
-		}*/
+		}
 		
 /*		HTTPConduit conduit = (HTTPConduit)proxy.getConduit();
 		TLSClientParameters tcp = new TLSClientParameters();

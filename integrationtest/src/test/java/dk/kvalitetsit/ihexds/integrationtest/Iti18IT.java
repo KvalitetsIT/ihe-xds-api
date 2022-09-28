@@ -25,42 +25,29 @@ public class Iti18IT extends AbstractIntegrationTest{
         apiClient.setBasePath(getApiBasePath());
         ihexdsApi = new IhexdsApi(apiClient);
     }
-/*
+
     // post
+
     @Test
     public void testV1Iti18PostController() throws ApiException {
 
 
         Iti18QueryParameter iti18QueryParameter = new Iti18QueryParameter();
+        iti18QueryParameter.setPatientId("2512489996");
         iti18QueryParameter.setAvailabilityStatus("APPROVED");
-        iti18QueryParameter.setDocumentType(Arrays.asList(new String[]{"STABLE"}));
-        iti18QueryParameter.setEndToDate(OffsetDateTime.parse("2022-09-23T15:15:00Z"));
-        iti18QueryParameter.setEndFromDate(OffsetDateTime.parse("2022-09-23T15:20:00Z"));
-        iti18QueryParameter.setStartToDate(OffsetDateTime.parse("2022-09-28T15:20:00Z"));
-        iti18QueryParameter.setStartFromDate(OffsetDateTime.parse("2022-09-28T15:15:00Z"));
-
-        CodeQuery testCode = new CodeQuery();
-        testCode.setCode("test");
-        testCode.setCodeScheme("test");
-
-        iti18QueryParameter.setEventCode(testCode);
-        iti18QueryParameter.setFormatCode(testCode);
-        iti18QueryParameter.setHealthcareFacilityTypeCode(testCode);
-        iti18QueryParameter.setPracticeSettingCode(testCode);
-        iti18QueryParameter.setTypeCode(testCode);
-
-        iti18QueryParameter.setPatientId("Test ID");
+        iti18QueryParameter.setDocumentType(Arrays.asList(new String[]{"STABLE", "ON-DEMAND"}));
+        iti18QueryParameter.setEndToDate(null);
+        iti18QueryParameter.setEndFromDate(null);
+        iti18QueryParameter.setStartFromDate(null);
+        iti18QueryParameter.setStartToDate(null);
 
 
-
-        String credentialID = "testID";
+        String credentialID = "D:9038f177-d345-4c42-b2b4-6e27314e713e";
         HealthcareProfessionalContext context = new HealthcareProfessionalContext();
-        context.setActingUserId("TestID");
-        context.setResponsibleUserId("TestID");
-        context.setAuthorizationCode("TestID");
-        context.setConsentOverride(false);
-        context.setOrganisationCode("TestID");
 
+        context.setAuthorizationCode("NS363");
+        context.setConsentOverride(false);
+        context.setRole("User");
 
         Iti18Request iti18Request = new Iti18Request();
 
@@ -75,6 +62,5 @@ public class Iti18IT extends AbstractIntegrationTest{
         assertEquals(200, result.getStatusCode());
 
         // add result?
-    }*/
-
+    }
 }

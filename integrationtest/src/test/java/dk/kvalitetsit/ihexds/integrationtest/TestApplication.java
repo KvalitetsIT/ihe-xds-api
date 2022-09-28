@@ -1,7 +1,9 @@
 package dk.kvalitetsit.ihexds.integrationtest;
 
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.cache.annotation.EnableCaching;
 
 import java.io.IOException;
 

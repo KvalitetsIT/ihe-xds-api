@@ -50,6 +50,11 @@ public class RepositortyImplTest {
     @Autowired
     CredentialRepositoryImpl subject;
 
+    @AfterClass
+    public static void cleanupRedis() {
+        redis.close();
+    }
+
     @Test (expected = ConnectionFailedExecption.class)
 
     public void TestConnectionToRedisFailed() throws ConnectionFailedExecption, URISyntaxException, IOException {

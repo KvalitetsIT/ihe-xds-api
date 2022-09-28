@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 @Configuration
 public class RedisConfiguration {
 
+
     @Value("${redis.host}")
     private String redisHost;
     @Value("${redis.port}")
@@ -39,10 +40,4 @@ public class RedisConfiguration {
     public CredentialRepository credentialRepository() {
         return new CredentialRepositoryImpl(redisTemplate(),ttl);
     }
-
-
-
-
-
-
 }

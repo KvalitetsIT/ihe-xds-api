@@ -177,6 +177,35 @@ paths:
                 items:
                   $ref: '#/components/schemas/code'
 
+  /v1/prevRequest:
+    get:
+      tags:
+        - Previous Request result
+      summary: Get Previous Request result SOAP/XML
+      description: Get Previous Request result SOAP/XML
+      responses:
+        '200':
+          description: Ok with list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/downloadLog'
+
+
+
+  /v1/prevResponse:
+    get:
+      tags:
+        - Previous Response result
+      summary: Get Previous Response result SOAP/XML
+      description: Get Previous Response result SOAP/XML
+      responses:
+        '200':
+          description: Ok with list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/downloadLog'
 components:
   responses:
     '400':
@@ -248,19 +277,7 @@ components:
 
     healthcareProfessionalContext:
       type: object
-      required:
-        - actingUserId
-        - authorizationCode
-        - consentOverride
       properties:
-        actingUserId:
-          description: The id of the person making the request
-          type: string
-          example: "2512489996"
-        responsibleUserId:
-          description: The id of the person responsible for the request (if different from actingUserId)
-          type: string
-          example: "2512489996"
         authorizationCode:
           description: The doctor authrization for the person responseible for the request
           type: string
@@ -269,10 +286,10 @@ components:
           description: 'Break the glass'
           type: boolean
           example: "false"
-        organisationCode:
-          description: The code of the organisation where the responsible is located
+        role:
+          description: 'Role of the actor'
           type: string
-          example: "7879798789"
+          example: "User, Læge"
 
     iti18QueryParameter:
       type: object
@@ -371,3 +388,12 @@ components:
           description: The first property
           type: string
           example: "test"
+
+    downloadLog:
+      type: object
+      properties:
+        payload:
+          description: They payload of the request or response
+          type: string
+          example: "<xml>...<xml>"
+

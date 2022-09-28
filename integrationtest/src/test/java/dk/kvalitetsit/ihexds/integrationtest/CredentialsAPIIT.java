@@ -71,7 +71,7 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
 
         createCredentialRequest.setDisplayName("My cerificate");
         createCredentialRequest.setOwner("Me");
-        ;
+
         createCredentialRequest.setOwner("Me");
         createCredentialRequest.setPrivateKeyStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI())));
 
@@ -104,7 +104,10 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
         assertEquals(HttpStatus.SC_BAD_REQUEST, apiException.getCode());
         assertTrue(apiException.getResponseBody().contains("Invalid private key"));
     }
-/*
+
+    /*
+
+
     @Test
     public void testCredentialinfoPutControllerExistingID() throws ApiException, URISyntaxException, IOException {
         String id = "1234AAADD";
@@ -113,7 +116,6 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
 
         createCredentialRequest.setDisplayName("My cerificate");
         createCredentialRequest.setOwner("Me");
-        createCredentialRequest.set
         createCredentialRequest.setPrivateKeyStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI())));
         createCredentialRequest.setPublicCertStr(Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/public-cert1.cer").toURI())));
 
@@ -130,9 +132,10 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
 
         ApiException apiException = assertThrows(ApiException.class, () -> credentialsApi.v1CredentialinfoPutWithHttpInfo(createCredentialRequest2nd));
         assertEquals(HttpStatus.SC_BAD_REQUEST, apiException.getCode());
-        assertTrue(apiException.getResponseBody().contains("A credential vault with id " + id + " is already registered"));
-    }
-*/
+        System.out.println(apiException.getResponseBody());
+        //assertTrue(apiException.getResponseBody().contains("A credential vault with id " + id + " is already registered"));
+    }*/
+
     @Test
     public void testCallService() throws ApiException {
         var iti18Request = new Iti18Request();
