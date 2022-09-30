@@ -3,8 +3,11 @@ package dk.kvalitetsit.ihexdsapi.configuration;
 import dk.kvalitetsit.ihexdsapi.dgws.CredentialInfo;
 import dk.kvalitetsit.ihexdsapi.dgws.CredentialService;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
+import dk.kvalitetsit.ihexdsapi.service.UtilityService;
+import dk.kvalitetsit.ihexdsapi.service.impl.UtilityServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
@@ -30,7 +33,7 @@ public class InitConfiguration {
          String key1 = Files.readString(Paths.get(this.keyPath));
          String cert1 = Files.readString(Paths.get(this.publicPath));
          // Need better variable names
-        credentialService.createAndAddCredentialInfo(null, "Default MOCES", cert1, key1
+        credentialService.createAndAddCredentialInfo(null, "Sonja Bech", cert1, key1
                 );
     }
 }

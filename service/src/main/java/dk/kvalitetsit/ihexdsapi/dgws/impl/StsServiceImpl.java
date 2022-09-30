@@ -6,6 +6,7 @@ import java.util.Properties;
 import dk.kvalitetsit.ihexdsapi.dgws.CredentialInfo;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
 import dk.sosi.seal.model.*;
+import org.openapitools.model.HealthcareProfessionalContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -37,17 +38,19 @@ public class StsServiceImpl implements StsService {
 	}
 
 	@Override
-	public DgwsClientInfo getDgwsClientInfoForSystem(CredentialInfo credentialInfo, String patientId) throws DgwsSecurityException {
+	public DgwsClientInfo getDgwsClientInfoForSystem(CredentialInfo credentialInfo, String patientId, HealthcareProfessionalContext context) throws DgwsSecurityException {
 		Properties properties = new Properties(System.getProperties());
 		properties.setProperty(SOSIFactory.PROPERTYNAME_SOSI_VALIDATE, Boolean.toString(true));
 		SOSIFactory sosiFactory = new SOSIFactory(new SOSITestFederation(properties), credentialInfo.getCredentialVault(), properties);
 
+		//System.out.println(credentialInfo.getCredentialVault().getSystemCredentialPair().getCertificate());
 		String cvr = credentialInfo.getCredentialVault().getSystemCredentialPair().getCertificate().getSubjectX500Principal().getName();
 		cvr = cvr.substring(cvr.lastIndexOf('/') + 6,cvr.lastIndexOf(','));
 
+		String authorizationCode = context.getAuthorizationCode();
 
 
-		UserIDCard userIDCard = getUserIdCard(credentialInfo.getCredentialVault(), sosiFactory, cvr);
+		UserIDCard userIDCard = getUserIdCard(credentialInfo.getCredentialVault(), sosiFactory, cvr, context.getRole(), authorizationCode);
 
 
 		Request request = sosiFactory.createNewRequest(false, null);
@@ -55,7 +58,7 @@ public class StsServiceImpl implements StsService {
 		return new DgwsClientInfo(request.serialize2DOMDocument(), userIDCard.getUserInfo().getCPR(), patientId, userIDCard.getUserInfo().getAuthorizationCode(), cvr);
 	}
 
-	private UserIDCard getUserIdCard(CredentialVault credentialVault, SOSIFactory sosiFactory, String cvr) throws DgwsSecurityException {
+	private UserIDCard getUserIdCard(CredentialVault credentialVault, SOSIFactory sosiFactory, String cvr, String role, String authCode) throws DgwsSecurityException {
 
 		String rawString = credentialVault.getSystemCredentialPair().getCertificate().getSubjectX500Principal().getName();
 
@@ -64,10 +67,7 @@ public class StsServiceImpl implements StsService {
 		String orgName = rawString.substring(rawString.indexOf(',') + 3, rawString.indexOf('/') - 1 );
 
 
-
-		//String name = credentialVault.getSystemCredentialPair().getCertificate().getSubjectX500Principal().getName()
-		//String cpr, String givenName, String surName, String email, String occupation, String role, String authorizationCode
-		UserInfo userInfo = new UserInfo(null, name, surName, null, null, "læge", "NS363");
+		UserInfo userInfo = new UserInfo(null, name, surName, null, null, role, authCode);
 		CareProvider careProvider = new CareProvider(SubjectIdentifierTypeValues.CVR_NUMBER, cvr, orgName);
 		UserIDCard selfSigned = sosiFactory.createNewUserIDCard(itSystem, userInfo, careProvider, AuthenticationLevel.MOCES_TRUSTED_USER, null, null, null, null);
 
@@ -88,6 +88,10 @@ public class StsServiceImpl implements StsService {
 
 		if (responseXml.contains("Authentication failed: multiple authorizations found")) {
 			String errorMsg = responseXml.substring(706, 791);
+
+			String example = errorMsg.substring(errorMsg.indexOf('{') + 1, errorMsg.indexOf(','));
+
+			//System.out.println("HELLO");
 			/*System.out.println(errorMsg);
 			System.out.println(responseXml.length());
 			System.out.println(responseXml.substring(690));
@@ -97,7 +101,7 @@ public class StsServiceImpl implements StsService {
 
 			System.out.println(true);*/
 
-			throw new DgwsSecurityException(1000, errorMsg + ". Choose one\ne.g. NS363");
+			throw new DgwsSecurityException(1000, errorMsg + ". Choose one\ne.g. " + example);
 		}
 
 		SecurityTokenResponse securityTokenResponse = sosiFactory.deserializeSecurityTokenResponse(responseXml);
@@ -118,7 +122,7 @@ public class StsServiceImpl implements StsService {
 		SOSIFactory sosiFactory = new SOSIFactory(new SOSITestFederation(properties), credentialVault, properties);
 
 
-		// cvr ? ?? orgnin???
+
 
 		CareProvider careProvider = new CareProvider(SubjectIdentifierTypeValues.CVR_NUMBER, cvr, organisation);
 
@@ -137,7 +141,6 @@ public class StsServiceImpl implements StsService {
 		String responseXml = null;
 		try {
 			responseXml = sendRequest(requestXml);
-			System.out.println(responseXml);
 		} catch (IOException e) {
 			throw new DgwsSecurityException(e, 1000, "Something went wrong");
 		}

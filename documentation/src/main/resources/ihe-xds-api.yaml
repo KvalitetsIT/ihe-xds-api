@@ -45,9 +45,8 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/iti18Response'
+                $ref: '#/components/schemas/iti18Response'
+
 
   /v1/codes/classCode:
     get:
@@ -177,6 +176,49 @@ paths:
                 items:
                   $ref: '#/components/schemas/code'
 
+  /v1/request/{requestId}:
+    get:
+      tags:
+        -  Request result
+      summary: Get  Request result SOAP/XML
+      description: Get  Request result SOAP/XML
+      parameters:
+        - in: path
+          name: requestId
+          schema:
+            type: string
+          required: true
+          description: UUID of the request to get
+      responses:
+        '200':
+          description: Ok with list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/downloadLog'
+
+
+
+  /v1/response/{responseId}:
+    get:
+      tags:
+        -  Response result
+      summary: Get  Response result SOAP/XML
+      description: Get  Response result SOAP/XML
+      parameters:
+        - in: path
+          name: responseId
+          schema:
+            type: string
+          required: true
+          description: UUID of the response to get
+      responses:
+        '200':
+          description: Ok with list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/downloadLog'
 components:
   responses:
     '400':
@@ -186,7 +228,7 @@ components:
     '403':
       description: "Forbidden. This could be because: <br> * The requested information does not belong the organisation of the user <br> * The calling user does not have the required roles"
   schemas:
-    iti18Response:
+    iti18QueryResponse:
       type: object
       required:
         - patientId
@@ -213,19 +255,38 @@ components:
           nullable: false
           example: "Dato og tidspunkt for møde mellem patient og sundhedsperson"
         serviceStart:
-          description: The start service from date-time
-          type: string
-          format: date-time
-          example: "2021-01-30T08:30:00Z"
+          description: The start service from date-time as Long
+          type: integer
+          format: int64
+          example: "1664349302510"
         serviceEnd:
-          description: The start service to date-time
-          type: string
-          format: date-time
-          example: "2021-01-30T08:30:00Z"
+          description: The start service to date-time as Long
+          type: integer
+          format: int64
+          example: "1664349302510"
         document:
           description: The uploaded document
           type: object
           $ref: '#/components/schemas/document'
+
+    iti18Response:
+      type: object
+      properties:
+        queryResponse:
+          description: The query responses results
+          type: array
+          items:
+            $ref: '#/components/schemas/iti18QueryResponse'
+          example: "[..], [..]"
+        requestId:
+          description: The request Id as UUID
+          type: string
+          example: "f638012a-8c49-44b2-b647-9c3595b9e398"
+        responseId:
+          description: The response Id as UUID
+          type: string
+          example: "f638012a-8c49-44b2-b647-9c3595b9e398"
+
 
     code:
       type: object
@@ -248,19 +309,7 @@ components:
 
     healthcareProfessionalContext:
       type: object
-      required:
-        - actingUserId
-        - authorizationCode
-        - consentOverride
       properties:
-        actingUserId:
-          description: The id of the person making the request
-          type: string
-          example: "2512489996"
-        responsibleUserId:
-          description: The id of the person responsible for the request (if different from actingUserId)
-          type: string
-          example: "2512489996"
         authorizationCode:
           description: The doctor authrization for the person responseible for the request
           type: string
@@ -269,10 +318,10 @@ components:
           description: 'Break the glass'
           type: boolean
           example: "false"
-        organisationCode:
-          description: The code of the organisation where the responsible is located
+        role:
+          description: 'Role of the actor'
           type: string
-          example: "7879798789"
+          example: "User, Læge"
 
     iti18QueryParameter:
       type: object
@@ -305,25 +354,25 @@ components:
           items:
             type: string
         startFromDate:
-          description: The start service from date-time
-          type: string
-          format: date-time
-          example: "2021-01-30T08:30:00Z"
+          description: The start service from date-time as Long
+          type: integer
+          format: int64
+          example: "1664349302510"
         startToDate:
-          description: The start service to date-time
-          type: string
-          format: date-time
-          example: "2021-01-30T08:30:00Z"
+          description: The start service to date-time as Long
+          type: integer
+          format: int64
+          example: "1664349302510"
         endFromDate:
-          description: The end service from date-time
-          type: string
-          format: date-time
-          example: "2021-01-30T08:30:00Z"
+          description: The end service from date-time as Long
+          type: integer
+          format: int64
+          example: "1664349302510"
         endToDate:
-          description: The end service to date-time
-          type: string
-          format: date-time
-          example: "2021-01-30T08:30:00Z"
+          description: The end service to date-time as Long
+          type: integer
+          format: int64
+          example: "1664349302510"
         availabilityStatus:
           description: The availability result
           type: string
@@ -371,3 +420,12 @@ components:
           description: The first property
           type: string
           example: "test"
+
+    downloadLog:
+      type: object
+      properties:
+        payload:
+          description: They payload of the request or response
+          type: string
+          example: "<xml>...<xml>"
+

@@ -82,7 +82,6 @@ public class CodesServiceImplTest {
 
     @Test
     public void testGetTypeCodesList() throws CodesExecption {
-        System.out.println(subject.getTypeCodesList());
         Assert.assertEquals(5, subject.getTypeCodesList().size());
     }
     @Test

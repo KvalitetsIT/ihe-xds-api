@@ -7,9 +7,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 @Configuration
 public class RedisConfiguration {
+
 
     @Value("${redis.host}")
     private String redisHost;
@@ -22,10 +25,21 @@ public class RedisConfiguration {
     @Bean
     public JedisConnectionFactory jedisConnectionFactory()  {
         JedisConnectionFactory jedisConFactory
-                = new JedisConnectionFactory();
+                = new JedisConnectionFactory(getJedisPool());
         jedisConFactory.setHostName(redisHost);
         jedisConFactory.setPort(redisPort);
+
         return jedisConFactory;
+    }
+
+    private JedisPoolConfig getJedisPool() {
+        JedisPoolConfig config = new JedisPoolConfig();
+        config.setMaxTotal(100);
+        config.setMinIdle(0);
+
+
+
+        return config;
     }
 
     @Bean
@@ -39,10 +53,4 @@ public class RedisConfiguration {
     public CredentialRepository credentialRepository() {
         return new CredentialRepositoryImpl(redisTemplate(),ttl);
     }
-
-
-
-
-
-
 }

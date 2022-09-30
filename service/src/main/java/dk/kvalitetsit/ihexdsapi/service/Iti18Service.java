@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface Iti18Service {
 
-	List<Iti18Response> queryForDocument(Iti18QueryParameter iti18Request, DgwsClientInfo dgwsClientInfo) throws DgwsSecurityException;
+	Iti18Response queryForDocument(Iti18QueryParameter iti18Request, DgwsClientInfo dgwsClientInfo) throws DgwsSecurityException;
 
 }
