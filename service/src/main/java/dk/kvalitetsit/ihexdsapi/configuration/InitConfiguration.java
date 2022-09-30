@@ -26,14 +26,23 @@ public class InitConfiguration {
     @Value("${default.cert.public}")
     private String publicPath;
 
+    @Value("${default.cert.private.two}")
+    private String keyPath2;
+    @Value("${default.cert.public.two}")
+    private String publicPath2;
+
 
 
     @PostConstruct
     public void setupDefaultCredentials() throws URISyntaxException, IOException, DgwsSecurityException {
          String key1 = Files.readString(Paths.get(this.keyPath));
          String cert1 = Files.readString(Paths.get(this.publicPath));
+         String key2 = Files.readString(Paths.get(this.keyPath2));
+         String cert2 = Files.readString(Paths.get(this.publicPath2));
          // Need better variable names
         credentialService.createAndAddCredentialInfo(null, "Sonja Bech", cert1, key1
+                );
+        credentialService.createAndAddCredentialInfo(null, "Grethe Pedersen", cert2, key2
                 );
     }
 }

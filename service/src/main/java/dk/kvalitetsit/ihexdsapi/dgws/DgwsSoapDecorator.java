@@ -114,7 +114,9 @@ public class DgwsSoapDecorator extends AbstractSoapInterceptor {
             attributes.add(new ConsentOverrideAttribute(true));
         }
         attributes.add(new ResponsibleUserCivilRegistrationNumberAttribute(responsibleUserCpr != null ? responsibleUserCpr : actingUserCpr));
-        attributes.add(new ResponsibleUserAuthorizationCodeAttribute(authorizationCode));
+        if (authorizationCode != null) {
+            attributes.add(new ResponsibleUserAuthorizationCodeAttribute(authorizationCode));
+        }
         return HealthcareServiceUserIdentificationHeaderUtil.createHealthcareServiceUserIdentificationHeader(ISSUER, attributes);
     }
 }

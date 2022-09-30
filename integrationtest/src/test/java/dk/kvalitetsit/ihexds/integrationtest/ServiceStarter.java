@@ -45,9 +45,13 @@ public class ServiceStarter {
         // Gets correct test paths
         var privateKey = new ClassPathResource("/certificates/private-cert1.pem");
         var publicKey = new ClassPathResource("/certificates/public-cert1.cer");
+        var privateKey2 = new ClassPathResource("/certificates/private-cert2.pem");
+        var publicKey2 = new ClassPathResource("/certificates/public-cert2.cer");
 
         System.setProperty("default.cert.private", privateKey.getFile().getAbsolutePath());
         System.setProperty("default.cert.public", publicKey.getFile().getAbsolutePath());
+        System.setProperty("default.cert.private.two", privateKey2.getFile().getAbsolutePath());
+        System.setProperty("default.cert.public.two", publicKey2.getFile().getAbsolutePath());
         System.setProperty("redis.host", "localhost");
         System.setProperty("redis.port", Integer.toString(mappedRedisPort));
 
