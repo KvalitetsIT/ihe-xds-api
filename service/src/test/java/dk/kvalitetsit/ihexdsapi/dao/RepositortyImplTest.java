@@ -5,60 +5,43 @@ import dk.kvalitetsit.ihexdsapi.dao.exception.ConnectionFailedExecption;
 import dk.kvalitetsit.ihexdsapi.dao.impl.CredentialRepositoryImpl;
 import dk.kvalitetsit.ihexdsapi.utility.TestHelper;
 import org.junit.*;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.testcontainers.DockerClientFactory;
-import org.testcontainers.containers.BindMode;
-import org.testcontainers.containers.GenericContainer;
+import redis.clients.jedis.JedisPoolConfig;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {dk.kvalitetsit.ihexdsapi.configuration.RedisConfiguration.class})
-public class RepositortyImplTest {
 
-    private static final int REDIS_PORT = 6379;
-
-    private static GenericContainer<?> redis;
-
-     static  {
-        redis = new GenericContainer("redis:7.0.4")
-                .withExposedPorts(REDIS_PORT)
-                .withCommand("redis-server /usr/local/etc/redis/redis.conf")
-                .withClasspathResourceMapping("redis.conf", "/usr/local/etc/redis/redis.conf", BindMode.READ_ONLY);
-
-        redis.start();
-
-        Integer mappedRedisPort = redis.getMappedPort(REDIS_PORT);
-         ;
-        System.setProperty("redis.host", DockerClientFactory.instance().dockerHostIpAddress());
-        System.setProperty("redis.port", mappedRedisPort.toString());
-
-        System.setProperty("redis.data.ttl", "3000");
-    }
+public class RepositortyImplTest extends AbstractRedisTest{
 
 
-    @Autowired
-    public RedisTemplate<String, Object> redisTemplate;
+
+
 
     @Autowired
     CredentialRepositoryImpl subject;
 
-    @AfterClass
-    public static void cleanupRedis() {
-        redis.close();
-    }
+
 
     @Test (expected = ConnectionFailedExecption.class)
-
     public void TestConnectionToRedisFailed() throws ConnectionFailedExecption, URISyntaxException, IOException {
-        redis.close();
+        JedisConnectionFactory jedisConFactory
+                    = new JedisConnectionFactory();
+            jedisConFactory.setHostName("localhost");
+            jedisConFactory.setPort(40321);
+
+
+            RedisTemplate<String, Object> template = new RedisTemplate<>();
+            template.setConnectionFactory(jedisConFactory);
+
+
+    CredentialRepositoryImpl credentialRepository = new CredentialRepositoryImpl(template, 3000);
+
 
         //When
         CredentialInfoEntity credentialInfoEntity;
@@ -72,9 +55,9 @@ public class RepositortyImplTest {
         credentialInfoEntity = new CredentialInfoEntity(owner, id, displayName,   publicKey, privateKey);
 
 
-        subject.saveCredentialsForID(credentialInfoEntity);
+        credentialRepository.saveCredentialsForID(credentialInfoEntity);
 
-        redis.start();
+
     }
 
     @Test
@@ -147,6 +130,9 @@ public class RepositortyImplTest {
 
     }
 
+
+
+
     @Test
     public void TestGetCredentialByID() throws URISyntaxException, IOException {
         // Owner as key
@@ -167,5 +153,4 @@ public class RepositortyImplTest {
         CredentialInfoEntity result = subject.findCredentialInfoByID(id);
         Assert.assertNotNull(result);
     }
-
 }

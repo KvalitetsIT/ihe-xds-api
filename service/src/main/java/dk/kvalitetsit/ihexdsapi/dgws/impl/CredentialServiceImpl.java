@@ -37,7 +37,7 @@ public class CredentialServiceImpl implements CredentialService {
         String id = UUID.randomUUID().toString();
 
         // Test purpose
-        if (displayName.equals("Default MOCES")) {
+        if (displayName.equals("Sonja Bech")) {
             id = "D:" + "9038f177-d345-4c42-b2b4-6e27314e713e";
         }
 

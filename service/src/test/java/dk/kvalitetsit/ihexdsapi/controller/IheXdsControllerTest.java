@@ -1,11 +1,15 @@
 package dk.kvalitetsit.ihexdsapi.controller;
 
+import dk.kvalitetsit.ihexdsapi.dao.AbstractRedisTest;
+import dk.kvalitetsit.ihexdsapi.dgws.DgwsClientInfo;
+import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsService;
-import dk.kvalitetsit.ihexdsapi.interceptors.CacheRequestResponseHandle;
-import dk.kvalitetsit.ihexdsapi.interceptors.impl.CacheRequestResponseHandleImpl;
-import dk.kvalitetsit.ihexdsapi.service.IheXdsService;
+import dk.kvalitetsit.ihexdsapi.dao.CacheRequestResponseHandle;
+import dk.kvalitetsit.ihexdsapi.dao.impl.CacheRequestResponseHandleImpl;
 import dk.kvalitetsit.ihexdsapi.service.Iti18Service;
+import dk.kvalitetsit.ihexdsapi.service.UtilityService;
 import dk.kvalitetsit.ihexdsapi.service.impl.DgwsServiceImpl;
+import dk.kvalitetsit.ihexdsapi.service.impl.UtilityServiceImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,10 +26,10 @@ import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 
+import java.util.Arrays;
 import java.util.List;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {dk.kvalitetsit.ihexdsapi.configuration.RedisConfiguration.class})
+
 public class IheXdsControllerTest {
 
 
@@ -34,32 +38,10 @@ public class IheXdsControllerTest {
 
     CacheRequestResponseHandle cacheRequestResponseHandle;
 
+    UtilityService utilityService;
+
     IheXdsController subject;
 
-    // Needed?
-    private static final int REDIS_PORT = 6379;
-
-    private static GenericContainer<?> redis;
-
-    static  {
-        redis = new GenericContainer("redis:7.0.4")
-                .withExposedPorts(REDIS_PORT)
-                .withCommand("redis-server /usr/local/etc/redis/redis.conf")
-                .withClasspathResourceMapping("redis.conf", "/usr/local/etc/redis/redis.conf", BindMode.READ_ONLY);
-
-        redis.start();
-
-        Integer mappedRedisPort = redis.getMappedPort(REDIS_PORT);
-        ;
-        System.setProperty("redis.host", DockerClientFactory.instance().dockerHostIpAddress());
-        System.setProperty("redis.port", mappedRedisPort.toString());
-
-        System.setProperty("redis.data.ttl", "3000");
-    }
-
-
-    @Autowired
-    public RedisTemplate<String, Object> redisTemplate;
 
 
     @Before
@@ -68,15 +50,39 @@ public class IheXdsControllerTest {
         this.dgwsService = Mockito.mock(DgwsServiceImpl.class);
         this.iti18Service = Mockito.mock(Iti18Service.class);
         this.cacheRequestResponseHandle = Mockito.mock(CacheRequestResponseHandleImpl.class);
+        this.utilityService = Mockito.mock((UtilityServiceImpl.class));
 
 
 
-        subject = new IheXdsController(dgwsService, iti18Service, cacheRequestResponseHandle);
+        subject = new IheXdsController(dgwsService, iti18Service, cacheRequestResponseHandle, utilityService);
     }
 
    @Test
-    public void testv1Iti18HealthcareProfessionalGet() {
+    public void testv1Iti18HealthcareProfessionalGet() throws DgwsSecurityException {
         // Given
+       Mockito.when(utilityService.getId("tempRes")).then(a -> {
+
+           String output = "Response";
+           return output;
+       });Mockito.when(utilityService.getId("tempReq")).then(a -> {
+           String output = "Request";
+           return output;
+       });
+
+       Mockito.when(dgwsService.getHealthCareProfessionalClientInfo(Mockito.any(), Mockito.any(), Mockito.any())).then(a -> {
+
+          DgwsClientInfo output = new DgwsClientInfo(null, null, null, null, null);
+           return output;
+       });
+
+        Mockito.when(iti18Service.queryForDocument(Mockito.any(), Mockito.any())).then(a -> {
+
+            Iti18Response output = new Iti18Response();
+
+           return output;
+       });
+
+
         Iti18Request request = new Iti18Request();
         HealthcareProfessionalContext context = new HealthcareProfessionalContext();
         context.setAuthorizationCode("CBNH1");
@@ -88,18 +94,18 @@ public class IheXdsControllerTest {
         request.setCredentialId("DEFAULT");
 
         // When
-        ResponseEntity<List<Iti18Response>> responseEntity = subject.v1Iti18Post(request);
+        ResponseEntity<Iti18Response> responseEntity = subject.v1Iti18Post(request);
 
         // Then
         Assert.assertNotNull(responseEntity);
         Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         Assert.assertNotNull(responseEntity.getBody());
     }
-
+/*
     @Test
     public void testv1PrevRequestGet() {
         // When
-        ResponseEntity<DownloadLog> responseEntity = subject.v1PrevRequestGet();
+        ResponseEntity<DownloadLog> responseEntity = subject.v1RequestRequestIdGet();
 
 
         // Then
@@ -112,12 +118,12 @@ public class IheXdsControllerTest {
     @Test
     public void v1PrevResponseGet() {
          // When
-        ResponseEntity<DownloadLog> responseEntity = subject.v1PrevResponseGet();
+        ResponseEntity<DownloadLog> responseEntity = subject.v1ResponseResponseIdGet();
 
 
         // Then
        Assert.assertNotNull(responseEntity);
         Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         Assert.assertNotNull(responseEntity.getBody());
-    }
+    }*/
 }

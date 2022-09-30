@@ -1,7 +1,6 @@
 package dk.kvalitetsit.ihexdsapi.configuration;
 
 
-import javax.annotation.PostConstruct;
 import javax.xml.namespace.QName;
 
 import dk.kvalitetsit.ihexdsapi.dao.CredentialRepository;
@@ -9,8 +8,8 @@ import dk.kvalitetsit.ihexdsapi.dgws.CredentialService;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsService;
 import dk.kvalitetsit.ihexdsapi.dgws.impl.CredentialServiceImpl;
 import dk.kvalitetsit.ihexdsapi.dgws.impl.StsServiceImpl;
-import dk.kvalitetsit.ihexdsapi.interceptors.CacheRequestResponseHandle;
-import dk.kvalitetsit.ihexdsapi.interceptors.impl.CacheRequestResponseHandleImpl;
+import dk.kvalitetsit.ihexdsapi.dao.CacheRequestResponseHandle;
+import dk.kvalitetsit.ihexdsapi.dao.impl.CacheRequestResponseHandleImpl;
 import dk.kvalitetsit.ihexdsapi.interceptors.InResponseInterceptor;
 import dk.kvalitetsit.ihexdsapi.interceptors.OutResponseInterceptor;
 import dk.kvalitetsit.ihexdsapi.service.*;
@@ -28,6 +27,7 @@ import org.springframework.context.annotation.*;
 
 import dk.kvalitetsit.ihexdsapi.dgws.StsService;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.web.context.annotation.RequestScope;
 
 @Configuration
 @Import(RedisConfiguration.class)
@@ -146,6 +146,13 @@ public class IheXdsConfiguration {
     private RedisTemplate<String, Object> redisTemplate;
 
     @Bean
+    @RequestScope
+    public UtilityService utilityService() {
+        UtilityService utilityService = new UtilityServiceImpl();
+        return utilityService;
+    }
+
+    @Bean
     @DependsOn("redisTemplate")
     CacheRequestResponseHandle cacheRequestResponseHandle() {
         CacheRequestResponseHandleImpl cacheRequestResponseHandleimpl = new CacheRequestResponseHandleImpl(redisTemplate);
@@ -154,18 +161,27 @@ public class IheXdsConfiguration {
 
 
     @Bean
-    @DependsOn(value = "cacheRequestResponseHandle")
-    public Iti18PortType getDocumentRegistryServiceIti18() {
+    public Iti18PortType getDocumentRegistryServiceIti18(OutResponseInterceptor outResponseInterceptor, InResponseInterceptor inResponseInterceptor) {
         LOGGER.info("Creating Iti18PortType for url: " + xdsIti18Endpoint);
 
         XdsClientFactory xdsClientFactory = generateXdsRegistryClientFactory("wsdl/iti18.wsdl", xdsIti18Endpoint, Iti18PortType.class);
         Iti18PortType client = (Iti18PortType) xdsClientFactory.getClient();
         Client proxy = ClientProxy.getClient(client);
         //proxy.getOutInterceptors().add(new LoggingOutInterceptor());
-        proxy.getOutInterceptors().add(new OutResponseInterceptor(cacheRequestResponseHandle()));
+        proxy.getOutInterceptors().add(outResponseInterceptor);
        // proxy.getInInterceptors().add(new LoggingInInterceptor());
-        proxy.getInInterceptors().add(new InResponseInterceptor(cacheRequestResponseHandle()));
+        proxy.getInInterceptors().add(inResponseInterceptor);
         return client;
+    }
+
+    @Bean
+    public OutResponseInterceptor outResponseInterceptor (CacheRequestResponseHandle cacheRequestResponseHandle, UtilityService utilityService) {
+        return new OutResponseInterceptor(cacheRequestResponseHandle, utilityService);
+    }
+
+    @Bean
+    public InResponseInterceptor inResponseInterceptor (CacheRequestResponseHandle cacheRequestResponseHandle, UtilityService utilityService) {
+        return new InResponseInterceptor(cacheRequestResponseHandle, utilityService);
     }
 
 

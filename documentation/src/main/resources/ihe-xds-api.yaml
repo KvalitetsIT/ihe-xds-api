@@ -45,9 +45,8 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/iti18Response'
+                $ref: '#/components/schemas/iti18Response'
+
 
   /v1/codes/classCode:
     get:
@@ -177,12 +176,19 @@ paths:
                 items:
                   $ref: '#/components/schemas/code'
 
-  /v1/prevRequest:
+  /v1/request/{requestId}:
     get:
       tags:
-        - Previous Request result
-      summary: Get Previous Request result SOAP/XML
-      description: Get Previous Request result SOAP/XML
+        -  Request result
+      summary: Get  Request result SOAP/XML
+      description: Get  Request result SOAP/XML
+      parameters:
+        - in: path
+          name: requestId
+          schema:
+            type: string
+          required: true
+          description: UUID of the request to get
       responses:
         '200':
           description: Ok with list
@@ -193,12 +199,19 @@ paths:
 
 
 
-  /v1/prevResponse:
+  /v1/response/{responseId}:
     get:
       tags:
-        - Previous Response result
-      summary: Get Previous Response result SOAP/XML
-      description: Get Previous Response result SOAP/XML
+        -  Response result
+      summary: Get  Response result SOAP/XML
+      description: Get  Response result SOAP/XML
+      parameters:
+        - in: path
+          name: responseId
+          schema:
+            type: string
+          required: true
+          description: UUID of the response to get
       responses:
         '200':
           description: Ok with list
@@ -215,7 +228,7 @@ components:
     '403':
       description: "Forbidden. This could be because: <br> * The requested information does not belong the organisation of the user <br> * The calling user does not have the required roles"
   schemas:
-    iti18Response:
+    iti18QueryResponse:
       type: object
       required:
         - patientId
@@ -242,19 +255,38 @@ components:
           nullable: false
           example: "Dato og tidspunkt for møde mellem patient og sundhedsperson"
         serviceStart:
-          description: The start service from date-time
-          type: string
-          format: date-time
-          example: "2021-01-30T08:30:00Z"
+          description: The start service from date-time as Long
+          type: integer
+          format: int64
+          example: "1664349302510"
         serviceEnd:
-          description: The start service to date-time
-          type: string
-          format: date-time
-          example: "2021-01-30T08:30:00Z"
+          description: The start service to date-time as Long
+          type: integer
+          format: int64
+          example: "1664349302510"
         document:
           description: The uploaded document
           type: object
           $ref: '#/components/schemas/document'
+
+    iti18Response:
+      type: object
+      properties:
+        queryResponse:
+          description: The query responses results
+          type: array
+          items:
+            $ref: '#/components/schemas/iti18QueryResponse'
+          example: "[..], [..]"
+        requestId:
+          description: The request Id as UUID
+          type: string
+          example: "f638012a-8c49-44b2-b647-9c3595b9e398"
+        responseId:
+          description: The response Id as UUID
+          type: string
+          example: "f638012a-8c49-44b2-b647-9c3595b9e398"
+
 
     code:
       type: object
@@ -322,25 +354,25 @@ components:
           items:
             type: string
         startFromDate:
-          description: The start service from date-time
-          type: string
-          format: date-time
-          example: "2021-01-30T08:30:00Z"
+          description: The start service from date-time as Long
+          type: integer
+          format: int64
+          example: "1664349302510"
         startToDate:
-          description: The start service to date-time
-          type: string
-          format: date-time
-          example: "2021-01-30T08:30:00Z"
+          description: The start service to date-time as Long
+          type: integer
+          format: int64
+          example: "1664349302510"
         endFromDate:
-          description: The end service from date-time
-          type: string
-          format: date-time
-          example: "2021-01-30T08:30:00Z"
+          description: The end service from date-time as Long
+          type: integer
+          format: int64
+          example: "1664349302510"
         endToDate:
-          description: The end service to date-time
-          type: string
-          format: date-time
-          example: "2021-01-30T08:30:00Z"
+          description: The end service to date-time as Long
+          type: integer
+          format: int64
+          example: "1664349302510"
         availabilityStatus:
           description: The availability result
           type: string

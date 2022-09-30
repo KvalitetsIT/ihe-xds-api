@@ -38,6 +38,7 @@ public class Iti18IT extends AbstractIntegrationTest{
         iti18QueryParameter.setDocumentType(Arrays.asList(new String[]{"STABLE", "ON-DEMAND"}));
         iti18QueryParameter.setEndToDate(null);
         iti18QueryParameter.setEndFromDate(null);
+        //iti18QueryParameter.setStartFromDate(Long.parseLong("1662131460000"));
         iti18QueryParameter.setStartFromDate(null);
         iti18QueryParameter.setStartToDate(null);
 

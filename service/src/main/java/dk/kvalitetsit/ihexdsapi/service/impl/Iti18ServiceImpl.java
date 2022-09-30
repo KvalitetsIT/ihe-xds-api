@@ -7,7 +7,9 @@ import dk.kvalitetsit.ihexdsapi.service.Iti18Service;
 import dk.kvalitetsit.ihexdsapi.xds.Codes;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
+import org.joda.time.DateTime;
 import org.openapitools.model.Iti18QueryParameter;
+import org.openapitools.model.Iti18QueryResponse;
 import org.openapitools.model.Iti18Response;
 import org.openehealth.ipf.commons.ihe.xds.core.ebxml.EbXMLAdhocQueryRequest;
 import org.openehealth.ipf.commons.ihe.xds.core.ebxml.EbXMLFactory;
@@ -25,17 +27,11 @@ import org.openehealth.ipf.commons.ihe.xds.core.transform.requests.QueryRegistry
 import org.openehealth.ipf.commons.ihe.xds.core.transform.responses.QueryResponseTransformer;
 import org.openehealth.ipf.commons.ihe.xds.iti18.Iti18PortType;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 public class Iti18ServiceImpl implements Iti18Service {
 
@@ -52,7 +48,7 @@ public class Iti18ServiceImpl implements Iti18Service {
 		proxy.getOutInterceptors().add(dgwsSoapDecorator);
 	}
 
-	private List<Iti18Response> createResponse(String patientId, AdhocQueryResponse response) {
+	private List<Iti18QueryResponse> createResponse(String patientId, AdhocQueryResponse response) {
 
 
 
@@ -61,7 +57,7 @@ public class Iti18ServiceImpl implements Iti18Service {
 		EbXMLQueryResponse30 ebXmlresponse = new EbXMLQueryResponse30(response);
 		QueryResponse queryResponse = queryResponseTransformer.fromEbXML(ebXmlresponse);
 
-		List<Iti18Response> result = new LinkedList<>();
+		List<Iti18QueryResponse> result = new LinkedList<>();
 		for (DocumentEntry documentEntry : queryResponse.getDocumentEntries()) {
 
 
@@ -69,26 +65,26 @@ public class Iti18ServiceImpl implements Iti18Service {
 
 			documentTypeString = documentTypeString.substring(documentTypeString.lastIndexOf('=') + 1, documentTypeString.length() - 1);
 
-			Iti18Response iti18Response = new Iti18Response();
-			iti18Response.setPatientId(patientId);
-			iti18Response.setDocumentId(documentEntry.getUniqueId());
-			iti18Response.setRepositoryID(documentEntry.getRepositoryUniqueId());
-			iti18Response.setDocumentType(documentTypeString);
+			Iti18QueryResponse iti18QueryResponse = new Iti18QueryResponse();
+			iti18QueryResponse.setPatientId(patientId);
+			iti18QueryResponse.setDocumentId(documentEntry.getUniqueId());
+			iti18QueryResponse.setRepositoryID(documentEntry.getRepositoryUniqueId());
+			iti18QueryResponse.setDocumentType(documentTypeString);
 
 
 
 			if (documentEntry.getServiceStartTime() != null) {
-				System.out.println(documentEntry.getServiceStartTime().toString());
-			iti18Response.setServiceStart(formatTime(documentEntry.getServiceStartTime().toString()));}
+				iti18QueryResponse.setServiceStart(formatTimeForResponse(documentEntry.getServiceStartTime().toString()));}
 			if (documentEntry.getServiceStopTime() != null) {
-			iti18Response.setServiceEnd(formatTime(documentEntry.getServiceStopTime().toString())); }
-			result.add(iti18Response);
+				iti18QueryResponse.setServiceEnd(formatTimeForResponse(documentEntry.getServiceStopTime().toString())); }
+			result.add(iti18QueryResponse);
 		}
 		return result;
 	}
 
-	private OffsetDateTime formatTime(String time) {
-		return  OffsetDateTime.parse(time);
+	private Long formatTimeForResponse(String time) {
+		Instant i = Instant.parse(time);
+		return  i.toEpochMilli();
 	}
 
 	private EbXMLFactory getEbXmlFactory() {
@@ -113,7 +109,6 @@ public class Iti18ServiceImpl implements Iti18Service {
 			status.add(AvailabilityStatus.valueOfOpcode(iti18Request.getAvailabilityStatus()));
 			fdq.setStatus(status);
 		}
-		// TODO ÆNDRE GUI OG BACKEND TIME FRA STRING TIL INTEGER eks. -663292800
 
 		// Type code
 		if (iti18Request.getTypeCode() != null && !iti18Request.getTypeCode().getCode().isEmpty()) {
@@ -149,27 +144,25 @@ public class Iti18ServiceImpl implements Iti18Service {
 			fdq.setPracticeSettingCodes(getCode(iti18Request.getPracticeSettingCode().getCode(), iti18Request.getPracticeSettingCode().getCodeScheme()));
 		}
 
-		System.out.println(iti18Request.getStartFromDate());
-
 		// ServiceStart
 		if (iti18Request.getStartFromDate()!= null && !iti18Request.getStartFromDate().toString().isEmpty()) {
 
-			fdq.getServiceStartTime().setFrom(dateFormatter(iti18Request.getStartFromDate()));
+			fdq.getServiceStartTime().setFrom(dateFormatterForRequest(iti18Request.getStartFromDate()));
 		}
 
 		if (iti18Request.getStartToDate()!= null && !iti18Request.getStartToDate().toString().isEmpty()) {
-			fdq.getServiceStartTime().setTo(dateFormatter(iti18Request.getStartToDate()));
+			fdq.getServiceStartTime().setTo(dateFormatterForRequest(iti18Request.getStartToDate()));
 
 		}
 		// ServiceStop
 
 		if (iti18Request.getEndFromDate()!= null && !iti18Request.getEndFromDate().toString().isEmpty()) {
-			fdq.getServiceStopTime().setFrom(dateFormatter(iti18Request.getEndFromDate()));
+			fdq.getServiceStopTime().setFrom(dateFormatterForRequest(iti18Request.getEndFromDate()));
 
 		}
 
 		if (iti18Request.getEndToDate()!= null && !iti18Request.getEndToDate().toString().isEmpty()) {
-			fdq.getServiceStopTime().setTo(dateFormatter(iti18Request.getEndToDate()));
+			fdq.getServiceStopTime().setTo(dateFormatterForRequest(iti18Request.getEndToDate()));
 
 		}
 
@@ -208,26 +201,36 @@ public class Iti18ServiceImpl implements Iti18Service {
 		return result;
 	}
 
-	private String dateFormatter(OffsetDateTime date) {
+	private DateTime dateFormatterForRequest(Long date) {
+		Instant  i = Instant.ofEpochMilli(date);
+		DateTime dt = DateTime.parse(i.toString());
 
-		LocalDateTime d = date.toLocalDateTime();
+		return dt;
 
-
-		DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-
-		String dateString = d.format(dateTimeFormat);
-
-		return dateString;
 	}
 
 	@Override
-	public List<Iti18Response> queryForDocument(Iti18QueryParameter iti18Request, DgwsClientInfo dgwsClientInfo) throws DgwsSecurityException {
+	public Iti18Response queryForDocument(Iti18QueryParameter iti18Request, DgwsClientInfo dgwsClientInfo) throws DgwsSecurityException {
 		try {
 			dgwsSoapDecorator.setDgwsClientInfo(dgwsClientInfo);
 
 			var query = createQuery(iti18Request);
 			var response = iti18PortType.documentRegistryRegistryStoredQuery(query);
-			return createResponse(iti18Request.getPatientId(), response);
+
+			List<Iti18QueryResponse> queryResponses = createResponse(iti18Request.getPatientId(), response);
+
+			//Generate Response and request ID
+
+
+
+			Iti18Response iti18Response = new Iti18Response();
+
+			iti18Response.setQueryResponse(queryResponses);
+
+
+
+
+			return iti18Response;
 
 		} finally {
 			dgwsSoapDecorator.clearSDgwsClientInfo();;
