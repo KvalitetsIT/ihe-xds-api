@@ -6,7 +6,8 @@ import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsService;
 import dk.kvalitetsit.ihexdsapi.dao.CacheRequestResponseHandle;
 import dk.kvalitetsit.ihexdsapi.service.Iti18Service;
-import dk.kvalitetsit.ihexdsapi.service.UtilityService;
+import dk.kvalitetsit.ihexdsapi.service.IDContextService;
+import dk.kvalitetsit.ihexdsapi.service.RegistryErrorService;
 import org.openapitools.api.*;
 import org.openapitools.model.*;
 import org.slf4j.Logger;
@@ -17,8 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.List;
-import java.util.UUID;
 
 @RestController
 // CORS - Consider if this is needed in your application. Only here to make Swagger UI work.
@@ -33,15 +32,22 @@ public class IheXdsController  implements IhexdsApi,  RequestResultApi, Response
 
 	private CacheRequestResponseHandle cacheRequestResponseHandle;
 
-	@Autowired
-	private UtilityService utilityService;
 
-    public IheXdsController(DgwsService dgwsService, Iti18Service iti18Service, CacheRequestResponseHandle cacheRequestResponseHandle,
-							UtilityService utilityService) {
+	private RegistryErrorService registryErrorService;
+
+
+	private IDContextService iDContextService;
+
+
+
+    public IheXdsController(DgwsService dgwsService, Iti18Service iti18Service,
+							CacheRequestResponseHandle cacheRequestResponseHandle,
+							IDContextService iDContextService, RegistryErrorService registryErrorService) {
         this.dgwsService = dgwsService;
 		this.iti18Service = iti18Service;
 		this.cacheRequestResponseHandle = cacheRequestResponseHandle;
-		this.utilityService = utilityService;
+		this.iDContextService = iDContextService;
+		this.registryErrorService = registryErrorService;
     }
 
 	@Override
@@ -49,8 +55,12 @@ public class IheXdsController  implements IhexdsApi,  RequestResultApi, Response
 		try {
 			DgwsClientInfo clientInfo = dgwsService.getHealthCareProfessionalClientInfo(iti18Request.getQueryParameters().getPatientId(), iti18Request.getCredentialId(), iti18Request.getContext());
 			Iti18Response iti18Response = iti18Service.queryForDocument(iti18Request.getQueryParameters(), clientInfo);
-			iti18Response.setResponseId(utilityService.getId("tempRes"));
-			iti18Response.setRequestId(utilityService.getId("tempReq"));
+			iti18Response.setResponseId(iDContextService.getId("tempRes"));
+			iti18Response.setRequestId(iDContextService.getId("tempReq"));
+			iti18Response.setErrors(registryErrorService.getList());
+
+			registryErrorService.cleanup();
+			System.out.println(iti18Response.getErrors());
 /*
 			// Generate 3 responses
 			Iti18Response res;
@@ -72,7 +82,7 @@ public class IheXdsController  implements IhexdsApi,  RequestResultApi, Response
 				iti18Responses.add(res);
 			}
 */
-			return new ResponseEntity<Iti18Response>(iti18Response, HttpStatus.OK);
+			return new ResponseEntity<>(iti18Response, HttpStatus.OK);
 		} catch (DgwsSecurityException e) {
 			throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
 		}

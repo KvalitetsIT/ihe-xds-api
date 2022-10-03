@@ -82,6 +82,7 @@ public class StsServiceImpl implements StsService {
 		String responseXml = null;
 		try {
 			responseXml = sendRequest(requestXml);
+
 		} catch (IOException e) {
 			throw new DgwsSecurityException(e, 1000, "Something went wrong");
 		}

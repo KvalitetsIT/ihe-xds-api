@@ -137,8 +137,15 @@ public class IheXdsConfiguration {
     }
 
     @Bean
-    public Iti18Service iti18Service(Iti18PortType iti18PortType) {
-        Iti18ServiceImpl iti18ServiceImpl = new Iti18ServiceImpl(iti18PortType);
+    @RequestScope
+    public RegistryErrorService registryErrorService() {
+        RegistryErrorServiceImpl registryErrorService = new RegistryErrorServiceImpl();
+        return registryErrorService;
+    }
+
+    @Bean
+    public Iti18Service iti18Service(Iti18PortType iti18PortType, RegistryErrorService registryErrorService) {
+        Iti18ServiceImpl iti18ServiceImpl = new Iti18ServiceImpl(iti18PortType, registryErrorService);
         return iti18ServiceImpl;
     }
 
@@ -147,9 +154,9 @@ public class IheXdsConfiguration {
 
     @Bean
     @RequestScope
-    public UtilityService utilityService() {
-        UtilityService utilityService = new UtilityServiceImpl();
-        return utilityService;
+    public IDContextService idContextService() {
+        IDContextService idContextService = new IDContextServiceImpl();
+        return idContextService;
     }
 
     @Bean
@@ -175,13 +182,13 @@ public class IheXdsConfiguration {
     }
 
     @Bean
-    public OutResponseInterceptor outResponseInterceptor (CacheRequestResponseHandle cacheRequestResponseHandle, UtilityService utilityService) {
-        return new OutResponseInterceptor(cacheRequestResponseHandle, utilityService);
+    public OutResponseInterceptor outResponseInterceptor (CacheRequestResponseHandle cacheRequestResponseHandle, IDContextService iDContextService) {
+        return new OutResponseInterceptor(cacheRequestResponseHandle, iDContextService);
     }
 
     @Bean
-    public InResponseInterceptor inResponseInterceptor (CacheRequestResponseHandle cacheRequestResponseHandle, UtilityService utilityService) {
-        return new InResponseInterceptor(cacheRequestResponseHandle, utilityService);
+    public InResponseInterceptor inResponseInterceptor (CacheRequestResponseHandle cacheRequestResponseHandle, IDContextService iDContextService) {
+        return new InResponseInterceptor(cacheRequestResponseHandle, iDContextService);
     }
 
 

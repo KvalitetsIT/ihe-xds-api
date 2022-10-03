@@ -2,7 +2,7 @@ package dk.kvalitetsit.ihexdsapi.service;
 
 import java.util.HashMap;
 
-public interface UtilityService {
+public interface IDContextService {
 
     HashMap<String, String> getIds();
 

@@ -4,6 +4,7 @@ import dk.kvalitetsit.ihexdsapi.dgws.DgwsClientInfo;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSoapDecorator;
 import dk.kvalitetsit.ihexdsapi.service.Iti18Service;
+import dk.kvalitetsit.ihexdsapi.service.RegistryErrorService;
 import dk.kvalitetsit.ihexdsapi.xds.Codes;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
@@ -11,6 +12,7 @@ import org.joda.time.DateTime;
 import org.openapitools.model.Iti18QueryParameter;
 import org.openapitools.model.Iti18QueryResponse;
 import org.openapitools.model.Iti18Response;
+import org.openapitools.model.RegistryError;
 import org.openehealth.ipf.commons.ihe.xds.core.ebxml.EbXMLAdhocQueryRequest;
 import org.openehealth.ipf.commons.ihe.xds.core.ebxml.EbXMLFactory;
 import org.openehealth.ipf.commons.ihe.xds.core.ebxml.ebxml30.EbXMLFactory30;
@@ -20,6 +22,7 @@ import org.openehealth.ipf.commons.ihe.xds.core.requests.QueryRegistry;
 import org.openehealth.ipf.commons.ihe.xds.core.requests.query.FindDocumentsQuery;
 import org.openehealth.ipf.commons.ihe.xds.core.requests.query.QueryList;
 import org.openehealth.ipf.commons.ihe.xds.core.requests.query.QueryReturnType;
+import org.openehealth.ipf.commons.ihe.xds.core.responses.ErrorInfo;
 import org.openehealth.ipf.commons.ihe.xds.core.responses.QueryResponse;
 import org.openehealth.ipf.commons.ihe.xds.core.stub.ebrs30.query.AdhocQueryRequest;
 import org.openehealth.ipf.commons.ihe.xds.core.stub.ebrs30.query.AdhocQueryResponse;
@@ -39,10 +42,13 @@ public class Iti18ServiceImpl implements Iti18Service {
 
 	private Iti18PortType iti18PortType;
 
+	private RegistryErrorService registryErrorService;
+
 	private DgwsSoapDecorator dgwsSoapDecorator = new DgwsSoapDecorator();
 	
-	public Iti18ServiceImpl(Iti18PortType iti18PortType) {
+	public Iti18ServiceImpl(Iti18PortType iti18PortType, RegistryErrorService registryErrorService) {
 		this.iti18PortType = iti18PortType;
+		this.registryErrorService = registryErrorService;
 
 		Client proxy = ClientProxy.getClient(iti18PortType);
 		proxy.getOutInterceptors().add(dgwsSoapDecorator);
@@ -56,6 +62,10 @@ public class Iti18ServiceImpl implements Iti18Service {
 
 		EbXMLQueryResponse30 ebXmlresponse = new EbXMLQueryResponse30(response);
 		QueryResponse queryResponse = queryResponseTransformer.fromEbXML(ebXmlresponse);
+
+
+
+		registryErrorService.createListOfErrors(queryResponse);
 
 		List<Iti18QueryResponse> result = new LinkedList<>();
 		for (DocumentEntry documentEntry : queryResponse.getDocumentEntries()) {
@@ -79,6 +89,8 @@ public class Iti18ServiceImpl implements Iti18Service {
 				iti18QueryResponse.setServiceEnd(formatTimeForResponse(documentEntry.getServiceStopTime().toString())); }
 			result.add(iti18QueryResponse);
 		}
+
+
 		return result;
 	}
 
@@ -112,8 +124,6 @@ public class Iti18ServiceImpl implements Iti18Service {
 
 		// Type code
 		if (iti18Request.getTypeCode() != null && !iti18Request.getTypeCode().getCode().isEmpty()) {
-
-
 			fdq.setTypeCodes(getCode(iti18Request.getTypeCode().getCode(), iti18Request.getTypeCode().getCodeScheme()));
 		}
 
@@ -171,7 +181,7 @@ public class Iti18ServiceImpl implements Iti18Service {
 			if (fdq.getDocumentEntryTypes() == null) {
 				fdq.setDocumentEntryTypes(new LinkedList<>());
 			}
-			fdq.getDocumentEntryTypes().add(DocumentEntryType.ON_DEMAND);
+			fdq.getDocumentEntryTypes().add(DocumentEntryType.STABLE);
 		}
 		if (iti18Request.getDocumentType().contains("ON-DEMAND")) {
 			if (fdq.getDocumentEntryTypes() == null) {
