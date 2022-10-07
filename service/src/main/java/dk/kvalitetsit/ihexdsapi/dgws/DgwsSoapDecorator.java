@@ -117,6 +117,13 @@ public class DgwsSoapDecorator extends AbstractSoapInterceptor {
         if (authorizationCode != null) {
             attributes.add(new ResponsibleUserAuthorizationCodeAttribute(authorizationCode));
         }
-        return HealthcareServiceUserIdentificationHeaderUtil.createHealthcareServiceUserIdentificationHeader(ISSUER, attributes);
+
+        try {
+            return HealthcareServiceUserIdentificationHeaderUtil.createHealthcareServiceUserIdentificationHeader(ISSUER, attributes);
+
+        } catch (Exception e) {
+            System.out.println(e);
+            throw e;
+        }
     }
 }

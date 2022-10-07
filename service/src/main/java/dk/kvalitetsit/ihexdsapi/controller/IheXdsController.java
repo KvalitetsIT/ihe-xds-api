@@ -7,12 +7,11 @@ import dk.kvalitetsit.ihexdsapi.dgws.DgwsService;
 import dk.kvalitetsit.ihexdsapi.dao.CacheRequestResponseHandle;
 import dk.kvalitetsit.ihexdsapi.service.Iti18Service;
 import dk.kvalitetsit.ihexdsapi.service.IDContextService;
-import dk.kvalitetsit.ihexdsapi.service.RegistryErrorService;
+import dk.kvalitetsit.ihexdsapi.service.Iti43Service;
 import org.openapitools.api.*;
 import org.openapitools.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,12 +27,12 @@ public class IheXdsController  implements IhexdsApi,  RequestResultApi, Response
 
 	private Iti18Service iti18Service;
 
+	private Iti43Service iti43Service;
+
 	private DgwsService dgwsService;
 
 	private CacheRequestResponseHandle cacheRequestResponseHandle;
 
-
-	private RegistryErrorService registryErrorService;
 
 
 	private IDContextService iDContextService;
@@ -42,12 +41,12 @@ public class IheXdsController  implements IhexdsApi,  RequestResultApi, Response
 
     public IheXdsController(DgwsService dgwsService, Iti18Service iti18Service,
 							CacheRequestResponseHandle cacheRequestResponseHandle,
-							IDContextService iDContextService, RegistryErrorService registryErrorService) {
+							IDContextService iDContextService, Iti43Service iti43Service) {
         this.dgwsService = dgwsService;
 		this.iti18Service = iti18Service;
 		this.cacheRequestResponseHandle = cacheRequestResponseHandle;
 		this.iDContextService = iDContextService;
-		this.registryErrorService = registryErrorService;
+		this.iti43Service = iti43Service;
     }
 
 	@Override
@@ -57,36 +56,29 @@ public class IheXdsController  implements IhexdsApi,  RequestResultApi, Response
 			Iti18Response iti18Response = iti18Service.queryForDocument(iti18Request.getQueryParameters(), clientInfo);
 			iti18Response.setResponseId(iDContextService.getId("tempRes"));
 			iti18Response.setRequestId(iDContextService.getId("tempReq"));
-			iti18Response.setErrors(registryErrorService.getList());
 
-			registryErrorService.cleanup();
-			System.out.println(iti18Response.getErrors());
-/*
-			// Generate 3 responses
-			Iti18Response res;
-			List<Iti18Response> iti18Responses = new LinkedList<>();
 
-			for (int i = 1; i <= 3; i++) {
-				Document document = new Document();
-				document.setProp1("Data for set: " + i);
-				res = new Iti18Response();
-
-				res.setDocument(document);
-				res.setDocumentType("Approved");
-				res.setRepositoryID("Some ID for: " + i );
-				res.setPatientId("patient: " + i);
-				res.setDocumentId("Some ID for: " + i);
-				res.setServiceStart(OffsetDateTime.parse("2007-12-03T10:15:30Z"));
-				res.setServiceEnd(OffsetDateTime.parse("2007-12-07T10:15:30Z"));
-
-				iti18Responses.add(res);
-			}
-*/
 			return new ResponseEntity<>(iti18Response, HttpStatus.OK);
 		} catch (DgwsSecurityException e) {
 			throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
 		}
 	}
+
+	@Override
+	public ResponseEntity<Iti43Response> v1Iti43Post(Iti43Request iti43Request) {
+		try {
+			DgwsClientInfo clientInfo = dgwsService.getHealthCareProfessionalClientInfo(iti43Request.getQueryParameters().getPatientId(), iti43Request.getCredentialId(), iti43Request.getContext());
+			String resp = iti43Service.getDocument(iti43Request.getQueryParameters(), clientInfo);
+			Iti43Response iti43Response = new Iti43Response();
+			iti43Response.setResponse(resp);
+			return new ResponseEntity<>(iti43Response, HttpStatus.OK);
+		}catch (DgwsSecurityException e) {
+			throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
+			//throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
+		}
+	}
+
+
 
 
 	@Override

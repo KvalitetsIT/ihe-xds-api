@@ -8,14 +8,15 @@ import java.util.*;
 public class ConfigsServiceImpl implements ConfigsService {
 
 
-    private String sts, xdsIti18;
+    private String sts, xdsIti18, xdsIti43;
 
     private List<ConfigResponse> configResponseList;
 
 
-    public ConfigsServiceImpl(String sts, String xdsIti18) {
+    public ConfigsServiceImpl(String sts, String xdsIti18, String xdsIti43) {
         this.sts = sts;
         this.xdsIti18 = xdsIti18;
+        this.xdsIti43 = xdsIti43;
 
         makeList();
 
@@ -27,6 +28,7 @@ public class ConfigsServiceImpl implements ConfigsService {
         // variables
         list.add(createResponseObject("sts.url", sts));
         list.add(createResponseObject("iti-18.url", xdsIti18));
+        list.add(createResponseObject("iti-43.url", xdsIti43));
 
         Collections.sort(list, new SortbyKey());
 

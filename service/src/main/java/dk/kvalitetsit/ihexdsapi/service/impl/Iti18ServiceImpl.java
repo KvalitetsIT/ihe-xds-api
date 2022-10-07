@@ -4,7 +4,6 @@ import dk.kvalitetsit.ihexdsapi.dgws.DgwsClientInfo;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSoapDecorator;
 import dk.kvalitetsit.ihexdsapi.service.Iti18Service;
-import dk.kvalitetsit.ihexdsapi.service.RegistryErrorService;
 import dk.kvalitetsit.ihexdsapi.xds.Codes;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
@@ -34,7 +33,6 @@ import java.time.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 public class Iti18ServiceImpl implements Iti18Service {
 
@@ -42,19 +40,17 @@ public class Iti18ServiceImpl implements Iti18Service {
 
 	private Iti18PortType iti18PortType;
 
-	private RegistryErrorService registryErrorService;
 
 	private DgwsSoapDecorator dgwsSoapDecorator = new DgwsSoapDecorator();
 	
-	public Iti18ServiceImpl(Iti18PortType iti18PortType, RegistryErrorService registryErrorService) {
+	public Iti18ServiceImpl(Iti18PortType iti18PortType) {
 		this.iti18PortType = iti18PortType;
-		this.registryErrorService = registryErrorService;
 
 		Client proxy = ClientProxy.getClient(iti18PortType);
 		proxy.getOutInterceptors().add(dgwsSoapDecorator);
 	}
 
-	private List<Iti18QueryResponse> createResponse(String patientId, AdhocQueryResponse response) {
+	private Iti18Response populateIti18Response(String patientId, AdhocQueryResponse response, Iti18Response iti18Response) {
 
 
 
@@ -65,9 +61,10 @@ public class Iti18ServiceImpl implements Iti18Service {
 
 
 
-		registryErrorService.createListOfErrors(queryResponse);
 
-		List<Iti18QueryResponse> result = new LinkedList<>();
+
+        // Query parameters
+		List<Iti18QueryResponse> queryResponses = new LinkedList<>();
 		for (DocumentEntry documentEntry : queryResponse.getDocumentEntries()) {
 
 
@@ -87,11 +84,32 @@ public class Iti18ServiceImpl implements Iti18Service {
 				iti18QueryResponse.setServiceStart(formatTimeForResponse(documentEntry.getServiceStartTime().toString()));}
 			if (documentEntry.getServiceStopTime() != null) {
 				iti18QueryResponse.setServiceEnd(formatTimeForResponse(documentEntry.getServiceStopTime().toString())); }
-			result.add(iti18QueryResponse);
+			queryResponses.add(iti18QueryResponse);
 		}
 
+        // set errors
+        List<RegistryError> errors = new LinkedList<>();
+        for (ErrorInfo errorInfo : queryResponse.getErrors()) {
+            RegistryError registryError = new RegistryError();
 
-		return result;
+            registryError.setCodeContext(errorInfo.getCodeContext());
+            registryError.setErrorCode(errorInfo.getErrorCode().getOpcode() + " , " + errorInfo.getErrorCode().name());
+
+			if (errorInfo.getSeverity().name().contains("ERROR")) {
+				registryError.setSeverity(RegistryError.SeverityEnum.ERROR);
+			} else {
+				registryError.setSeverity(RegistryError.SeverityEnum.WARNING);
+
+			}
+
+            errors.add(registryError);
+        }
+
+
+        iti18Response.setQueryResponse(queryResponses);
+        iti18Response.setErrors(errors);
+
+		return iti18Response;
 	}
 
 	private Long formatTimeForResponse(String time) {
@@ -190,13 +208,13 @@ public class Iti18ServiceImpl implements Iti18Service {
 			fdq.getDocumentEntryTypes().add(DocumentEntryType.ON_DEMAND);
 		}
 
-
 		QueryRegistry queryRegistry = new QueryRegistry(fdq);
 		queryRegistry.setReturnType(QueryReturnType.LEAF_CLASS);
 
 		QueryRegistryTransformer queryRegistryTransformer = new QueryRegistryTransformer();
 		EbXMLAdhocQueryRequest ebxmlAdhocQueryRequest = queryRegistryTransformer.toEbXML(queryRegistry);
 		AdhocQueryRequest internal = (AdhocQueryRequest)ebxmlAdhocQueryRequest.getInternal();
+
 		return internal;
 	}
 
@@ -227,15 +245,9 @@ public class Iti18ServiceImpl implements Iti18Service {
 			var query = createQuery(iti18Request);
 			var response = iti18PortType.documentRegistryRegistryStoredQuery(query);
 
-			List<Iti18QueryResponse> queryResponses = createResponse(iti18Request.getPatientId(), response);
 
-			//Generate Response and request ID
+            Iti18Response iti18Response = populateIti18Response(iti18Request.getPatientId(), response, new Iti18Response());
 
-
-
-			Iti18Response iti18Response = new Iti18Response();
-
-			iti18Response.setQueryResponse(queryResponses);
 
 
 

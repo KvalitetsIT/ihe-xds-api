@@ -41,6 +41,7 @@ public class ServiceStarter {
 
         System.setProperty("STSURL", "http://test1.ekstern-test.nspop.dk:8080/sts/services/NewSecurityTokenService");
         System.setProperty("xdsIti18Endpoint", "http://test1-cnsp.ekstern-test.nspop.dk:8080/ddsregistry");
+        System.setProperty("xdsIti43Endpoint", "http://test1-cnsp.ekstern-test.nspop.dk:8080/ddsrepository");
 
         // Gets correct test paths
         var privateKey = new ClassPathResource("/certificates/private-cert1.pem");
@@ -123,6 +124,7 @@ public class ServiceStarter {
                 .withClasspathResourceMapping("certificates/public-cert1.cer", "/certificates/public-cert1.cer", BindMode.READ_ONLY)
                 .withEnv("STSURL", "http://test1.ekstern-test.nspop.dk:8080/sts/services/NewSecurityTokenService")
                 .withEnv("xdsIti18Endpoint", "http://test1-cnsp.ekstern-test.nspop.dk:8080/ddsregistry")
+                .withEnv("xdsIti43Endpoint", "http://test1-cnsp.ekstern-test.nspop.dk:8080/ddsrepository")
                 .withEnv("default.cert.private", "/certificates/private-cert1.pem")
                 .withEnv("default.cert.public", "/certificates/public-cert1.cer")
                 .withEnv("redis.host", "redis")

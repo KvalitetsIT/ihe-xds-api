@@ -19,6 +19,7 @@ import org.apache.cxf.frontend.ClientProxy;
 import org.openehealth.ipf.commons.ihe.ws.WsTransactionConfiguration;
 import org.openehealth.ipf.commons.ihe.xds.core.XdsClientFactory;
 import org.openehealth.ipf.commons.ihe.xds.iti18.Iti18PortType;
+import org.openehealth.ipf.commons.ihe.xds.iti43.Iti43PortType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,9 @@ public class IheXdsConfiguration {
     private static Logger LOGGER = LoggerFactory.getLogger(IheXdsConfiguration.class);
     @Value("${xdsIti18Endpoint}")
     private String xdsIti18Endpoint;
+
+    @Value("${xdsIti43Endpoint}")
+    private String xdsIti43Endpoint;
 
 
 // Codes
@@ -70,13 +74,7 @@ public class IheXdsConfiguration {
 
 
     // Dropdown lists
-/*
-    @Value("${availabilitystatus.codes}")
-    private String availabilityStatusCodes;
 
-    @Value("${availabilitystatus.names}")
-    private String availabilityStatusNames;
-*/
     @Value("${format.code.codes}")
     private String formatCodeCodes;
 
@@ -136,16 +134,10 @@ public class IheXdsConfiguration {
         return dgwsService;
     }
 
-    @Bean
-    @RequestScope
-    public RegistryErrorService registryErrorService() {
-        RegistryErrorServiceImpl registryErrorService = new RegistryErrorServiceImpl();
-        return registryErrorService;
-    }
 
     @Bean
-    public Iti18Service iti18Service(Iti18PortType iti18PortType, RegistryErrorService registryErrorService) {
-        Iti18ServiceImpl iti18ServiceImpl = new Iti18ServiceImpl(iti18PortType, registryErrorService);
+    public Iti18Service iti18Service(Iti18PortType iti18PortType) {
+        Iti18ServiceImpl iti18ServiceImpl = new Iti18ServiceImpl(iti18PortType);
         return iti18ServiceImpl;
     }
 
@@ -160,8 +152,7 @@ public class IheXdsConfiguration {
     }
 
     @Bean
-    @DependsOn("redisTemplate")
-    CacheRequestResponseHandle cacheRequestResponseHandle() {
+    CacheRequestResponseHandle cacheRequestResponseHandle(RedisTemplate<String, Object> redisTemplate) {
         CacheRequestResponseHandleImpl cacheRequestResponseHandleimpl = new CacheRequestResponseHandleImpl(redisTemplate);
         return cacheRequestResponseHandleimpl;
     }
@@ -174,11 +165,25 @@ public class IheXdsConfiguration {
         XdsClientFactory xdsClientFactory = generateXdsRegistryClientFactory("wsdl/iti18.wsdl", xdsIti18Endpoint, Iti18PortType.class);
         Iti18PortType client = (Iti18PortType) xdsClientFactory.getClient();
         Client proxy = ClientProxy.getClient(client);
-        //proxy.getOutInterceptors().add(new LoggingOutInterceptor());
         proxy.getOutInterceptors().add(outResponseInterceptor);
-       // proxy.getInInterceptors().add(new LoggingInInterceptor());
         proxy.getInInterceptors().add(inResponseInterceptor);
         return client;
+    }
+
+    @Bean
+    public Iti43PortType getDocumentRepositoryServiceIti43() {
+        LOGGER.info("Creating Iti43PortType for url: "+xdsIti43Endpoint);
+
+        XdsClientFactory xdsClientFactory = generateXdsRepositoryClientFactory("wsdl/iti43.wsdl", xdsIti43Endpoint, Iti43PortType.class);
+        Iti43PortType client = (Iti43PortType) xdsClientFactory.getClient();
+
+        return client;
+    }
+
+    @Bean
+    public Iti43Service iti43Service(Iti43PortType iti43PortType) {
+        Iti43ServiceImpl iti43ServiceImpl = new Iti43ServiceImpl(iti43PortType);
+        return iti43ServiceImpl;
     }
 
     @Bean
@@ -207,7 +212,7 @@ public class IheXdsConfiguration {
     @Bean
     public ConfigsService configsService() {
 
-        ConfigsServiceImpl configsService = new ConfigsServiceImpl(STSURL, xdsIti18Endpoint);
+        ConfigsServiceImpl configsService = new ConfigsServiceImpl(STSURL, xdsIti18Endpoint,xdsIti43Endpoint );
         return configsService;
 
     }
@@ -260,5 +265,18 @@ public class IheXdsConfiguration {
                 wsdl, true, false, false, false);
 
         return new XdsClientFactory(WS_CONFIG, url, null, null, null);
+    }
+
+    private XdsClientFactory generateXdsRepositoryClientFactory(String wsdl, String url, Class<?> clazz){
+        final WsTransactionConfiguration WS_CONFIG = new WsTransactionConfiguration(
+                new QName("urn:ihe:iti:xds-b:2007", "DocumentRepository_Service",
+                        "ihe"), clazz, new QName(
+                "urn:ihe:iti:xds-b:2007",
+                "DocumentRepository_Binding_Soap12", "ihe"), true,
+                wsdl, true, false, false, false);
+
+
+        XdsClientFactory xcf = new XdsClientFactory(WS_CONFIG, url, null, null,null);
+        return xcf;
     }
 }

@@ -46,6 +46,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/iti18Response'
+  /v1/iti43:
+    post:
+      tags:
+        - IHEXDS
+      summary: get XDS as a healthcare professional
+      description: get XDS as a healthcare professional
+      requestBody:
+        description: Your name
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/iti43Request'
+      responses:
+        '200':
+          description: Ok with list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/iti43Response'
 
 
   /v1/codes/classCode:
@@ -433,7 +453,9 @@ components:
         severity:
           description: The severirty's opcode and name
           type: string
-          example: "urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error , Error"
+          enum:
+            - ERROR
+            - WARNING
 
 
     downloadLog:
@@ -444,3 +466,50 @@ components:
           type: string
           example: "<xml>...<xml>"
 
+    iti43Response:
+      type: object
+      properties:
+        response:
+          description: The response of teh document as string/bytes
+          type: string
+          example: "<xml>...<xml>"
+
+    iti43Request:
+      type: object
+      required:
+        - queryParameters
+        - credentialId
+        - context
+      properties:
+        queryParameters:
+          description: query parameters related to iti-43 query
+          $ref: '#/components/schemas/iti43QueryParameter'
+        credentialId:
+          description: The credential to use (identified by id)
+          type: string
+          example: "credentialid"
+        context:
+          description: the context in which to make the query
+          $ref: '#/components/schemas/healthcareProfessionalContext'
+
+
+
+    iti43QueryParameter:
+      type: object
+      required:
+        - patientId
+        - documentId
+        - repositoryId
+      properties:
+        patientId:
+          description: Patientens Id (CPR)
+          type: string
+          example: "2512489996"
+        documentId:
+          description: Documentets unique Id
+          type: string
+          example: "2512489996"
+        repositoryId:
+          description: Documentets repository Id
+          type: string
+          example: "2512489996"

@@ -87,28 +87,11 @@ public class StsServiceImpl implements StsService {
 			throw new DgwsSecurityException(e, 1000, "Something went wrong");
 		}
 
-		if (responseXml.contains("Authentication failed: multiple authorizations found")) {
-			String errorMsg = responseXml.substring(706, 791);
-
-			String example = errorMsg.substring(errorMsg.indexOf('{') + 1, errorMsg.indexOf(','));
-
-			//System.out.println("HELLO");
-			/*System.out.println(errorMsg);
-			System.out.println(responseXml.length());
-			System.out.println(responseXml.substring(690));
-
-			System.out.println(responseXml.indexOf('<', 791));
-
-
-			System.out.println(true);*/
-
-			throw new DgwsSecurityException(1000, errorMsg + ". Choose one\ne.g. " + example);
-		}
 
 		SecurityTokenResponse securityTokenResponse = sosiFactory.deserializeSecurityTokenResponse(responseXml);
 
 		if (securityTokenResponse.isFault() || securityTokenResponse.getIDCard() == null) {
-			throw  new DgwsSecurityException(1000, "No ID card :-(");
+			throw  new DgwsSecurityException(1000, securityTokenResponse.getFaultString());
 		}
 		else {
 			return  (UserIDCard) securityTokenResponse.getIDCard();

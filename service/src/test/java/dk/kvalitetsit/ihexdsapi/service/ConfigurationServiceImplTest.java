@@ -16,10 +16,10 @@ public class ConfigurationServiceImplTest {
     @Before
     public void setup() {
 
-        String sts = "http://http://test1.ekstern-test.nspop.dk:8080test1.ekstern-test.nspop.dk:8080/sts/services/NewSecurityTokenService";
-        String xds = "http://test1-cnsp.ekstern-test.nspop.dk:8080/ddsregistry";
+        String sts = "http://test1.ekstern-test.nspop.dk:8080/sts/services/NewSecurityTokenService";
+        String xdsIti18 = "http://test1-cnsp.ekstern-test.nspop.dk:8080/ddsregistry";
 
-        subject = new ConfigsServiceImpl(sts, xds) ;
+        subject = new ConfigsServiceImpl(sts, xdsIti18, "") ;
 
     }
 
@@ -28,7 +28,7 @@ public class ConfigurationServiceImplTest {
     public void TestGetConfigResponsesList() {
        List<ConfigResponse> responses = subject.getListOfConfigResponses();
 
-        Assert.assertEquals(2, responses.size());
+        Assert.assertEquals(3, responses.size());
         Assert.assertEquals("iti-18.url", responses.get(0).getConfigKey());
 
 
