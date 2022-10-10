@@ -81,10 +81,12 @@ public class CredentialServiceImplTest extends AbstractTest {
         String owner = "me";
         String displayName = "My cetifiacte";
         String id = "MyID";
+        String serialNumber = "test";
+        String type = "test";
 
         Mockito.when(credentialRepository.findCredentialInfoByID(id)).then(a -> {
             CredentialInfoEntity output = new CredentialInfoEntity(owner, id, displayName,
-                    publicCertStr, privateKeyStr);
+                    publicCertStr, privateKeyStr, serialNumber, type);
             return output;
 
         });

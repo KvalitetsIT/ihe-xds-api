@@ -1,33 +1,24 @@
 package dk.kvalitetsit.ihexdsapi.controller;
 
-import dk.kvalitetsit.ihexdsapi.dao.AbstractRedisTest;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsClientInfo;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsService;
 import dk.kvalitetsit.ihexdsapi.dao.CacheRequestResponseHandle;
 import dk.kvalitetsit.ihexdsapi.dao.impl.CacheRequestResponseHandleImpl;
 import dk.kvalitetsit.ihexdsapi.service.Iti18Service;
-import dk.kvalitetsit.ihexdsapi.service.UtilityService;
+import dk.kvalitetsit.ihexdsapi.service.IDContextService;
+import dk.kvalitetsit.ihexdsapi.service.Iti43Service;
 import dk.kvalitetsit.ihexdsapi.service.impl.DgwsServiceImpl;
-import dk.kvalitetsit.ihexdsapi.service.impl.UtilityServiceImpl;
+import dk.kvalitetsit.ihexdsapi.service.impl.IDContextServiceImpl;
+import dk.kvalitetsit.ihexdsapi.service.impl.Iti18ServiceImpl;
+import dk.kvalitetsit.ihexdsapi.service.impl.Iti43ServiceImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.openapitools.model.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.testcontainers.DockerClientFactory;
-import org.testcontainers.containers.BindMode;
-import org.testcontainers.containers.GenericContainer;
-
-import java.util.Arrays;
-import java.util.List;
 
 
 public class IheXdsControllerTest {
@@ -36,9 +27,13 @@ public class IheXdsControllerTest {
     DgwsService dgwsService;
     Iti18Service iti18Service;
 
+    Iti43Service iti43Service;
+
     CacheRequestResponseHandle cacheRequestResponseHandle;
 
-    UtilityService utilityService;
+    IDContextService iDContextService;
+
+
 
     IheXdsController subject;
 
@@ -48,23 +43,25 @@ public class IheXdsControllerTest {
     public void setup() {
         // Configure mocks senere
         this.dgwsService = Mockito.mock(DgwsServiceImpl.class);
-        this.iti18Service = Mockito.mock(Iti18Service.class);
+        this.iti18Service = Mockito.mock(Iti18ServiceImpl.class);
+        this.iti43Service = Mockito.mock(Iti43ServiceImpl.class);
         this.cacheRequestResponseHandle = Mockito.mock(CacheRequestResponseHandleImpl.class);
-        this.utilityService = Mockito.mock((UtilityServiceImpl.class));
+        this.iDContextService = Mockito.mock((IDContextServiceImpl.class));
 
 
 
-        subject = new IheXdsController(dgwsService, iti18Service, cacheRequestResponseHandle, utilityService);
+
+        subject = new IheXdsController(dgwsService, iti18Service, cacheRequestResponseHandle, iDContextService, iti43Service);
     }
 
    @Test
     public void testv1Iti18HealthcareProfessionalGet() throws DgwsSecurityException {
         // Given
-       Mockito.when(utilityService.getId("tempRes")).then(a -> {
+       Mockito.when(iDContextService.getId("tempRes")).then(a -> {
 
            String output = "Response";
            return output;
-       });Mockito.when(utilityService.getId("tempReq")).then(a -> {
+       });Mockito.when(iDContextService.getId("tempReq")).then(a -> {
            String output = "Request";
            return output;
        });
@@ -101,11 +98,12 @@ public class IheXdsControllerTest {
         Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         Assert.assertNotNull(responseEntity.getBody());
     }
-/*
+
     @Test
     public void testv1PrevRequestGet() {
         // When
-        ResponseEntity<DownloadLog> responseEntity = subject.v1RequestRequestIdGet();
+        String test = "test";
+        ResponseEntity<DownloadLog> responseEntity = subject.v1RequestRequestIdGet(test);
 
 
         // Then
@@ -116,14 +114,37 @@ public class IheXdsControllerTest {
 
 
     @Test
-    public void v1PrevResponseGet() {
+    public void testv1PrevResponseGet() {
          // When
-        ResponseEntity<DownloadLog> responseEntity = subject.v1ResponseResponseIdGet();
+        String test = "test";
+        ResponseEntity<DownloadLog> responseEntity = subject.v1ResponseResponseIdGet(test);
 
 
         // Then
        Assert.assertNotNull(responseEntity);
         Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         Assert.assertNotNull(responseEntity.getBody());
-    }*/
+    }
+
+    @Test
+    public void testv1Iti43Post() {
+
+        Iti43Request request = new Iti43Request();
+        HealthcareProfessionalContext context = new HealthcareProfessionalContext();
+        context.setAuthorizationCode("CBNH1");
+        context.setConsentOverride(false);
+        request.setContext(context);
+        Iti43QueryParameter queryParameters = new Iti43QueryParameter();
+        queryParameters.setPatientId("2512489996");
+        request.setQueryParameters(queryParameters);
+        request.setCredentialId("DEFAULT");
+
+        // When
+        ResponseEntity<Iti43Response> responseEntity = subject.v1Iti43Post(request);
+
+        // Then
+        Assert.assertNotNull(responseEntity);
+        Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        Assert.assertNotNull(responseEntity.getBody());
+    }
 }

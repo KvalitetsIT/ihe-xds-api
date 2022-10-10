@@ -6,19 +6,17 @@ import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsService;
 import dk.kvalitetsit.ihexdsapi.dao.CacheRequestResponseHandle;
 import dk.kvalitetsit.ihexdsapi.service.Iti18Service;
-import dk.kvalitetsit.ihexdsapi.service.UtilityService;
+import dk.kvalitetsit.ihexdsapi.service.IDContextService;
+import dk.kvalitetsit.ihexdsapi.service.Iti43Service;
 import org.openapitools.api.*;
 import org.openapitools.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.List;
-import java.util.UUID;
 
 @RestController
 // CORS - Consider if this is needed in your application. Only here to make Swagger UI work.
@@ -29,19 +27,26 @@ public class IheXdsController  implements IhexdsApi,  RequestResultApi, Response
 
 	private Iti18Service iti18Service;
 
+	private Iti43Service iti43Service;
+
 	private DgwsService dgwsService;
 
 	private CacheRequestResponseHandle cacheRequestResponseHandle;
 
-	@Autowired
-	private UtilityService utilityService;
 
-    public IheXdsController(DgwsService dgwsService, Iti18Service iti18Service, CacheRequestResponseHandle cacheRequestResponseHandle,
-							UtilityService utilityService) {
+
+	private IDContextService iDContextService;
+
+
+
+    public IheXdsController(DgwsService dgwsService, Iti18Service iti18Service,
+							CacheRequestResponseHandle cacheRequestResponseHandle,
+							IDContextService iDContextService, Iti43Service iti43Service) {
         this.dgwsService = dgwsService;
 		this.iti18Service = iti18Service;
 		this.cacheRequestResponseHandle = cacheRequestResponseHandle;
-		this.utilityService = utilityService;
+		this.iDContextService = iDContextService;
+		this.iti43Service = iti43Service;
     }
 
 	@Override
@@ -49,34 +54,31 @@ public class IheXdsController  implements IhexdsApi,  RequestResultApi, Response
 		try {
 			DgwsClientInfo clientInfo = dgwsService.getHealthCareProfessionalClientInfo(iti18Request.getQueryParameters().getPatientId(), iti18Request.getCredentialId(), iti18Request.getContext());
 			Iti18Response iti18Response = iti18Service.queryForDocument(iti18Request.getQueryParameters(), clientInfo);
-			iti18Response.setResponseId(utilityService.getId("tempRes"));
-			iti18Response.setRequestId(utilityService.getId("tempReq"));
-/*
-			// Generate 3 responses
-			Iti18Response res;
-			List<Iti18Response> iti18Responses = new LinkedList<>();
+			iti18Response.setResponseId(iDContextService.getId("tempRes"));
+			iti18Response.setRequestId(iDContextService.getId("tempReq"));
 
-			for (int i = 1; i <= 3; i++) {
-				Document document = new Document();
-				document.setProp1("Data for set: " + i);
-				res = new Iti18Response();
 
-				res.setDocument(document);
-				res.setDocumentType("Approved");
-				res.setRepositoryID("Some ID for: " + i );
-				res.setPatientId("patient: " + i);
-				res.setDocumentId("Some ID for: " + i);
-				res.setServiceStart(OffsetDateTime.parse("2007-12-03T10:15:30Z"));
-				res.setServiceEnd(OffsetDateTime.parse("2007-12-07T10:15:30Z"));
-
-				iti18Responses.add(res);
-			}
-*/
-			return new ResponseEntity<Iti18Response>(iti18Response, HttpStatus.OK);
+			return new ResponseEntity<>(iti18Response, HttpStatus.OK);
 		} catch (DgwsSecurityException e) {
 			throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
 		}
 	}
+
+	@Override
+	public ResponseEntity<Iti43Response> v1Iti43Post(Iti43Request iti43Request) {
+		try {
+			DgwsClientInfo clientInfo = dgwsService.getHealthCareProfessionalClientInfo(iti43Request.getQueryParameters().getPatientId(), iti43Request.getCredentialId(), iti43Request.getContext());
+			String resp = iti43Service.getDocument(iti43Request.getQueryParameters(), clientInfo);
+			Iti43Response iti43Response = new Iti43Response();
+			iti43Response.setResponse(resp);
+			return new ResponseEntity<>(iti43Response, HttpStatus.OK);
+		}catch (DgwsSecurityException e) {
+			throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
+			//throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
+		}
+	}
+
+
 
 
 	@Override

@@ -6,6 +6,7 @@ import java.util.Properties;
 import dk.kvalitetsit.ihexdsapi.dgws.CredentialInfo;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
 import dk.sosi.seal.model.*;
+import org.openapitools.model.CredentialInfoResponse;
 import org.openapitools.model.HealthcareProfessionalContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -43,14 +44,14 @@ public class StsServiceImpl implements StsService {
 		properties.setProperty(SOSIFactory.PROPERTYNAME_SOSI_VALIDATE, Boolean.toString(true));
 		SOSIFactory sosiFactory = new SOSIFactory(new SOSITestFederation(properties), credentialInfo.getCredentialVault(), properties);
 
-		//System.out.println(credentialInfo.getCredentialVault().getSystemCredentialPair().getCertificate());
+		System.out.println(credentialInfo.getCredentialVault().getSystemCredentialPair().getCertificate().getSubjectX500Principal().getName());
 		String cvr = credentialInfo.getCredentialVault().getSystemCredentialPair().getCertificate().getSubjectX500Principal().getName();
 		cvr = cvr.substring(cvr.lastIndexOf('/') + 6,cvr.lastIndexOf(','));
 
 		String authorizationCode = context.getAuthorizationCode();
 
 
-		UserIDCard userIDCard = getUserIdCard(credentialInfo.getCredentialVault(), sosiFactory, cvr, context.getRole(), authorizationCode);
+		UserIDCard userIDCard = getUserIdCard(credentialInfo, sosiFactory, cvr, context.getRole(), authorizationCode);
 
 
 		Request request = sosiFactory.createNewRequest(false, null);
@@ -58,9 +59,13 @@ public class StsServiceImpl implements StsService {
 		return new DgwsClientInfo(request.serialize2DOMDocument(), userIDCard.getUserInfo().getCPR(), patientId, userIDCard.getUserInfo().getAuthorizationCode(), cvr);
 	}
 
-	private UserIDCard getUserIdCard(CredentialVault credentialVault, SOSIFactory sosiFactory, String cvr, String role, String authCode) throws DgwsSecurityException {
+	private UserIDCard getUserIdCard(CredentialInfo credentialInfo, SOSIFactory sosiFactory, String cvr, String role, String authCode) throws DgwsSecurityException {
+		CredentialVault credentialVault = credentialInfo.getCredentialVault();
 
 		String rawString = credentialVault.getSystemCredentialPair().getCertificate().getSubjectX500Principal().getName();
+		var test = credentialVault.getSystemCredentialPair().getCertificate().getSubjectX500Principal().toString();
+		getCredentialType(test);
+		System.out.println();
 
 		String name = rawString.substring(3, rawString.indexOf(' '));
 		String surName =rawString.substring(rawString.indexOf(' ')+1, rawString.indexOf('+'));
@@ -82,38 +87,33 @@ public class StsServiceImpl implements StsService {
 		String responseXml = null;
 		try {
 			responseXml = sendRequest(requestXml);
+
 		} catch (IOException e) {
 			throw new DgwsSecurityException(e, 1000, "Something went wrong");
 		}
 
-		if (responseXml.contains("Authentication failed: multiple authorizations found")) {
-			String errorMsg = responseXml.substring(706, 791);
-
-			String example = errorMsg.substring(errorMsg.indexOf('{') + 1, errorMsg.indexOf(','));
-
-			//System.out.println("HELLO");
-			/*System.out.println(errorMsg);
-			System.out.println(responseXml.length());
-			System.out.println(responseXml.substring(690));
-
-			System.out.println(responseXml.indexOf('<', 791));
-
-
-			System.out.println(true);*/
-
-			throw new DgwsSecurityException(1000, errorMsg + ". Choose one\ne.g. " + example);
-		}
 
 		SecurityTokenResponse securityTokenResponse = sosiFactory.deserializeSecurityTokenResponse(responseXml);
 
 		if (securityTokenResponse.isFault() || securityTokenResponse.getIDCard() == null) {
-			throw  new DgwsSecurityException(1000, "No ID card :-(");
+			throw  new DgwsSecurityException(1000, securityTokenResponse.getFaultString());
 		}
 		else {
 			return  (UserIDCard) securityTokenResponse.getIDCard();
 
 
 		}
+	}
+
+	private CredentialInfoResponse.CredentialTypeEnum getCredentialType(String input) {
+		System.out.println(input);
+		if (input.contains("RID")) {
+			return CredentialInfoResponse.CredentialTypeEnum.HEALTHCAREPROFESSIONAL;
+		} else {
+
+		return CredentialInfoResponse.CredentialTypeEnum.SYSTEM;
+		}
+
 	}
 
 	private Document getSystemIdCardFromSTS(CredentialVault credentialVault, String cvr, String organisation) throws DgwsSecurityException {

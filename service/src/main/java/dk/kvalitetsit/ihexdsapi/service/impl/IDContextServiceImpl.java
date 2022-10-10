@@ -1,13 +1,13 @@
 package dk.kvalitetsit.ihexdsapi.service.impl;
 
-import dk.kvalitetsit.ihexdsapi.service.UtilityService;
+import dk.kvalitetsit.ihexdsapi.service.IDContextService;
 
 import java.util.HashMap;
 
-public class UtilityServiceImpl implements UtilityService {
+public class IDContextServiceImpl implements IDContextService {
     private HashMap<String, String> temporaryIdMap;
 
-    public UtilityServiceImpl() {
+    public IDContextServiceImpl() {
         temporaryIdMap = new HashMap<>();
     }
 

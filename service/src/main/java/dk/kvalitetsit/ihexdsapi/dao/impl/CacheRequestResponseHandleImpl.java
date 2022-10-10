@@ -2,7 +2,6 @@ package dk.kvalitetsit.ihexdsapi.dao.impl;
 
 import dk.kvalitetsit.ihexdsapi.dao.CacheRequestResponseHandle;
 import dk.kvalitetsit.ihexdsapi.dao.entity.LogEntry;
-import dk.kvalitetsit.ihexdsapi.service.UtilityService;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.time.Duration;

@@ -11,6 +11,7 @@ import org.joda.time.DateTime;
 import org.openapitools.model.Iti18QueryParameter;
 import org.openapitools.model.Iti18QueryResponse;
 import org.openapitools.model.Iti18Response;
+import org.openapitools.model.RegistryError;
 import org.openehealth.ipf.commons.ihe.xds.core.ebxml.EbXMLAdhocQueryRequest;
 import org.openehealth.ipf.commons.ihe.xds.core.ebxml.EbXMLFactory;
 import org.openehealth.ipf.commons.ihe.xds.core.ebxml.ebxml30.EbXMLFactory30;
@@ -20,6 +21,7 @@ import org.openehealth.ipf.commons.ihe.xds.core.requests.QueryRegistry;
 import org.openehealth.ipf.commons.ihe.xds.core.requests.query.FindDocumentsQuery;
 import org.openehealth.ipf.commons.ihe.xds.core.requests.query.QueryList;
 import org.openehealth.ipf.commons.ihe.xds.core.requests.query.QueryReturnType;
+import org.openehealth.ipf.commons.ihe.xds.core.responses.ErrorInfo;
 import org.openehealth.ipf.commons.ihe.xds.core.responses.QueryResponse;
 import org.openehealth.ipf.commons.ihe.xds.core.stub.ebrs30.query.AdhocQueryRequest;
 import org.openehealth.ipf.commons.ihe.xds.core.stub.ebrs30.query.AdhocQueryResponse;
@@ -31,13 +33,13 @@ import java.time.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 public class Iti18ServiceImpl implements Iti18Service {
 
 	private static final EbXMLFactory ebXMLFactory = new EbXMLFactory30();
 
 	private Iti18PortType iti18PortType;
+
 
 	private DgwsSoapDecorator dgwsSoapDecorator = new DgwsSoapDecorator();
 	
@@ -48,7 +50,7 @@ public class Iti18ServiceImpl implements Iti18Service {
 		proxy.getOutInterceptors().add(dgwsSoapDecorator);
 	}
 
-	private List<Iti18QueryResponse> createResponse(String patientId, AdhocQueryResponse response) {
+	private Iti18Response populateIti18Response(String patientId, AdhocQueryResponse response, Iti18Response iti18Response) {
 
 
 
@@ -57,7 +59,12 @@ public class Iti18ServiceImpl implements Iti18Service {
 		EbXMLQueryResponse30 ebXmlresponse = new EbXMLQueryResponse30(response);
 		QueryResponse queryResponse = queryResponseTransformer.fromEbXML(ebXmlresponse);
 
-		List<Iti18QueryResponse> result = new LinkedList<>();
+
+
+
+
+        // Query parameters
+		List<Iti18QueryResponse> queryResponses = new LinkedList<>();
 		for (DocumentEntry documentEntry : queryResponse.getDocumentEntries()) {
 
 
@@ -77,9 +84,32 @@ public class Iti18ServiceImpl implements Iti18Service {
 				iti18QueryResponse.setServiceStart(formatTimeForResponse(documentEntry.getServiceStartTime().toString()));}
 			if (documentEntry.getServiceStopTime() != null) {
 				iti18QueryResponse.setServiceEnd(formatTimeForResponse(documentEntry.getServiceStopTime().toString())); }
-			result.add(iti18QueryResponse);
+			queryResponses.add(iti18QueryResponse);
 		}
-		return result;
+
+        // set errors
+        List<RegistryError> errors = new LinkedList<>();
+        for (ErrorInfo errorInfo : queryResponse.getErrors()) {
+            RegistryError registryError = new RegistryError();
+
+            registryError.setCodeContext(errorInfo.getCodeContext());
+            registryError.setErrorCode(errorInfo.getErrorCode().getOpcode() + " , " + errorInfo.getErrorCode().name());
+
+			if (errorInfo.getSeverity().name().contains("ERROR")) {
+				registryError.setSeverity(RegistryError.SeverityEnum.ERROR);
+			} else {
+				registryError.setSeverity(RegistryError.SeverityEnum.WARNING);
+
+			}
+
+            errors.add(registryError);
+        }
+
+
+        iti18Response.setQueryResponse(queryResponses);
+        iti18Response.setErrors(errors);
+
+		return iti18Response;
 	}
 
 	private Long formatTimeForResponse(String time) {
@@ -112,8 +142,6 @@ public class Iti18ServiceImpl implements Iti18Service {
 
 		// Type code
 		if (iti18Request.getTypeCode() != null && !iti18Request.getTypeCode().getCode().isEmpty()) {
-
-
 			fdq.setTypeCodes(getCode(iti18Request.getTypeCode().getCode(), iti18Request.getTypeCode().getCodeScheme()));
 		}
 
@@ -171,7 +199,7 @@ public class Iti18ServiceImpl implements Iti18Service {
 			if (fdq.getDocumentEntryTypes() == null) {
 				fdq.setDocumentEntryTypes(new LinkedList<>());
 			}
-			fdq.getDocumentEntryTypes().add(DocumentEntryType.ON_DEMAND);
+			fdq.getDocumentEntryTypes().add(DocumentEntryType.STABLE);
 		}
 		if (iti18Request.getDocumentType().contains("ON-DEMAND")) {
 			if (fdq.getDocumentEntryTypes() == null) {
@@ -180,13 +208,13 @@ public class Iti18ServiceImpl implements Iti18Service {
 			fdq.getDocumentEntryTypes().add(DocumentEntryType.ON_DEMAND);
 		}
 
-
 		QueryRegistry queryRegistry = new QueryRegistry(fdq);
 		queryRegistry.setReturnType(QueryReturnType.LEAF_CLASS);
 
 		QueryRegistryTransformer queryRegistryTransformer = new QueryRegistryTransformer();
 		EbXMLAdhocQueryRequest ebxmlAdhocQueryRequest = queryRegistryTransformer.toEbXML(queryRegistry);
 		AdhocQueryRequest internal = (AdhocQueryRequest)ebxmlAdhocQueryRequest.getInternal();
+
 		return internal;
 	}
 
@@ -217,15 +245,9 @@ public class Iti18ServiceImpl implements Iti18Service {
 			var query = createQuery(iti18Request);
 			var response = iti18PortType.documentRegistryRegistryStoredQuery(query);
 
-			List<Iti18QueryResponse> queryResponses = createResponse(iti18Request.getPatientId(), response);
 
-			//Generate Response and request ID
+            Iti18Response iti18Response = populateIti18Response(iti18Request.getPatientId(), response, new Iti18Response());
 
-
-
-			Iti18Response iti18Response = new Iti18Response();
-
-			iti18Response.setQueryResponse(queryResponses);
 
 
 

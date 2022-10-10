@@ -46,6 +46,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/iti18Response'
+  /v1/iti43:
+    post:
+      tags:
+        - IHEXDS
+      summary: get XDS as a healthcare professional
+      description: get XDS as a healthcare professional
+      requestBody:
+        description: Your name
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/iti43Request'
+      responses:
+        '200':
+          description: Ok with list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/iti43Response'
 
 
   /v1/codes/classCode:
@@ -264,10 +284,8 @@ components:
           type: integer
           format: int64
           example: "1664349302510"
-        document:
-          description: The uploaded document
-          type: object
-          $ref: '#/components/schemas/document'
+
+
 
     iti18Response:
       type: object
@@ -286,6 +304,12 @@ components:
           description: The response Id as UUID
           type: string
           example: "f638012a-8c49-44b2-b647-9c3595b9e398"
+        errors:
+          description: registry errors list
+          type: array
+          items:
+            $ref: '#/components/schemas/registryError'
+          example: "[..], [..]"
 
 
     code:
@@ -413,13 +437,26 @@ components:
           example: "2.16.840.1.113883.6.1"
 
 
-    document:
+
+
+    registryError:
       type: object
       properties:
-        prop1:
-          description: The first property
+        codeContext:
+          description: The error code contetext
           type: string
-          example: "test"
+          example: "urn:dk:nsi:Consent Filter Applied"
+        errorCode:
+          description: The error codes opcode and name
+          type: string
+          example: "XDSRegistryError , REGISTRY_ERROR"
+        severity:
+          description: The severirty's opcode and name
+          type: string
+          enum:
+            - ERROR
+            - WARNING
+
 
     downloadLog:
       type: object
@@ -429,3 +466,50 @@ components:
           type: string
           example: "<xml>...<xml>"
 
+    iti43Response:
+      type: object
+      properties:
+        response:
+          description: The response of teh document as string/bytes
+          type: string
+          example: "<xml>...<xml>"
+
+    iti43Request:
+      type: object
+      required:
+        - queryParameters
+        - credentialId
+        - context
+      properties:
+        queryParameters:
+          description: query parameters related to iti-43 query
+          $ref: '#/components/schemas/iti43QueryParameter'
+        credentialId:
+          description: The credential to use (identified by id)
+          type: string
+          example: "credentialid"
+        context:
+          description: the context in which to make the query
+          $ref: '#/components/schemas/healthcareProfessionalContext'
+
+
+
+    iti43QueryParameter:
+      type: object
+      required:
+        - patientId
+        - documentId
+        - repositoryId
+      properties:
+        patientId:
+          description: Patientens Id (CPR)
+          type: string
+          example: "2512489996"
+        documentId:
+          description: Documentets unique Id
+          type: string
+          example: "2512489996"
+        repositoryId:
+          description: Documentets repository Id
+          type: string
+          example: "2512489996"

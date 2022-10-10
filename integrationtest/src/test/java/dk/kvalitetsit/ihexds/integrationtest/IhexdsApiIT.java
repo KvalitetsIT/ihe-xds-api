@@ -4,23 +4,17 @@ import org.junit.Test;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.api.IhexdsApi;
-import org.openapitools.client.model.CodeQuery;
-import org.openapitools.client.model.HealthcareProfessionalContext;
-import org.openapitools.client.model.Iti18QueryParameter;
-import org.openapitools.client.model.Iti18Request;
+import org.openapitools.client.model.*;
 
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class Iti18IT extends AbstractIntegrationTest{
+public class IhexdsApiIT extends AbstractIntegrationTest{
 
     private IhexdsApi ihexdsApi;
 
-    public Iti18IT() {
+    public IhexdsApiIT() {
         var apiClient = new ApiClient();
         apiClient.setBasePath(getApiBasePath());
         ihexdsApi = new IhexdsApi(apiClient);
@@ -63,5 +57,32 @@ public class Iti18IT extends AbstractIntegrationTest{
         assertEquals(200, result.getStatusCode());
 
         // add result?
+    }
+
+    @Test
+    public void testV1Iti43PostController () throws ApiException {
+
+
+        Iti43QueryParameter queryParameters = new Iti43QueryParameter();
+        queryParameters.setPatientId("2512489996");
+        queryParameters.setDocumentId("7a65a7d3-75f9-4ddf-b60a-f1e3078077c8");
+        queryParameters.setRepositoryId("1.2.208.192.100.101");
+        String credentialID = "D:9038f177-d345-4c42-b2b4-6e27314e713e";
+        HealthcareProfessionalContext context = new HealthcareProfessionalContext();
+
+        context.setAuthorizationCode("NS363");
+        context.setConsentOverride(false);
+        context.setRole("User");
+
+        Iti43Request iti43Request = new Iti43Request();
+
+        iti43Request.setContext(context);
+        iti43Request.setCredentialId(credentialID);
+        iti43Request.setQueryParameters(queryParameters);
+
+        var result = ihexdsApi.v1Iti43PostWithHttpInfo(iti43Request);
+
+        assertEquals(200, result.getStatusCode());
+
     }
 }

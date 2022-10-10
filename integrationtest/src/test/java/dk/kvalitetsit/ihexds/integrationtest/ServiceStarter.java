@@ -41,13 +41,23 @@ public class ServiceStarter {
 
         System.setProperty("STSURL", "http://test1.ekstern-test.nspop.dk:8080/sts/services/NewSecurityTokenService");
         System.setProperty("xdsIti18Endpoint", "http://test1-cnsp.ekstern-test.nspop.dk:8080/ddsregistry");
+        System.setProperty("xdsIti43Endpoint", "http://test1-cnsp.ekstern-test.nspop.dk:8080/ddsrepository");
 
         // Gets correct test paths
         var privateKey = new ClassPathResource("/certificates/private-cert1.pem");
         var publicKey = new ClassPathResource("/certificates/public-cert1.cer");
+        var privateKey2 = new ClassPathResource("/certificates/private-cert2.pem");
+        var publicKey2 = new ClassPathResource("/certificates/public-cert2.cer");
+
+        var privateKey3 = new ClassPathResource("/certificates/voces1.pem");
+        var publicKey3 = new ClassPathResource("/certificates/voces1.cer");
 
         System.setProperty("default.cert.private", privateKey.getFile().getAbsolutePath());
         System.setProperty("default.cert.public", publicKey.getFile().getAbsolutePath());
+        System.setProperty("default.cert.private.two", privateKey2.getFile().getAbsolutePath());
+        System.setProperty("default.cert.public.two", publicKey2.getFile().getAbsolutePath());
+        System.setProperty("default.cert.private.three", privateKey3.getFile().getAbsolutePath());
+        System.setProperty("default.cert.public.three", publicKey3.getFile().getAbsolutePath());
         System.setProperty("redis.host", "localhost");
         System.setProperty("redis.port", Integer.toString(mappedRedisPort));
 
@@ -117,10 +127,19 @@ public class ServiceStarter {
                 .withEnv("LOG_LEVEL", "INFO")
                 .withClasspathResourceMapping("certificates/private-cert1.pem", "/certificates/private-cert1.pem", BindMode.READ_ONLY)
                 .withClasspathResourceMapping("certificates/public-cert1.cer", "/certificates/public-cert1.cer", BindMode.READ_ONLY)
+                .withClasspathResourceMapping("certificates/private-cert2.pem", "/certificates/private-cert2.pem", BindMode.READ_ONLY)
+                .withClasspathResourceMapping("certificates/public-cert2.cer", "/certificates/public-cert2.cer", BindMode.READ_ONLY)
+                .withClasspathResourceMapping("certificates/voces1.pem", "/certificates/voces1.pem", BindMode.READ_ONLY)
+                .withClasspathResourceMapping("certificates/voces1.cer", "/certificates/voces1.cer", BindMode.READ_ONLY)
                 .withEnv("STSURL", "http://test1.ekstern-test.nspop.dk:8080/sts/services/NewSecurityTokenService")
                 .withEnv("xdsIti18Endpoint", "http://test1-cnsp.ekstern-test.nspop.dk:8080/ddsregistry")
+                .withEnv("xdsIti43Endpoint", "http://test1-cnsp.ekstern-test.nspop.dk:8080/ddsrepository")
                 .withEnv("default.cert.private", "/certificates/private-cert1.pem")
                 .withEnv("default.cert.public", "/certificates/public-cert1.cer")
+                .withEnv("default.cert.private.two", "/certificates/private-cert2.pem")
+                .withEnv("default.cert.public.two", "/certificates/public-cert2.cer")
+                .withEnv("default.cert.private.three", "/certificates/voces1.pem")
+                .withEnv("default.cert.public.three", "/certificates/voces1.cer")
                 .withEnv("redis.host", "redis")
                 .withEnv("redis.port", "6379")
                 .withEnv("redis.data.ttl", Integer.toString(ttl))
