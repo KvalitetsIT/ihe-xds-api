@@ -51,8 +51,9 @@ public class RepositortyImplTest extends AbstractRedisTest{
         String owner = "Me";
         String privateKey = Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI()));
         String publicKey = Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/public-cert1.cer").toURI()));
-
-        credentialInfoEntity = new CredentialInfoEntity(owner, id, displayName,   publicKey, privateKey);
+        String serialNumber = "test";
+        String type = "test";
+        credentialInfoEntity = new CredentialInfoEntity(owner, id, displayName,   publicKey, privateKey, serialNumber, type);
 
 
         credentialRepository.saveCredentialsForID(credentialInfoEntity);
@@ -71,8 +72,9 @@ public class RepositortyImplTest extends AbstractRedisTest{
         String owner = "Me";
         String privateKey = Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI()));
         String publicKey = Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/public-cert1.cer").toURI()));
-
-        credentialInfoEntity = new CredentialInfoEntity(owner, id, displayName, publicKey, privateKey);
+        String serialNumber = "test";
+        String type = "test";
+        credentialInfoEntity = new CredentialInfoEntity(owner, id, displayName, publicKey, privateKey, serialNumber, type);
 
         Assert.assertNull(redisTemplate.opsForValue().get(owner));
 
@@ -101,8 +103,9 @@ public class RepositortyImplTest extends AbstractRedisTest{
         String owner = "Test";
         String privateKey = Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI()));
         String publicKey = Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/public-cert1.cer").toURI()));
-
-        credentialInfoEntity = new CredentialInfoEntity(owner, id, displayName, publicKey, privateKey);
+        String serialNumber = "test";
+        String type = "test";
+        credentialInfoEntity = new CredentialInfoEntity(owner, id, displayName, publicKey, privateKey, serialNumber, type);
 
         Assert.assertNull(redisTemplate.opsForValue().get(owner));
 
@@ -112,7 +115,7 @@ public class RepositortyImplTest extends AbstractRedisTest{
 
         // Wait one second to test expiry
         TestHelper.waiter(1000 + 1);
-        credentialInfoEntity = new CredentialInfoEntity(owner, id2, displayName, publicKey, privateKey);
+        credentialInfoEntity = new CredentialInfoEntity(owner, id2, displayName, publicKey, privateKey, serialNumber, type);
 
         subject.saveCredentialsForID(credentialInfoEntity);
         result = ((CredentialInfoEntity) redisTemplate.opsForValue().get(id2));
@@ -142,8 +145,10 @@ public class RepositortyImplTest extends AbstractRedisTest{
         String owner = "Me";
         String privateKey = Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/private-cert1.pem").toURI()));
         String publicKey = Files.readString(Paths.get(getClass().getClassLoader().getResource("certificates/public-cert1.cer").toURI()));
+        String serialNumber = "test";
+        String type = "test";
 
-        credentialInfoEntity = new CredentialInfoEntity(owner, id, displayName, publicKey, privateKey);
+        credentialInfoEntity = new CredentialInfoEntity(owner, id, displayName, publicKey, privateKey, serialNumber, type);
 
         Assert.assertNull(redisTemplate.opsForValue().get(owner));
 

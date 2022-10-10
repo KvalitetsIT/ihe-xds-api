@@ -37,6 +37,7 @@ public class CredentialServiceImpl implements CredentialService {
         String id = UUID.randomUUID().toString();
 
         // Test purpose
+        // TODO Probably not the correct way to do it
         if (displayName.equals("Sonja Bech")) {
             id = "D:" + "9038f177-d345-4c42-b2b4-6e27314e713e";
         }
@@ -57,6 +58,7 @@ public class CredentialServiceImpl implements CredentialService {
             } else {
                 owning = idsForOwner.get(ownerKey);
             }
+            // Emil
             owning.add(new String[] {id, displayName});
             idsForOwner.put(ownerKey, owning);
         }
@@ -69,7 +71,7 @@ public class CredentialServiceImpl implements CredentialService {
             credentialInfoForID.put(id, credentialInfo);
         }
         credentialRepository.saveCredentialsForID(new CredentialInfoEntity(ownerKey,
-                id, displayName, publicCertStr, privateKeyStr));
+                id, displayName, publicCertStr, privateKeyStr, credentialInfo.getSerialNumber(), credentialInfo.getType()));
 
 
         return credentialInfo;
@@ -92,7 +94,6 @@ public class CredentialServiceImpl implements CredentialService {
 
         result.addAll(idsForOwner.get(DEFAULT_OWNER));
 
-    // FInd proper fix
         if (owner != null) {
             ownerKey = owner.trim();
             try {
@@ -131,7 +132,16 @@ public class CredentialServiceImpl implements CredentialService {
         }
     }
 
+    @Override
+    public String getType(String id) {
 
+        return credentialRepository.findCredentialInfoByID(id).getType();
+    }
+
+    @Override
+    public String getSerialNumber(String id) {
+        return credentialRepository.findCredentialInfoByID(id).getSerialNumber();
+    }
 
 
 }

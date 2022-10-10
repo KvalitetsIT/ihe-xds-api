@@ -14,12 +14,17 @@ public class CredentialInfoEntity implements Serializable {
 
     private String privateKeyStr;
 
-    public CredentialInfoEntity(String owner, String id, String displayName, String publicCertStr, String privateKeyStr) {
+    private String serialNumber;
+    private String type;
+
+    public CredentialInfoEntity(String owner, String id, String displayName, String publicCertStr, String privateKeyStr, String serialNumber, String type) {
         this.owner = owner;
         this.id = id;
         this.displayName = displayName;
         this.publicCertStr = publicCertStr;
         this.privateKeyStr = privateKeyStr;
+        this.type = type;
+        this.serialNumber = serialNumber;
     }
 
 
@@ -45,5 +50,11 @@ public class CredentialInfoEntity implements Serializable {
         return privateKeyStr;
     }
 
+    public String getSerialNumber() {
+        return serialNumber;
+    }
 
+    public String getType() {
+        return type;
+    }
 }

@@ -13,5 +13,8 @@ public interface CredentialService {
 
 	public CredentialInfo getCredentialInfoFromId(String id);
 
+	public String getType(String id);
+	public String getSerialNumber(String id);
+
 
 }

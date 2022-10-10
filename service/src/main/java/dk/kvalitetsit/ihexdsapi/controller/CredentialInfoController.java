@@ -34,6 +34,9 @@ public class CredentialInfoController implements CredentialsApi {
             CredentialInfoResponse credentialInfoResponse = new CredentialInfoResponse();
             credentialInfoResponse.setId(id[0]);
             credentialInfoResponse.displayName(id[1]);
+            credentialInfoResponse.setSubjectSerialNumber(credentialService.getSerialNumber(id[0]));
+            credentialInfoResponse.setCredentialType(
+                    CredentialInfoResponse.CredentialTypeEnum.valueOf(credentialService.getType(id[0])));
             responses.add(credentialInfoResponse);
         }
         ResponseEntity<List<CredentialInfoResponse>> responseEntity = new ResponseEntity(responses, HttpStatus.OK);

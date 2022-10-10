@@ -27,6 +27,10 @@ public class InitConfiguration {
     @Value("${default.cert.public.two}")
     private String publicPath2;
 
+    @Value("${default.cert.private.three}")
+    private String keyPath3;
+    @Value("${default.cert.public.three}")
+    private String publicPath3;
 
 
     @PostConstruct
@@ -35,10 +39,16 @@ public class InitConfiguration {
          String cert1 = Files.readString(Paths.get(this.publicPath));
          String key2 = Files.readString(Paths.get(this.keyPath2));
          String cert2 = Files.readString(Paths.get(this.publicPath2));
+        String key3 = Files.readString(Paths.get(this.keyPath3));
+        String cert3 = Files.readString(Paths.get(this.publicPath3));
+
          // Need better variable names
         credentialService.createAndAddCredentialInfo(null, "Sonja Bech", cert1, key1
                 );
         credentialService.createAndAddCredentialInfo(null, "Grethe Pedersen", cert2, key2
+                );
+
+        credentialService.createAndAddCredentialInfo(null, "Default VOCES", cert3, key3
                 );
     }
 }
