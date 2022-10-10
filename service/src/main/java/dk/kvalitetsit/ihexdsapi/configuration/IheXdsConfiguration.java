@@ -19,6 +19,7 @@ import org.apache.cxf.frontend.ClientProxy;
 import org.openehealth.ipf.commons.ihe.ws.WsTransactionConfiguration;
 import org.openehealth.ipf.commons.ihe.xds.core.XdsClientFactory;
 import org.openehealth.ipf.commons.ihe.xds.iti18.Iti18PortType;
+import org.openehealth.ipf.commons.ihe.xds.iti41.Iti41PortType;
 import org.openehealth.ipf.commons.ihe.xds.iti43.Iti43PortType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -167,6 +168,16 @@ public class IheXdsConfiguration {
         Client proxy = ClientProxy.getClient(client);
         proxy.getOutInterceptors().add(outResponseInterceptor);
         proxy.getInInterceptors().add(inResponseInterceptor);
+        return client;
+    }
+
+    @Bean
+    @Scope(value = "prototype")
+    public Iti41PortType getDocumentRepositoryServiceIti41(String endpoint) {
+        LOGGER.info("Creating Iti41PortType for url: "+endpoint);
+        XdsClientFactory xdsClientFactory = generateXdsRepositoryClientFactory("wsdl/iti41.wsdl", endpoint, Iti41PortType.class);
+        Iti41PortType client = (Iti41PortType) xdsClientFactory.getClient();
+
         return client;
     }
 
