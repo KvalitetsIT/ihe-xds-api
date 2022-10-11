@@ -78,6 +78,12 @@ public class IheXdsController  implements IhexdsApi,  RequestResultApi, Response
 		}
 	}
 
+	/* ResponseEntity<Iti41Response> v1Iti43Post(Iti41Request iti41Request) {
+	DgwsClientInfo clientInfo = dgwsService.getHealthCareProfessionalClientInfo();
+
+	}
+	 */
+
 
 
 

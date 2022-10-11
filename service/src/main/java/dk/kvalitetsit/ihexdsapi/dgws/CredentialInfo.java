@@ -13,6 +13,9 @@ public class CredentialInfo {
     private String type;
 
 
+    // TODO ENUM type eller String
+
+
 
 
     public CredentialInfo(CredentialVault credentialVault, String displayName) {
@@ -22,7 +25,7 @@ public class CredentialInfo {
         this.serialNumber = setSerialNumber();
 
     }
-
+    // TODO muligvis
     private String setSerialNumber() {
        String rawString = credentialVault.getSystemCredentialPair().getCertificate().getSubjectX500Principal().toString();
 

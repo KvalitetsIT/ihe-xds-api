@@ -19,7 +19,7 @@ public class ConfigurationServiceImplTest {
         String sts = "http://test1.ekstern-test.nspop.dk:8080/sts/services/NewSecurityTokenService";
         String xdsIti18 = "http://test1-cnsp.ekstern-test.nspop.dk:8080/ddsregistry";
 
-        subject = new ConfigsServiceImpl(sts, xdsIti18, "") ;
+        subject = new ConfigsServiceImpl(sts, xdsIti18, "", null) ;
 
     }
 
