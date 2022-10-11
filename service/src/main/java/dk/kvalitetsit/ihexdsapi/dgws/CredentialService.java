@@ -1,6 +1,7 @@
 package dk.kvalitetsit.ihexdsapi.dgws;
 
 import dk.sosi.seal.vault.CredentialVault;
+import org.openapitools.model.CredentialInfoResponse;
 
 import java.util.Collection;
 import java.util.List;
@@ -17,4 +18,5 @@ public interface CredentialService {
 	public String getSerialNumber(String id);
 
 
+	List<CredentialInfoResponse> populateResponses(String owner,String type);
 }

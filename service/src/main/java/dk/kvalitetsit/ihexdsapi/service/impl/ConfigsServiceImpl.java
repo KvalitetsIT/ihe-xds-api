@@ -9,7 +9,7 @@ import java.util.*;
 public class ConfigsServiceImpl implements ConfigsService {
 
 
-    private String sts, xdsIti18, xdsIti43;
+    private String sts, xdsIti18, xdsIti43, xdsIti41;
 
 
     private List<ConfigResponse> configResponseList;
@@ -17,10 +17,11 @@ public class ConfigsServiceImpl implements ConfigsService {
 
 
 
-    public ConfigsServiceImpl(String sts, String xdsIti18, String xdsIti43) {
+    public ConfigsServiceImpl(String sts, String xdsIti18, String xdsIti43, String xdsIti41) {
         this.sts = sts;
         this.xdsIti18 = xdsIti18;
         this.xdsIti43 = xdsIti43;
+        this.xdsIti41 = xdsIti41;
 
 
 
@@ -36,6 +37,7 @@ public class ConfigsServiceImpl implements ConfigsService {
         list.add(createResponseObject("sts.url", sts));
         list.add(createResponseObject("iti-18.url", xdsIti18));
         list.add(createResponseObject("iti-43.url", xdsIti43));
+        list.add(createResponseObject("iti-41.url", xdsIti41));
 
 
 

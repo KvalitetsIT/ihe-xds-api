@@ -25,20 +25,10 @@ public class CredentialInfoController implements CredentialsApi {
     private CredentialService credentialService;
 
 @Override
-    public ResponseEntity<List<CredentialInfoResponse>> v1CredentialinfoGet(String owner) {
+    public ResponseEntity<List<CredentialInfoResponse>> v1CredentialinfoGet(String owner, String type) {
 
+        List<CredentialInfoResponse> responses = credentialService.populateResponses(owner, type);
 
-    Collection<String[]> ids = credentialService.getIds(owner);
-        List<CredentialInfoResponse> responses = new LinkedList<>();
-        for (String[] id : ids) {
-            CredentialInfoResponse credentialInfoResponse = new CredentialInfoResponse();
-            credentialInfoResponse.setId(id[0]);
-            credentialInfoResponse.displayName(id[1]);
-            credentialInfoResponse.setSubjectSerialNumber(credentialService.getSerialNumber(id[0]));
-            credentialInfoResponse.setCredentialType(
-                    CredentialInfoResponse.CredentialTypeEnum.valueOf(credentialService.getType(id[0])));
-            responses.add(credentialInfoResponse);
-        }
         ResponseEntity<List<CredentialInfoResponse>> responseEntity = new ResponseEntity(responses, HttpStatus.OK);
         return responseEntity;
     }

@@ -233,7 +233,7 @@ public class IheXdsConfiguration {
     @Bean
     public ConfigsService configsService() {
 
-        ConfigsServiceImpl configsService = new ConfigsServiceImpl(STSURL, xdsIti18Endpoint,xdsIti43Endpoint );
+        ConfigsServiceImpl configsService = new ConfigsServiceImpl(STSURL, xdsIti18Endpoint,xdsIti43Endpoint, xdsIti41Endpoint );
         return configsService;
 
     }

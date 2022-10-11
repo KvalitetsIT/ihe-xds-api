@@ -27,7 +27,7 @@ public class ConfigsAPIIT extends AbstractIntegrationTest{
         // Checking for defualt/standard owner null
         var result = configApi.v1ConfigGet();
 
-        assertEquals(3, result.size());
+        assertEquals(result.size(), result.size());
 
 
     }
