@@ -13,7 +13,8 @@ public class CredentialInfo {
     private String type;
 
 
-    // TODO ENUM type eller String
+    private final String SYSTEM = "SYSTEM";
+    private final String HEALTHCAREPROFESSIONAL = "HEALTHCAREPROFESSIONAL";
 
 
 
@@ -25,11 +26,11 @@ public class CredentialInfo {
         this.serialNumber = setSerialNumber();
 
     }
-    // TODO muligvis
+    // TODO muligvis anden måde at tjekke
     private String setSerialNumber() {
        String rawString = credentialVault.getSystemCredentialPair().getCertificate().getSubjectX500Principal().toString();
 
-       if (this.type.equals("SYSTEM")) {
+       if (this.type.equals(SYSTEM)) {
            return rawString.substring(rawString.indexOf('=') + 1, rawString.indexOf('+')).trim();
        } else {
            return rawString.substring(rawString.indexOf('=', rawString.indexOf('+'))+1, rawString.indexOf(','));
@@ -40,10 +41,10 @@ public class CredentialInfo {
     private String setType() {
         String rawString = credentialVault.getSystemCredentialPair().getCertificate().getSubjectX500Principal().toString();
         if (rawString.contains("UID")) {
-            return "SYSTEM";
+            return SYSTEM;
         }
         else {
-            return "HEALTHCAREPROFESSIONAL";
+            return HEALTHCAREPROFESSIONAL;
         }
     }
 

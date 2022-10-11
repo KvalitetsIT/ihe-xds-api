@@ -1,6 +1,4 @@
 package dk.kvalitetsit.ihexdsapi.service;
 
-public interface UploadService {
-
-
+public interface Iti41Service {
 }

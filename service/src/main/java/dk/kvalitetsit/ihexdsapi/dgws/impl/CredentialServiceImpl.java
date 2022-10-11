@@ -6,6 +6,7 @@ import dk.kvalitetsit.ihexdsapi.dao.CredentialRepository;
 import dk.kvalitetsit.ihexdsapi.dao.entity.CredentialInfoEntity;
 import dk.kvalitetsit.ihexdsapi.dgws.CredentialInfo;
 import dk.kvalitetsit.ihexdsapi.utility.ValutGenerator;
+import org.openapitools.model.CredentialInfoResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +60,7 @@ public class CredentialServiceImpl implements CredentialService {
                 owning = idsForOwner.get(ownerKey);
             }
             // Emil
-            owning.add(new String[] {id, displayName});
+            owning.add(new String[]{id, displayName});
             idsForOwner.put(ownerKey, owning);
         }
 
@@ -97,8 +98,8 @@ public class CredentialServiceImpl implements CredentialService {
         if (owner != null) {
             ownerKey = owner.trim();
             try {
-            result.addAll(credentialRepository.FindListOfIDsForOwner(ownerKey)); }
-            catch (Exception e) {
+                result.addAll(credentialRepository.FindListOfIDsForOwner(ownerKey));
+            } catch (Exception e) {
 
             }
 
@@ -123,7 +124,7 @@ public class CredentialServiceImpl implements CredentialService {
 
         CredentialInfo credentialInfo = null;
         try {
-            credentialInfo = generateCredientialInfoFromKeys(credsEnitity.getDisplayName(),credsEnitity.getPublicCertStr(), credsEnitity.getPrivateKeyStr());
+            credentialInfo = generateCredientialInfoFromKeys(credsEnitity.getDisplayName(), credsEnitity.getPublicCertStr(), credsEnitity.getPrivateKeyStr());
             return credentialInfo;
 
         } catch (DgwsSecurityException e) {
@@ -141,6 +142,41 @@ public class CredentialServiceImpl implements CredentialService {
     @Override
     public String getSerialNumber(String id) {
         return credentialRepository.findCredentialInfoByID(id).getSerialNumber();
+    }
+
+    @Override
+    public List<CredentialInfoResponse> populateResponses(String owner, String type) {
+
+        Collection<String[]> ids = this.getIds(owner);
+        List<CredentialInfoResponse> responses = new LinkedList<>();
+        if (type == null) {
+            for (String[] id : ids) {
+                CredentialInfoResponse credentialInfoResponse = new CredentialInfoResponse();
+                credentialInfoResponse.setId(id[0]);
+                credentialInfoResponse.displayName(id[1]);
+                credentialInfoResponse.setSubjectSerialNumber(this.getSerialNumber(id[0]));
+                credentialInfoResponse.setCredentialType(
+                        CredentialInfoResponse.CredentialTypeEnum.valueOf(this.getType(id[0])));
+                responses.add(credentialInfoResponse);
+            }
+        } else {
+            for (String[] id : ids) {
+                if (CredentialInfoResponse.CredentialTypeEnum.valueOf(this.getType(id[0])) == CredentialInfoResponse.CredentialTypeEnum.HEALTHCAREPROFESSIONAL) {
+                    {
+                        CredentialInfoResponse credentialInfoResponse = new CredentialInfoResponse();
+                        credentialInfoResponse.setId(id[0]);
+                        credentialInfoResponse.displayName(id[1]);
+                        credentialInfoResponse.setSubjectSerialNumber(this.getSerialNumber(id[0]));
+                        credentialInfoResponse.setCredentialType(
+                                CredentialInfoResponse.CredentialTypeEnum.valueOf(this.getType(id[0])));
+                        responses.add(credentialInfoResponse);
+                    }
+                }
+
+            }
+        }
+
+        return responses;
     }
 
 

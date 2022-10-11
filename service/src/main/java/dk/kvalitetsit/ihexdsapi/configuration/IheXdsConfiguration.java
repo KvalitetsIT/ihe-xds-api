@@ -43,6 +43,10 @@ public class IheXdsConfiguration {
     @Value("${xdsIti18Endpoint}")
     private String xdsIti18Endpoint;
 
+    // ONE ITI41
+    @Value("${xdsIti41Endpoint}")
+    private String xdsIti41Endpoint;
+
     @Value("${xdsIti43Endpoint}")
     private String xdsIti43Endpoint;
 
@@ -173,12 +177,18 @@ public class IheXdsConfiguration {
 
     @Bean
     @Scope(value = "prototype")
-    public Iti41PortType getDocumentRepositoryServiceIti41(String endpoint) {
-        LOGGER.info("Creating Iti41PortType for url: "+endpoint);
-        XdsClientFactory xdsClientFactory = generateXdsRepositoryClientFactory("wsdl/iti41.wsdl", endpoint, Iti41PortType.class);
+    public Iti41PortType getDocumentRepositoryServiceIti41() {
+        LOGGER.info("Creating Iti41PortType for url: "+xdsIti41Endpoint);
+        XdsClientFactory xdsClientFactory = generateXdsRepositoryClientFactory("wsdl/iti41.wsdl", xdsIti41Endpoint, Iti41PortType.class);
         Iti41PortType client = (Iti41PortType) xdsClientFactory.getClient();
 
         return client;
+    }
+
+    @Bean
+    public Iti41Service iti41Service(Iti41PortType iti41PortType) {
+        Iti41ServiceImpl iti41ServiceImpl = new Iti41ServiceImpl(iti41PortType);
+        return iti41ServiceImpl;
     }
 
     @Bean
@@ -223,7 +233,7 @@ public class IheXdsConfiguration {
     @Bean
     public ConfigsService configsService() {
 
-        ConfigsServiceImpl configsService = new ConfigsServiceImpl(STSURL, xdsIti18Endpoint,xdsIti43Endpoint );
+        ConfigsServiceImpl configsService = new ConfigsServiceImpl(STSURL, xdsIti18Endpoint,xdsIti43Endpoint, xdsIti41Endpoint );
         return configsService;
 
     }

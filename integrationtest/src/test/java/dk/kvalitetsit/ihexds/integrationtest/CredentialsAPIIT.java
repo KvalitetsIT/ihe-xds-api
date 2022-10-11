@@ -8,6 +8,7 @@ import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.model.CreateCredentialRequest;
 import org.openapitools.client.model.Iti18Request;
+import org.openapitools.model.CredentialInfoResponse;
 
 
 import java.io.IOException;
@@ -35,9 +36,22 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
     public void testCredentialinfoGetController() throws ApiException, IOException, URISyntaxException {
 
         // Checking for defualt/standard owner null
-        var result = credentialsApi.v1CredentialinfoGet(null);
+        var result = credentialsApi.v1CredentialinfoGet(null, null);
 
         assertEquals(3, result.size());
+
+
+    }
+
+    @Test
+    public void testCredentialinfoGetControllerFiltered() throws ApiException, IOException, URISyntaxException {
+
+        // Checking for defualt/standard owner null
+        String filter = CredentialInfoResponse.CredentialTypeEnum.HEALTHCAREPROFESSIONAL.toString();
+
+        var result = credentialsApi.v1CredentialinfoGet(null, filter);
+
+        assertEquals(2, result.size());
 
 
     }
