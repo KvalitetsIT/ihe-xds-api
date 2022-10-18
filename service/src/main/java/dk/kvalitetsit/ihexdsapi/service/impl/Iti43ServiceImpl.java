@@ -19,6 +19,7 @@ import javax.xml.xpath.XPathFactory;
 
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsClientInfo;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSoapDecorator;
+import dk.kvalitetsit.ihexdsapi.dgws.Iti43Exception;
 import dk.kvalitetsit.ihexdsapi.service.Iti43Service;
 
 import org.apache.cxf.endpoint.Client;
@@ -52,25 +53,19 @@ public class Iti43ServiceImpl implements Iti43Service {
     }
 
     @Override
-    public String getDocument(Iti43QueryParameter queryParameter, DgwsClientInfo clientInfo) {
+    public String getDocument(Iti43QueryParameter queryParameter, DgwsClientInfo clientInfo) throws Iti43Exception {
         try {
             dgwsSoapDecorator.setDgwsClientInfo(clientInfo);
-
+            // TODO FIX null/index out of bounds
             RetrievedDocumentSet documentResponse = fetchDocument(queryParameter.getDocumentId(), queryParameter.getRepositoryId());
-            System.out.println(documentResponse);
+            System.out.println(documentResponse.getErrors());
+            System.out.println("HELLO");
+            //String xml = documentResponse.getDocuments().get(0).getDataHandler();
             String xml = formatXML(documentResponse.getDocuments().get(0).getDataHandler());
             return xml;
-
-        } catch (XPathExpressionException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
-        } catch (TransformerException e) {
-            throw new RuntimeException(e);
-        } catch (SAXException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new Iti43Exception(e, 1000, "Failed to retrieve document");
         } finally {
             dgwsSoapDecorator.clearSDgwsClientInfo();
         }
@@ -100,6 +95,7 @@ public class Iti43ServiceImpl implements Iti43Service {
         return retrieveDocumentSetRequestType;
     }
 
+    // TODO kig på at få inputsource til string
     private String formatXML(DataHandler dataHandler) throws TransformerException, SAXException, IOException, ParserConfigurationException, XPathExpressionException {
         Document xmlDocument = DocumentBuilderFactory.newInstance()
                 .newDocumentBuilder()
@@ -126,6 +122,7 @@ public class Iti43ServiceImpl implements Iti43Service {
         return stringWriter.toString();
 
     }
+
     private EbXMLFactory getEbXmlFactory() {
         return ebXMLFactory;
     }

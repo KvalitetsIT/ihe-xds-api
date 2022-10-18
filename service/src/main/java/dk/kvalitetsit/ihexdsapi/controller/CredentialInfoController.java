@@ -24,10 +24,20 @@ public class CredentialInfoController implements CredentialsApi {
     @Autowired
     private CredentialService credentialService;
 
-@Override
+    @Override
     public ResponseEntity<List<CredentialInfoResponse>> v1CredentialinfoGet(String owner, String type) {
-
-        List<CredentialInfoResponse> responses = credentialService.populateResponses(owner, type);
+        // TODO type + convert to ENUM
+        CredentialInfoResponse.CredentialTypeEnum typeEnum;
+        if (type == null) {
+            typeEnum = null;
+        } else if (type.equalsIgnoreCase("HEALTHCAREPROFESSIONAL")) {
+            typeEnum = CredentialInfoResponse.CredentialTypeEnum.HEALTHCAREPROFESSIONAL;
+        } else if (type.equals("SYSTEM")) {
+            typeEnum = CredentialInfoResponse.CredentialTypeEnum.SYSTEM;
+        } else {
+            throw BadRequestException.createException(BadRequestException.ERROR_CODE.GENERIC, "Bad type query");
+        }
+        List<CredentialInfoResponse> responses = credentialService.populateResponses(owner, typeEnum);
 
         ResponseEntity<List<CredentialInfoResponse>> responseEntity = new ResponseEntity(responses, HttpStatus.OK);
         return responseEntity;

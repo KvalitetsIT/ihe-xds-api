@@ -5,6 +5,7 @@ import dk.kvalitetsit.ihexdsapi.dgws.DgwsClientInfo;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsService;
 import dk.kvalitetsit.ihexdsapi.dao.CacheRequestResponseHandle;
+import dk.kvalitetsit.ihexdsapi.dgws.Iti43Exception;
 import dk.kvalitetsit.ihexdsapi.service.Iti18Service;
 import dk.kvalitetsit.ihexdsapi.service.IDContextService;
 import dk.kvalitetsit.ihexdsapi.service.Iti43Service;
@@ -63,6 +64,22 @@ public class IheXdsController  implements IhexdsApi,  RequestResultApi, Response
 			throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
 		}
 	}
+// TODO Better naming
+	@Override
+	public ResponseEntity<Iti18ResponseUnique> v1Iti18UniqueIDPost(Iti18RequestUnique iti18RequestUnique) {
+		try {
+			System.out.println(iti18RequestUnique);
+			DgwsClientInfo clientInfo = dgwsService.getHealthCareProfessionalClientInfo(
+					iti18RequestUnique.getQueryParameters().getPatientId(),
+					iti18RequestUnique.getQueryParameters().getCredentialId(),
+					iti18RequestUnique.getQueryParameters().getContext());
+			Iti18ResponseUnique response = iti18Service.queryForDocument(iti18RequestUnique, clientInfo);
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch (DgwsSecurityException e) {
+			throw new RuntimeException(e);
+		}
+
+	}
 
 	@Override
 	public ResponseEntity<Iti43Response> v1Iti43Post(Iti43Request iti43Request) {
@@ -75,6 +92,8 @@ public class IheXdsController  implements IhexdsApi,  RequestResultApi, Response
 		}catch (DgwsSecurityException e) {
 			throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
 			//throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
+		} catch (Iti43Exception e) {
+			throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
 		}
 	}
 

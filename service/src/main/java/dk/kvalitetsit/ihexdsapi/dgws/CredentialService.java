@@ -18,5 +18,5 @@ public interface CredentialService {
 	public String getSerialNumber(String id);
 
 
-	List<CredentialInfoResponse> populateResponses(String owner,String type);
+	List<CredentialInfoResponse> populateResponses(String owner,CredentialInfoResponse.CredentialTypeEnum type);
 }

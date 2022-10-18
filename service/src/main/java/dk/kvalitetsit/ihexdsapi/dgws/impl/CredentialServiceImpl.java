@@ -145,7 +145,7 @@ public class CredentialServiceImpl implements CredentialService {
     }
 
     @Override
-    public List<CredentialInfoResponse> populateResponses(String owner, String type) {
+    public List<CredentialInfoResponse> populateResponses(String owner, CredentialInfoResponse.CredentialTypeEnum type) {
 
         Collection<String[]> ids = this.getIds(owner);
         List<CredentialInfoResponse> responses = new LinkedList<>();
@@ -160,8 +160,9 @@ public class CredentialServiceImpl implements CredentialService {
                 responses.add(credentialInfoResponse);
             }
         } else {
+            // TODO Fix
             for (String[] id : ids) {
-                if (CredentialInfoResponse.CredentialTypeEnum.valueOf(this.getType(id[0])) == CredentialInfoResponse.CredentialTypeEnum.HEALTHCAREPROFESSIONAL) {
+                if (CredentialInfoResponse.CredentialTypeEnum.valueOf(this.getType(id[0])) == type) {
                     {
                         CredentialInfoResponse credentialInfoResponse = new CredentialInfoResponse();
                         credentialInfoResponse.setId(id[0]);

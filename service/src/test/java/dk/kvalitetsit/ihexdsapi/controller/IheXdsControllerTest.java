@@ -68,11 +68,11 @@ public class IheXdsControllerTest {
 
        Mockito.when(dgwsService.getHealthCareProfessionalClientInfo(Mockito.any(), Mockito.any(), Mockito.any())).then(a -> {
 
-          DgwsClientInfo output = new DgwsClientInfo(null, null, null, null, null);
+          DgwsClientInfo output = new DgwsClientInfo(null, null, null, null, null, false);
            return output;
        });
 
-        Mockito.when(iti18Service.queryForDocument(Mockito.any(), Mockito.any())).then(a -> {
+        Mockito.when(iti18Service.queryForDocument((Iti18QueryParameter) Mockito.any(), Mockito.any())).then(a -> {
 
             Iti18Response output = new Iti18Response();
 
