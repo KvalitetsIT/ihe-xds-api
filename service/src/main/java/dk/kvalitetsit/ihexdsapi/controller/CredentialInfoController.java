@@ -26,7 +26,6 @@ public class CredentialInfoController implements CredentialsApi {
 
     @Override
     public ResponseEntity<List<CredentialInfoResponse>> v1CredentialinfoGet(String owner, String type) {
-        // TODO type + convert to ENUM
         CredentialInfoResponse.CredentialTypeEnum typeEnum;
         if (type == null) {
             typeEnum = null;
