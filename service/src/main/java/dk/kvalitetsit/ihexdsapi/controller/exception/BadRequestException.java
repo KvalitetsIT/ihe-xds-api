@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.time.OffsetDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
@@ -54,6 +55,16 @@ public class BadRequestException extends RuntimeException {
         error.setStatusText(HttpStatus.BAD_REQUEST.getReasonPhrase());
         error.setTimestamp(OffsetDateTime.now());
         error.setErrorCode(errorCode.errorCode);
+
+        return new BadRequestException(error);
+    } public static BadRequestException createException(ERROR_CODE errorCode, String errorMessage, List<String> errors) {
+        var error = new BasicError();
+        error.setError(errorMessage);
+        error.setStatus(HttpStatus.BAD_REQUEST.value());
+        error.setStatusText(HttpStatus.BAD_REQUEST.getReasonPhrase());
+        error.setTimestamp(OffsetDateTime.now());
+        error.setErrorCode(errorCode.errorCode);
+        error.setOtherError(errors);
 
         return new BadRequestException(error);
     }

@@ -33,7 +33,7 @@ paths:
       summary: search XDS as a healthcare professional
       description: search XDS as a healthcare professional
       requestBody:
-        description: Your name
+        description: The iti18 request body
         required: true
         content:
           application/json:
@@ -46,6 +46,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/iti18Response'
+  /v1/iti18/uniqueID:
+    post:
+      tags:
+        - IHEXDS
+      summary: search XDS as a healthcare professional with a uniqueID
+      description: search XDS as a healthcare professional with a uniqueID
+      requestBody:
+        description: The iti18 request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/iti18RequestUnique'
+      responses:
+        '200':
+          description: Ok with list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/iti18ResponseUnique'
   /v1/iti43:
     post:
       tags:
@@ -456,6 +476,10 @@ components:
           enum:
             - ERROR
             - WARNING
+        customErrorCode:
+          description: A custom error code
+          type: string
+          example: "XDSObjectTypeError"
 
 
     downloadLog:
@@ -473,6 +497,12 @@ components:
           description: The response of teh document as string/bytes
           type: string
           example: "<xml>...<xml>"
+        errors:
+          description: registry errors list
+          type: array
+          items:
+            $ref: '#/components/schemas/registryError'
+          example: "[..], [..]"
 
     iti43Request:
       type: object
@@ -513,3 +543,186 @@ components:
           description: Documentets repository Id
           type: string
           example: "2512489996"
+
+
+
+# TODO Write decriptions
+    iti18ResponseUnique:
+      type: object
+      properties:
+        authorInstitution:
+          description: the context in which to make the query
+          $ref: '#/components/schemas/code'
+        authorPerson:
+          description: Documentets unique Id
+          type: string
+          example: "Prefix : Mr  Name: Doe"
+        availabilityStatus:
+          description:
+          $ref: '#/components/schemas/code'
+        classCode :
+          description:
+          $ref: '#/components/schemas/code'
+        comments:
+          description: Documentets unique Id
+          type: string
+          example: "Prefix : Mr  Name: Doe"
+        confidentialityCode:
+          description:
+          $ref: '#/components/schemas/code'
+        creationTime:
+          description: The start service from date-time as Long
+          type: integer
+          format: int64
+          example: "1664349302510"
+        documentAvailability:
+          description:
+          $ref: '#/components/schemas/code'
+        entryUuid:
+          description: Documentets unique Id
+          type: string
+          example: "Prefix : Mr  Name: Doe"
+        eventCode:
+          description: registry errors list
+          type: array
+          items:
+            $ref: '#/components/schemas/code'
+          example: "[..], [..]"
+        errors:
+          description: registry errors list
+          type: array
+          items:
+            $ref: '#/components/schemas/registryError'
+          example: "[..], [..]"
+        extraMetadata:
+          description: Documentets unique Id
+          type: string
+          example:
+        formatCode:
+          description:
+          $ref: '#/components/schemas/code'
+        hash:
+          description: Documentets unique Id
+          type: string
+          example:
+        healthCareFacilityType:
+          description:
+          $ref: '#/components/schemas/code'
+        homeComunity:
+          description: Documentets unique Id
+          type: string
+          example: "Prefix : Mr  Name: Doe"
+        languageCode:
+          description: Documentets unique Id
+          type: string
+          example: "Prefix : Mr  Name: Doe"
+        legalAuthenticator:
+          description: Documentets unique Id
+          type: string
+          example: "Prefix : Mr  Name: Doe"
+        logicalUuid:
+          description: Documentets unique Id
+          type: string
+          example: "Prefix : Mr  Name: Doe"
+        mimeType:
+          description: Documentets unique Id
+          type: string
+          example: "Prefix : Mr  Name: Doe"
+        objectType:
+          description: Documentets unique Id
+          type: string
+          example: "Prefix : Mr  Name: Doe"
+        practiceSettingCode:
+          description:
+          $ref: '#/components/schemas/code'
+        repositoryUniqueId:
+          description: Documentets unique Id
+          type: string
+          example: "Prefix : Mr  Name: Doe"
+        serviceStartTime:
+          description: The start service from date-time as Long
+          type: integer
+          format: int64
+          example: "1664349302510"
+        serviceStopTime:
+          description: The start service to date-time as Long
+          type: integer
+          format: int64
+          example: "1664349302510"
+        size:
+          description: The start service from date-time as Long
+          type: integer
+          example: "1664349302510"
+        sourcePatientId:
+          description:
+          $ref: '#/components/schemas/code'
+        sourcePatientInfo:
+          description:
+          type: object
+          properties:
+            name:
+              description: credential ID
+              type: string
+              example: "2512489996"
+            gender:
+              description: The severirty's opcode and name
+              type: string
+              enum:
+                - M
+                - F
+                - UNI
+            birthTime:
+              description: The start service from date-time as Long
+              type: integer
+              format: int64
+              example: "1664349302510"
+        title:
+          description: credential ID
+          type: string
+          example: "2512489996"
+        type:
+          description:
+          $ref: '#/components/schemas/code'
+        typeCode:
+          description:
+          $ref: '#/components/schemas/code'
+        uniqueId:
+          description: credential ID
+          type: string
+          example: "2512489996"
+        uri:
+          description: credential ID
+          type: string
+          example: "2512489996"
+        version:
+          description: credential ID
+          type: string
+          example: "2512489996"
+
+
+
+
+    iti18RequestUnique:
+      type: object
+      properties:
+        queryParameters:
+          description: query parameters related to iti-41 unique query
+          $ref: '#/components/schemas/iti18UniqueQueryParameter'
+    iti18UniqueQueryParameter:
+      type: object
+      properties:
+        credentialId:
+          description: credential ID
+          type: string
+          example: "2512489996"
+        patientId:
+          description: Patientens Id (CPR)
+          type: string
+          example: "2512489996"
+        documentId:
+          description: Documentets unique Id
+          type: string
+          example: "2512489996"
+        context:
+          description: the context in which to make the query
+          $ref: '#/components/schemas/healthcareProfessionalContext'

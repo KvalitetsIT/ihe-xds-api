@@ -56,7 +56,7 @@ public class StsServiceImpl implements StsService {
 
 		Request request = sosiFactory.createNewRequest(false, null);
 		request.setIDCard(userIDCard);
-		return new DgwsClientInfo(request.serialize2DOMDocument(), userIDCard.getUserInfo().getCPR(), patientId, userIDCard.getUserInfo().getAuthorizationCode(), cvr);
+		return new DgwsClientInfo(request.serialize2DOMDocument(), userIDCard.getUserInfo().getCPR(), patientId, userIDCard.getUserInfo().getAuthorizationCode(), cvr, context.getConsentOverride());
 	}
 
 	private UserIDCard getUserIdCard(CredentialInfo credentialInfo, SOSIFactory sosiFactory, String cvr, String role, String authCode) throws DgwsSecurityException {
@@ -64,8 +64,7 @@ public class StsServiceImpl implements StsService {
 
 		String rawString = credentialVault.getSystemCredentialPair().getCertificate().getSubjectX500Principal().getName();
 		var test = credentialVault.getSystemCredentialPair().getCertificate().getSubjectX500Principal().toString();
-		getCredentialType(test);
-		System.out.println();
+
 
 		String name = rawString.substring(3, rawString.indexOf(' '));
 		String surName =rawString.substring(rawString.indexOf(' ')+1, rawString.indexOf('+'));
@@ -105,16 +104,7 @@ public class StsServiceImpl implements StsService {
 		}
 	}
 
-	private CredentialInfoResponse.CredentialTypeEnum getCredentialType(String input) {
-		System.out.println(input);
-		if (input.contains("RID")) {
-			return CredentialInfoResponse.CredentialTypeEnum.HEALTHCAREPROFESSIONAL;
-		} else {
 
-		return CredentialInfoResponse.CredentialTypeEnum.SYSTEM;
-		}
-
-	}
 
 	private Document getSystemIdCardFromSTS(CredentialVault credentialVault, String cvr, String organisation) throws DgwsSecurityException {
 		Properties properties = new Properties(System.getProperties());

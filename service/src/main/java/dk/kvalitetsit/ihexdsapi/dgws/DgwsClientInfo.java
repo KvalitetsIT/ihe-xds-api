@@ -15,12 +15,13 @@ public class DgwsClientInfo {
 
     private String cpr;
 
-    public DgwsClientInfo(Document sosi, String cpr, String patientId, String authorizationCode, String organisationCode) {
+    public DgwsClientInfo(Document sosi, String cpr, String patientId, String authorizationCode, String organisationCode, boolean consentOverride) {
         this.sosi = sosi;
         this.cpr = cpr;
         this.patientId = patientId;
         this.authorizationCode = authorizationCode;
         this.organisationCode = organisationCode;
+        this.consentOverride = consentOverride;
 
     }
 
@@ -34,7 +35,7 @@ public class DgwsClientInfo {
 
     public String getPatientId() {
         return patientId;
-    }/*
+    }
     public void setPatientId(String patientId) {
         this.patientId = patientId;
     }
@@ -44,7 +45,7 @@ public class DgwsClientInfo {
     public void setConsentOverride(boolean consentOverride) {
         this.consentOverride = consentOverride;
     }
-
+/*
     public String getActingUserId() {
         return actingUserId;
     }

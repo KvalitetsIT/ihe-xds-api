@@ -87,7 +87,7 @@ public class DgwsSoapDecorator extends AbstractSoapInterceptor {
     private Header getHsuid(DgwsClientInfo clientInfo) throws JAXBException, ParserConfigurationException {
 
 
-        Boolean vaerdispring = false; //clientInfo.getConsentOverride();
+        Boolean vaerdispring = clientInfo.getConsentOverride();
 
         HsuidHeader hsuidHeader = getHsuidHeaderForHealthCareProfessionalWithAuthorization(clientInfo.getPatientId(), clientInfo.getCpr(), clientInfo.getCpr(), clientInfo.getAuthorizationCode(), clientInfo.getOrganisationCode(), vaerdispring);
 
@@ -115,6 +115,7 @@ public class DgwsSoapDecorator extends AbstractSoapInterceptor {
         }
         attributes.add(new ResponsibleUserCivilRegistrationNumberAttribute(responsibleUserCpr != null ? responsibleUserCpr : actingUserCpr));
         if (authorizationCode != null) {
+            // TODO Grethe ..
             attributes.add(new ResponsibleUserAuthorizationCodeAttribute(authorizationCode));
         }
 

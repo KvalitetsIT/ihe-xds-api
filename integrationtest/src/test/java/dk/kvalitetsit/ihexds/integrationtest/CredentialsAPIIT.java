@@ -1,6 +1,7 @@
 package dk.kvalitetsit.ihexds.integrationtest;
 
 
+import dk.kvalitetsit.ihexdsapi.controller.exception.BadRequestException;
 import org.apache.http.HttpStatus;
 import org.junit.Test;
 import org.openapitools.client.api.CredentialsApi;
@@ -52,6 +53,24 @@ public class CredentialsAPIIT extends AbstractIntegrationTest {
         var result = credentialsApi.v1CredentialinfoGet(null, filter);
 
         assertEquals(2, result.size());
+
+         filter = CredentialInfoResponse.CredentialTypeEnum.SYSTEM.toString();
+
+         result = credentialsApi.v1CredentialinfoGet(null, filter);
+
+        assertEquals(1, result.size());
+
+
+    }
+    @Test
+    public void testCredentialinfoGetControllerThrowsBadRequest() throws ApiException, IOException, URISyntaxException {
+
+
+
+        ApiException apiException = assertThrows(ApiException.class, () -> credentialsApi.v1CredentialinfoGet(null, "filter"));
+        assertEquals(HttpStatus.SC_BAD_REQUEST, apiException.getCode());
+        assertTrue(apiException.getResponseBody().contains("Bad type query"));
+
 
 
     }

@@ -1,7 +1,11 @@
 package dk.kvalitetsit.ihexdsapi.service.impl;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringWriter;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.activation.DataHandler;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -19,16 +23,20 @@ import javax.xml.xpath.XPathFactory;
 
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsClientInfo;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSoapDecorator;
+import dk.kvalitetsit.ihexdsapi.dgws.Iti43Exception;
 import dk.kvalitetsit.ihexdsapi.service.Iti43Service;
 
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.openapitools.model.Iti43QueryParameter;
+import org.openapitools.model.Iti43Response;
+import org.openapitools.model.RegistryError;
 import org.openehealth.ipf.commons.ihe.xds.core.ebxml.EbXMLFactory;
 import org.openehealth.ipf.commons.ihe.xds.core.ebxml.ebxml30.EbXMLFactory30;
 import org.openehealth.ipf.commons.ihe.xds.core.ebxml.ebxml30.EbXMLRetrieveDocumentSetResponse30;
 import org.openehealth.ipf.commons.ihe.xds.core.ebxml.ebxml30.RetrieveDocumentSetRequestType;
 import org.openehealth.ipf.commons.ihe.xds.core.ebxml.ebxml30.RetrieveDocumentSetResponseType;
+import org.openehealth.ipf.commons.ihe.xds.core.responses.ErrorInfo;
 import org.openehealth.ipf.commons.ihe.xds.core.responses.RetrievedDocumentSet;
 import org.openehealth.ipf.commons.ihe.xds.core.transform.responses.RetrieveDocumentSetResponseTransformer;
 import org.openehealth.ipf.commons.ihe.xds.iti43.Iti43PortType;
@@ -44,6 +52,7 @@ public class Iti43ServiceImpl implements Iti43Service {
     private DgwsSoapDecorator dgwsSoapDecorator = new DgwsSoapDecorator();
     private static final EbXMLFactory ebXMLFactory = new EbXMLFactory30();
 
+
     public Iti43ServiceImpl(Iti43PortType iti43PortType) {
         this.iti43PortType = iti43PortType;
 
@@ -52,28 +61,53 @@ public class Iti43ServiceImpl implements Iti43Service {
     }
 
     @Override
-    public String getDocument(Iti43QueryParameter queryParameter, DgwsClientInfo clientInfo) {
+    public Iti43Response getDocument(Iti43QueryParameter queryParameter, DgwsClientInfo clientInfo) throws Iti43Exception {
+        dgwsSoapDecorator.setDgwsClientInfo(clientInfo);
+        Iti43Response iti43Response = new Iti43Response();
+        RetrievedDocumentSet documentResponse = fetchDocument(queryParameter.getDocumentId(), queryParameter.getRepositoryId());
+
+        if (documentResponse.getDocuments().isEmpty()) {
+            List<RegistryError> errors = new LinkedList<>();
+            for (ErrorInfo errorInfo : documentResponse.getErrors()) {
+                RegistryError registryError = new RegistryError();
+
+                registryError.setCodeContext(errorInfo.getCodeContext());
+                registryError.setErrorCode(errorInfo.getErrorCode().getOpcode() + " , " + errorInfo.getErrorCode().name());
+
+                if (errorInfo.getSeverity().name().contains("ERROR")) {
+                    registryError.setSeverity(RegistryError.SeverityEnum.ERROR);
+                } else {
+                    registryError.setSeverity(RegistryError.SeverityEnum.WARNING);
+
+                }
+
+                errors.add(registryError);
+            }
+            dgwsSoapDecorator.clearSDgwsClientInfo();
+            throw new Iti43Exception(1000, "Failed to retrieve document", errors);
+        }
+        //String xml = documentResponse.getDocuments().get(0).getDataHandler();
+        String xml = null;
         try {
-            dgwsSoapDecorator.setDgwsClientInfo(clientInfo);
-
-            RetrievedDocumentSet documentResponse = fetchDocument(queryParameter.getDocumentId(), queryParameter.getRepositoryId());
-            System.out.println(documentResponse);
-            String xml = formatXML(documentResponse.getDocuments().get(0).getDataHandler());
-            return xml;
-
-        } catch (XPathExpressionException e) {
+            xml = formatXML(documentResponse.getDocuments().get(0).getDataHandler());
+        } catch (TransformerException e) {
+            throw new RuntimeException(e);
+        } catch (SAXException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ParserConfigurationException e) {
             throw new RuntimeException(e);
-        } catch (TransformerException e) {
+        } catch (XPathExpressionException e) {
             throw new RuntimeException(e);
-        } catch (SAXException e) {
-            throw new RuntimeException(e);
-        } finally {
-            dgwsSoapDecorator.clearSDgwsClientInfo();
         }
+
+        iti43Response.setResponse(xml);
+        dgwsSoapDecorator.clearSDgwsClientInfo();
+
+
+        return iti43Response;
+
     }
 
 
@@ -100,6 +134,7 @@ public class Iti43ServiceImpl implements Iti43Service {
         return retrieveDocumentSetRequestType;
     }
 
+    // TODO kig på at få inputsource til string
     private String formatXML(DataHandler dataHandler) throws TransformerException, SAXException, IOException, ParserConfigurationException, XPathExpressionException {
         Document xmlDocument = DocumentBuilderFactory.newInstance()
                 .newDocumentBuilder()
@@ -126,6 +161,8 @@ public class Iti43ServiceImpl implements Iti43Service {
         return stringWriter.toString();
 
     }
+
+
     private EbXMLFactory getEbXmlFactory() {
         return ebXMLFactory;
     }
