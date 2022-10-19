@@ -160,7 +160,6 @@ public class CredentialServiceImpl implements CredentialService {
                 responses.add(credentialInfoResponse);
             }
         } else {
-            // TODO Fix
             for (String[] id : ids) {
                 if (CredentialInfoResponse.CredentialTypeEnum.valueOf(this.getType(id[0])) == type) {
                     {

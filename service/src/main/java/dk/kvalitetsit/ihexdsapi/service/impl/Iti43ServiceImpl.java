@@ -1,6 +1,8 @@
 package dk.kvalitetsit.ihexdsapi.service.impl;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.util.LinkedList;
 import java.util.List;
@@ -99,6 +101,7 @@ public class Iti43ServiceImpl implements Iti43Service {
         } catch (XPathExpressionException e) {
             throw new RuntimeException(e);
         }
+
         iti43Response.setResponse(xml);
         dgwsSoapDecorator.clearSDgwsClientInfo();
 
@@ -158,6 +161,7 @@ public class Iti43ServiceImpl implements Iti43Service {
         return stringWriter.toString();
 
     }
+
 
     private EbXMLFactory getEbXmlFactory() {
         return ebXMLFactory;
