@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 // CORS - Consider if this is needed in your application. Only here to make Swagger UI work.
@@ -85,25 +87,21 @@ public class IheXdsController  implements IhexdsApi,  RequestResultApi, Response
 	public ResponseEntity<Iti43Response> v1Iti43Post(Iti43Request iti43Request) {
 		try {
 			DgwsClientInfo clientInfo = dgwsService.getHealthCareProfessionalClientInfo(iti43Request.getQueryParameters().getPatientId(), iti43Request.getCredentialId(), iti43Request.getContext());
-			String resp = iti43Service.getDocument(iti43Request.getQueryParameters(), clientInfo);
-			Iti43Response iti43Response = new Iti43Response();
-			iti43Response.setResponse(resp);
+			Iti43Response iti43Response = iti43Service.getDocument(iti43Request.getQueryParameters(), clientInfo);
 			return new ResponseEntity<>(iti43Response, HttpStatus.OK);
 		}catch (DgwsSecurityException e) {
+
 			throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
 			//throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
 		} catch (Iti43Exception e) {
-			throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
+			List<String> errors = new ArrayList<>();
+			for (RegistryError err : e.getOtherErrors() ) {
+				errors.add("" + err.getCodeContext() + ", " + err.getErrorCode() + ", " + err.getSeverity() + ", " + err.getCustomErrorCode());
+			}
+
+			throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage(), errors);
 		}
 	}
-
-	/* ResponseEntity<Iti41Response> v1Iti43Post(Iti41Request iti41Request) {
-	DgwsClientInfo clientInfo = dgwsService.getHealthCareProfessionalClientInfo();
-
-	}
-	 */
-
-
 
 
 	@Override

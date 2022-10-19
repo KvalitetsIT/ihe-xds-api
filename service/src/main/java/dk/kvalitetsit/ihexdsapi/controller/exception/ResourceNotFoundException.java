@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 public class ResourceNotFoundException extends RuntimeException {
@@ -31,6 +32,17 @@ public class ResourceNotFoundException extends RuntimeException {
         error.setStatusText(HttpStatus.NOT_FOUND.getReasonPhrase());
         error.setTimestamp(OffsetDateTime.now());
         error.setErrorCode(ERROR_CODE.GENERIC.errorCode);
+
+        return new ResourceNotFoundException(error);
+    }
+    public static ResourceNotFoundException createException(String message, List<String> externalErrors) {
+        var error = new BasicError();
+        error.setError(message);
+        error.setStatus(HttpStatus.NOT_FOUND.value());
+        error.setStatusText(HttpStatus.NOT_FOUND.getReasonPhrase());
+        error.setTimestamp(OffsetDateTime.now());
+        error.setErrorCode(ERROR_CODE.GENERIC.errorCode);
+        error.setOtherError(externalErrors);
 
         return new ResourceNotFoundException(error);
     }

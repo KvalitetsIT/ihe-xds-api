@@ -145,6 +145,6 @@ public class IheXdsControllerTest {
         // Then
         Assert.assertNotNull(responseEntity);
         Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        Assert.assertNotNull(responseEntity.getBody());
+
     }
 }

@@ -497,6 +497,12 @@ components:
           description: The response of teh document as string/bytes
           type: string
           example: "<xml>...<xml>"
+        errors:
+          description: registry errors list
+          type: array
+          items:
+            $ref: '#/components/schemas/registryError'
+          example: "[..], [..]"
 
     iti43Request:
       type: object
