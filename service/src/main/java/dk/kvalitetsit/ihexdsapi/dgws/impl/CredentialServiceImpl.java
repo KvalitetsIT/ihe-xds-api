@@ -42,6 +42,9 @@ public class CredentialServiceImpl implements CredentialService {
         if (displayName.equals("Sonja Bech")) {
             id = "D:" + "9038f177-d345-4c42-b2b4-6e27314e713e";
         }
+        else if (displayName.equals("Default VOCES")) {
+            id = "D:" + "9038f177-d345-4c42-b2b4-6e27314e714f";
+        }
 
         if (credentialInfoForID.containsKey(id) || this.credentialRepository.findCredentialInfoByID(id) != null) {
             throw new DgwsSecurityException(3, "A credential vault with id " + id + " is already registered.");

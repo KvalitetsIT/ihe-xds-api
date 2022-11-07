@@ -84,6 +84,16 @@ public class IheXdsController  implements IhexdsApi,  RequestResultApi, Response
 	}
 
 	@Override
+	public ResponseEntity<Iti41PreviewResponse> v1Iti41PreviewUploadPost(Iti41PreviewRequest iti41PreviewRequest) {
+		return null;
+	}
+
+	@Override
+	public ResponseEntity<Iti41UploadResponse> v1Iti41UploadPost(Iti41UploadRequest iti41UploadRequest) {
+		return null;
+	}
+
+	@Override
 	public ResponseEntity<Iti43Response> v1Iti43Post(Iti43Request iti43Request) {
 		try {
 			DgwsClientInfo clientInfo = dgwsService.getHealthCareProfessionalClientInfo(iti43Request.getQueryParameters().getPatientId(), iti43Request.getCredentialId(), iti43Request.getContext());

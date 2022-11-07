@@ -1,3 +1,4 @@
+# TODO MAke sure descriptions and summary fits. Did a lot of copy paste
 openapi: 3.0.0
 info:
   title: ihe-xds-api
@@ -87,7 +88,46 @@ paths:
               schema:
                 $ref: '#/components/schemas/iti43Response'
 
-
+  /v1/iti41/previewUpload:
+    post:
+      tags:
+        - IHEXDS
+      summary: Preview the CDA document/XML and let's the user adjust metadata before uploading
+      description: Preview the CDA document/XML and let's the user adjust metadata before uploading
+      requestBody:
+        description: The request iti41PreviewRequest consisting of xml file and repository name
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/iti41PreviewRequest'
+      responses:
+        '200':
+          description: Ok with response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/iti41PreviewResponse'
+  /v1/iti41/upload:
+    post:
+      tags:
+        - IHEXDS
+      summary: Uploads a clinic document to the databases at Nation Service platform
+      description: Uploads a clinic document to the databases at Nation Service platform
+      requestBody:
+        description: The request iti41UploadRequest consisting of xml file, repository name credintialID
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/iti41UploadRequest'
+      responses:
+        '200':
+          description: Ok with response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/iti41UploadResponse'
   /v1/codes/classCode:
     get:
       tags:
@@ -546,7 +586,7 @@ components:
 
 
 
-# TODO Write decriptions
+# TODO Write descriptions
     iti18ResponseUnique:
       type: object
       properties:
@@ -726,3 +766,159 @@ components:
         context:
           description: the context in which to make the query
           $ref: '#/components/schemas/healthcareProfessionalContext'
+
+    iti41PreviewRequest:
+      type: object
+      properties:
+        xmlInformation:
+          description: XML data from file either formatted or as bytes
+          type: string
+          example: "<xml>...<xml>"
+        repository:
+          description: Obejct of the repository
+          $ref: '#/components/schemas/iti41Repository'
+
+    # TODO Consider new name
+    iti41Repository:
+      type: object
+      properties:
+        displayName:
+          description: Named displayed in GUI
+          type: string
+          example: "DROS"
+        path:
+          description: Path that get's the correct repository
+          type: string
+          example: "DROS"
+
+    iti41PreviewResponse:
+      type: object
+      properties:
+        xmlInformation:
+          description: XML data from file either formatted or as bytes
+          type: string
+          example: "<xml>...<xml>"
+        repository:
+          description: Obejct of the repository
+          $ref: '#/components/schemas/iti41Repository'
+        generatedMetadata:
+          description: Obejct of the repository
+          $ref: '#/components/schemas/generatedMetaData'
+
+
+    generatedMetaData:
+      type: object
+      properties:
+        authorInstitution:
+          description: the context in which to make the query
+          $ref: '#/components/schemas/code'
+        authorPerson:
+          description: Documentets unique Id
+          type: string
+          example: "Prefix : Mr  Name: Doe"
+        confidentialityCode:
+          description:
+          $ref: '#/components/schemas/code'
+        creationTime:
+          description: The start service from date-time as Long
+          type: integer
+          format: int64
+          example: "1664349302510"
+        eventCode:
+          description: document event code
+          type: array
+          items:
+            $ref: '#/components/schemas/code'
+          example: "[..], [..]"
+        languageCode:
+          description: Document's language code
+          type: string
+          example: "Prefix : Mr  Name: Doe"
+        legalAuthenticator:
+          description: Document's unique Id
+          type: string
+          example: "Prefix : Mr  Name: Doe"
+        patientId:
+          description: patientId and codeScheme
+          $ref: '#/components/schemas/code'
+        serviceStartTime:
+          description: The start service from date-time as Long
+          type: integer
+          format: int64
+          example: "1664349302510"
+        serviceStopTime:
+          description: The start service to date-time as Long
+          type: integer
+          format: int64
+          example: "1664349302510"
+        size:
+          description: The start service from date-time as Long
+          type: integer
+          example: "1664349302510"
+        sourcePatientId:
+          description:
+          $ref: '#/components/schemas/code'
+        sourcePatientInfo:
+          description:
+          type: object
+          properties:
+            name:
+              description: credential ID
+              type: string
+              example: "2512489996"
+            gender:
+              description: The severirty's opcode and name
+              type: string
+              enum:
+                - M
+                - F
+                - UNI
+            birthTime:
+              description: The start service from date-time as Long
+              type: integer
+              format: int64
+              example: "1664349302510"
+        title:
+          description: title
+          type: string
+          example: "2512489996"
+        typeCode:
+          description:
+          $ref: '#/components/schemas/code'
+        uniqueId:
+          description: credential ID
+          type: string
+          example: "2512489996"
+        isLegalDocument:
+          description: Boolean that indicates weather or not the document is legal
+          type: boolean
+          example: "False"
+
+
+    iti41UploadRequest:
+      type: object
+      properties:
+        xmlInformation:
+          description: XML data from file either formatted or as bytes
+          type: string
+          example: "<xml>...<xml>"
+        repository:
+          description: Obejct of the repository
+          $ref: '#/components/schemas/iti41Repository'
+        certificateID:
+          description: ID of the credentialInfo that uploads the document
+          type: string
+
+    iti41UploadResponse:
+      type: object
+      properties:
+        resultMessage:
+          description: Message from backend that is either successful or failed
+          type: string
+        uniqueId:
+          description: If successful unique Id of the document
+          type: string
+        patientId:
+          description: The id of the patient
+          type: string
+
