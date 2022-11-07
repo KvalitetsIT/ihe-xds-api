@@ -6,6 +6,10 @@ import org.openapitools.client.ApiException;
 import org.openapitools.client.api.IhexdsApi;
 import org.openapitools.client.model.*;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
@@ -81,6 +85,47 @@ public class IhexdsApiIT extends AbstractIntegrationTest{
         iti43Request.setQueryParameters(queryParameters);
 
         var result = ihexdsApi.v1Iti43PostWithHttpInfo(iti43Request);
+
+        assertEquals(200, result.getStatusCode());
+
+    }
+
+
+    @Test
+    public void testv1Iti41UploadPostController () throws ApiException, URISyntaxException, IOException {
+
+        Iti41Repository iti41Repository = new Iti41Repository();
+        iti41Repository.setDisplayName("DROS");
+        iti41Repository.setPath("DROS");
+
+        Iti41UploadRequest iti41UploadRequest = new Iti41UploadRequest();
+
+        iti41UploadRequest.setCertificateID("D:" + "9038f177-d345-4c42-b2b4-6e27314e714f");
+        iti41UploadRequest.setRepository(iti41Repository);
+
+        iti41UploadRequest.setXmlInformation(Files.readString(Paths.get(getClass().getClassLoader().getResource("xml/DK-APD_Example_1_2_apd_maximum.xml").toURI())));
+
+
+        var result = ihexdsApi.v1Iti41UploadPostWithHttpInfo(iti41UploadRequest);
+
+        assertEquals(201, result.getStatusCode());
+
+    }
+
+    @Test
+    public void testv1Iti41PreviewUploadPostController () throws ApiException, URISyntaxException, IOException {
+
+        Iti41Repository iti41Repository = new Iti41Repository();
+        iti41Repository.setDisplayName("DROS");
+        iti41Repository.setPath("DROS");
+
+        Iti41PreviewRequest request = new Iti41PreviewRequest();
+        request.setXmlInformation(Files.readString(Paths.get(getClass().getClassLoader().getResource("xml/DK-APD_Example_1_2_apd_maximum.xml").toURI())));
+
+
+
+
+        var result = ihexdsApi.v1Iti41PreviewUploadPostWithHttpInfo(request);
 
         assertEquals(200, result.getStatusCode());
 
