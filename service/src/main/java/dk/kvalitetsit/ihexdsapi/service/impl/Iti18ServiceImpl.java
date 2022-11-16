@@ -270,7 +270,7 @@ public class Iti18ServiceImpl implements Iti18Service {
 
         } finally {
             dgwsSoapDecorator.clearSDgwsClientInfo();
-            ;
+
         }
     }
 
@@ -460,7 +460,7 @@ public class Iti18ServiceImpl implements Iti18Service {
 
         return metaDataResponse;
     }
-
+//TODO refactor in one class
     private org.openapitools.model.Code makeCodeObject(String name, String code, String codeScheme) {
         org.openapitools.model.Code c = new org.openapitools.model.Code();
         c.setName(name);

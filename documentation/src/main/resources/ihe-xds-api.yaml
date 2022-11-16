@@ -805,7 +805,7 @@ components:
           description: Obejct of the repository
           $ref: '#/components/schemas/generatedMetaData'
 
-
+# MetaData generated from xml document
     generatedMetaData:
       type: object
       properties:
@@ -814,15 +814,25 @@ components:
           $ref: '#/components/schemas/code'
         authorPerson:
           description: Documentets unique Id
-          type: string
-          example: "Prefix : Mr  Name: Doe"
+          type: object
+          properties:
+            familyName:
+              type: string
+            givenName:
+              description: credential ID
+              type: string
+              example: "2512489996"
+            secondAndFurtherGivenNames:
+              description: credential ID
+              type: string
+              example: "2512489996"
+
         confidentialityCode:
           description:
           $ref: '#/components/schemas/code'
         creationTime:
           description: The start service from date-time as Long
-          type: integer
-          format: int64
+          type: string
           example: "1664349302510"
         eventCode:
           description: document event code
@@ -862,7 +872,13 @@ components:
           description:
           type: object
           properties:
-            name:
+            familyName:
+              type: string
+            givenName:
+              description: credential ID
+              type: string
+              example: "2512489996"
+            secondAndFurtherGivenNames:
               description: credential ID
               type: string
               example: "2512489996"
@@ -875,8 +891,7 @@ components:
                 - UNI
             birthTime:
               description: The start service from date-time as Long
-              type: integer
-              format: int64
+              type: string
               example: "1664349302510"
         title:
           description: title
@@ -893,6 +908,139 @@ components:
           description: Boolean that indicates weather or not the document is legal
           type: boolean
           example: "False"
+
+# All meta data
+    responseMetaData:
+      type: object
+      properties:
+        authorInstitution:
+          description: the context in which to make the query
+          $ref: '#/components/schemas/code'
+        authorPerson:
+          description: Documentets unique Id
+          type: object
+          properties:
+            familyName:
+              type: string
+            givenName:
+              description: credential ID
+              type: string
+              example: "2512489996"
+            secondAndFurtherGivenNames:
+              description: credential ID
+              type: string
+              example: "2512489996"
+
+        confidentialityCode:
+          description:
+          $ref: '#/components/schemas/code'
+        creationTime:
+          description: The start service from date-time as Long
+          type: string
+          example: "1664349302510"
+        eventCode:
+          description: document event code
+          type: array
+          items:
+            $ref: '#/components/schemas/code'
+          example: "[..], [..]"
+        languageCode:
+          description: Document's language code
+          type: string
+          example: "Prefix : Mr  Name: Doe"
+        legalAuthenticator:
+          description: Documentets unique Id
+          type: object
+          properties:
+            familyName:
+              type: string
+            givenName:
+              description: credential ID
+              type: string
+              example: "2512489996"
+            secondAndFurtherGivenNames:
+              description: credential ID
+              type: string
+              example: "2512489996"
+        patientId:
+          description: patientId and codeScheme
+          $ref: '#/components/schemas/code'
+        serviceStartTime:
+          description: The start service from date-time as Long
+          type: string
+          example: "1664349302510"
+        serviceStopTime:
+          description: The start service to date-time as Long
+          type: string
+          example: "1664349302510"
+        size:
+          description: The start service from date-time as Long
+          type: integer
+          example: "1664349302510"
+        sourcePatientId:
+          description:
+          $ref: '#/components/schemas/code'
+        sourcePatientInfo:
+          description:
+          type: object
+          properties:
+            familyName:
+              type: string
+            givenName:
+              description: credential ID
+              type: string
+              example: "2512489996"
+            secondAndFurtherGivenNames:
+              description: credential ID
+              type: string
+              example: "2512489996"
+            gender:
+              description: The severirty's opcode and name
+              type: string
+              enum:
+                - M
+                - F
+                - UNI
+            birthTime:
+              description: The start service from date-time as Long
+              type: string
+              example: "1664349302510"
+        title:
+          description: title
+          type: string
+          example: "2512489996"
+        typeCode:
+          description:
+          $ref: '#/components/schemas/code'
+        uniqueId:
+          description: credential ID
+          type: string
+          example: "2512489996"
+        isLegalDocument:
+          description: Boolean that indicates weather or not the document is legal
+          type: boolean
+          example: "False"
+        objectType:
+          description: Documentets unique Id
+          type: string
+          example: "Prefix : Mr  Name: Doe"
+        availabilityStatus:
+          description: Documentets unique Id
+          type: string
+          example: "Prefix : Mr  Name: Doe"
+        formatCode:
+          description:
+          $ref: '#/components/schemas/code'
+        healthcareFacilityTypeCode:
+          description:
+          $ref: '#/components/schemas/code'
+        practiceSetting:
+          description:
+          $ref: '#/components/schemas/code'
+        classCode:
+          description:
+          $ref: '#/components/schemas/code'
+
 
 
     iti41UploadRequest:

@@ -77,11 +77,12 @@ public class DgwsSoapDecorator extends AbstractSoapInterceptor {
         }
 
         // Add HSUID
+        /*
         try {
             message.getHeaders().add(getHsuid(clientInfo));
         } catch (ParserConfigurationException | JAXBException e) {
             throw new RuntimeException(e);
-        }
+        }*/
     }
 
     private Header getHsuid(DgwsClientInfo clientInfo) throws JAXBException, ParserConfigurationException {

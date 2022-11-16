@@ -1,18 +1,17 @@
 package dk.kvalitetsit.ihexdsapi.controller;
 
 import dk.kvalitetsit.ihexdsapi.controller.exception.BadRequestException;
-import dk.kvalitetsit.ihexdsapi.dgws.DgwsClientInfo;
-import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
-import dk.kvalitetsit.ihexdsapi.dgws.DgwsService;
+import dk.kvalitetsit.ihexdsapi.dgws.*;
 import dk.kvalitetsit.ihexdsapi.dao.CacheRequestResponseHandle;
-import dk.kvalitetsit.ihexdsapi.dgws.Iti43Exception;
 import dk.kvalitetsit.ihexdsapi.service.Iti18Service;
 import dk.kvalitetsit.ihexdsapi.service.IDContextService;
+import dk.kvalitetsit.ihexdsapi.service.Iti41Service;
 import dk.kvalitetsit.ihexdsapi.service.Iti43Service;
 import org.openapitools.api.*;
 import org.openapitools.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,14 +41,19 @@ public class IheXdsController  implements IhexdsApi,  RequestResultApi, Response
 
 
 
+	private Iti41Service iti41Service;
+
+
+
     public IheXdsController(DgwsService dgwsService, Iti18Service iti18Service,
 							CacheRequestResponseHandle cacheRequestResponseHandle,
-							IDContextService iDContextService, Iti43Service iti43Service) {
+							IDContextService iDContextService, Iti43Service iti43Service, Iti41Service iti41Service) {
         this.dgwsService = dgwsService;
 		this.iti18Service = iti18Service;
 		this.cacheRequestResponseHandle = cacheRequestResponseHandle;
 		this.iDContextService = iDContextService;
 		this.iti43Service = iti43Service;
+		this.iti41Service = iti41Service;
     }
 
 	@Override
@@ -88,8 +92,29 @@ public class IheXdsController  implements IhexdsApi,  RequestResultApi, Response
 		return null;
 	}
 
+
+
 	@Override
-	public ResponseEntity<Iti41UploadResponse> v1Iti41UploadPost(Iti41UploadRequest iti41UploadRequest) {
+	public ResponseEntity<Iti41UploadResponse> v1Iti41UploadPost(Iti41UploadRequest iti41UploadRequest ) {
+		HealthcareProfessionalContext context = new HealthcareProfessionalContext();
+
+		context.setAuthorizationCode("NS363");
+		context.setConsentOverride(false);
+		context.setRole("User");
+		try {
+			//DgwsClientInfo clientInfo = dgwsService.getSystemClientInfo(iti41UploadRequest.getCertificateID());
+			//moces
+			DgwsClientInfo clientInfo = dgwsService.getHealthCareProfessionalClientInfo("", iti41UploadRequest.getCertificateID(), context);
+			System.out.println(clientInfo);
+			Iti41UploadResponse response = iti41Service.uploadRequest(iti41UploadRequest.getXmlInformation(),clientInfo);
+
+		} catch (DgwsSecurityException e) {
+			System.out.println(e);
+		}
+
+		System.out.println();
+
+
 		return null;
 	}
 

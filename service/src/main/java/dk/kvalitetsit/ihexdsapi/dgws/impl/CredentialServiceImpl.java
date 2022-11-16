@@ -14,6 +14,7 @@ import dk.kvalitetsit.ihexdsapi.dgws.CredentialService;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
 import dk.sosi.seal.vault.GenericCredentialVault;
 
+// TODO Consider making UUID A utility helper class (refactor)
 
 public class CredentialServiceImpl implements CredentialService {
 

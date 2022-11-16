@@ -25,6 +25,10 @@ public class DgwsClientInfo {
 
     }
 
+    public DgwsClientInfo(Document systemCardDocument) {
+        this.sosi = systemCardDocument;
+    }
+
     public Document getSosi() {
         return sosi;
     }

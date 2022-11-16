@@ -27,125 +27,133 @@ import dk.sosi.seal.xml.XmlUtil;
 
 public class StsServiceImpl implements StsService {
 
-	private String stsUrl;
+    private String stsUrl;
 
-	private RestTemplate restTemplate = new RestTemplate();
+    private RestTemplate restTemplate = new RestTemplate();
 
-	private String itSystem;
+    private String itSystem;
 
-	public StsServiceImpl(String stsUrl) {
-		this.stsUrl = stsUrl;
-		this.itSystem = "IheXdsApi";
-	}
+    public StsServiceImpl(String stsUrl) {
+        this.stsUrl = stsUrl;
+        this.itSystem = "IheXdsApi";
+    }
 
-	@Override
-	public DgwsClientInfo getDgwsClientInfoForSystem(CredentialInfo credentialInfo, String patientId, HealthcareProfessionalContext context) throws DgwsSecurityException {
-		Properties properties = new Properties(System.getProperties());
-		properties.setProperty(SOSIFactory.PROPERTYNAME_SOSI_VALIDATE, Boolean.toString(true));
-		SOSIFactory sosiFactory = new SOSIFactory(new SOSITestFederation(properties), credentialInfo.getCredentialVault(), properties);
+    // User  Moces
+    @Override
+    public DgwsClientInfo getDgwsClientInfoForSystem(CredentialInfo credentialInfo, String patientId, HealthcareProfessionalContext context) throws DgwsSecurityException {
+        Properties properties = new Properties(System.getProperties());
+        properties.setProperty(SOSIFactory.PROPERTYNAME_SOSI_VALIDATE, Boolean.toString(true));
+        SOSIFactory sosiFactory = new SOSIFactory(new SOSITestFederation(properties), credentialInfo.getCredentialVault(), properties);
 
-		System.out.println(credentialInfo.getCredentialVault().getSystemCredentialPair().getCertificate().getSubjectX500Principal().getName());
-		String cvr = credentialInfo.getCredentialVault().getSystemCredentialPair().getCertificate().getSubjectX500Principal().getName();
-		cvr = cvr.substring(cvr.lastIndexOf('/') + 6,cvr.lastIndexOf(','));
+        // System.out.println(credentialInfo.getCredentialVault().getSystemCredentialPair().getCertificate().getSubjectX500Principal().getName());
+        String cvr = credentialInfo.getCredentialVault().getSystemCredentialPair().getCertificate().getSubjectX500Principal().getName();
+        cvr = cvr.substring(cvr.lastIndexOf('/') + 6, cvr.lastIndexOf(','));
 
-		String authorizationCode = context.getAuthorizationCode();
-
-
-		UserIDCard userIDCard = getUserIdCard(credentialInfo, sosiFactory, cvr, context.getRole(), authorizationCode);
+        String authorizationCode = context.getAuthorizationCode();
 
 
-		Request request = sosiFactory.createNewRequest(false, null);
-		request.setIDCard(userIDCard);
-		return new DgwsClientInfo(request.serialize2DOMDocument(), userIDCard.getUserInfo().getCPR(), patientId, userIDCard.getUserInfo().getAuthorizationCode(), cvr, context.getConsentOverride());
-	}
-
-	private UserIDCard getUserIdCard(CredentialInfo credentialInfo, SOSIFactory sosiFactory, String cvr, String role, String authCode) throws DgwsSecurityException {
-		CredentialVault credentialVault = credentialInfo.getCredentialVault();
-
-		String rawString = credentialVault.getSystemCredentialPair().getCertificate().getSubjectX500Principal().getName();
-		var test = credentialVault.getSystemCredentialPair().getCertificate().getSubjectX500Principal().toString();
+        UserIDCard userIDCard = getUserIdCard(credentialInfo, sosiFactory, cvr, context.getRole(), authorizationCode);
 
 
-		String name = rawString.substring(3, rawString.indexOf(' '));
-		String surName =rawString.substring(rawString.indexOf(' ')+1, rawString.indexOf('+'));
-		String orgName = rawString.substring(rawString.indexOf(',') + 3, rawString.indexOf('/') - 1 );
+        Request request = sosiFactory.createNewRequest(false, null);
+        request.setIDCard(userIDCard);
+        return new DgwsClientInfo(request.serialize2DOMDocument(), userIDCard.getUserInfo().getCPR(), patientId, userIDCard.getUserInfo().getAuthorizationCode(), cvr, context.getConsentOverride());
+    }
+
+    @Override
+    public DgwsClientInfo getDgwsClientInfoForSystem(CredentialInfo credentialInfo) throws DgwsSecurityException {
+        Properties properties = new Properties(System.getProperties());
+        properties.setProperty(SOSIFactory.PROPERTYNAME_SOSI_VALIDATE, Boolean.toString(true));
+        SOSIFactory sosiFactory = new SOSIFactory(new SOSITestFederation(properties), credentialInfo.getCredentialVault(), properties);
 
 
-		UserInfo userInfo = new UserInfo(null, name, surName, null, null, role, authCode);
-		CareProvider careProvider = new CareProvider(SubjectIdentifierTypeValues.CVR_NUMBER, cvr, orgName);
-		UserIDCard selfSigned = sosiFactory.createNewUserIDCard(itSystem, userInfo, careProvider, AuthenticationLevel.MOCES_TRUSTED_USER, null, null, null, null);
-
-		SecurityTokenRequest securityTokenRequest = sosiFactory.createNewSecurityTokenRequest();
-		securityTokenRequest.setIDCard(selfSigned);
-		Document doc = securityTokenRequest.serialize2DOMDocument();
-
-		SignatureConfiguration signatureConfiguration = new SignatureConfiguration(new String[] { IDValues.IDCARD }, IDValues.IDCARD, IDValues.id);
-		SignatureUtil.sign(SignatureProviderFactory.fromCredentialVault(credentialVault), doc, signatureConfiguration);
-		String requestXml = XmlUtil.node2String(doc, false, true);
-
-		String responseXml = null;
-		try {
-			responseXml = sendRequest(requestXml);
-
-		} catch (IOException e) {
-			throw new DgwsSecurityException(e, 1000, "Something went wrong");
-		}
+        SystemIDCard systemIDCard = getSystemIdCardFromSTS(credentialInfo, credentialInfo.getCvr(), credentialInfo.getOrganisationName(), sosiFactory);
 
 
-		SecurityTokenResponse securityTokenResponse = sosiFactory.deserializeSecurityTokenResponse(responseXml);
+        Request request = sosiFactory.createNewRequest(false, null);
+        request.setIDCard(systemIDCard);
+        return new DgwsClientInfo(request.serialize2DOMDocument());
+    }
 
-		if (securityTokenResponse.isFault() || securityTokenResponse.getIDCard() == null) {
-			throw  new DgwsSecurityException(1000, securityTokenResponse.getFaultString());
-		}
-		else {
-			return  (UserIDCard) securityTokenResponse.getIDCard();
+    private UserIDCard getUserIdCard(CredentialInfo credentialInfo, SOSIFactory sosiFactory, String cvr, String role, String authCode) throws DgwsSecurityException {
+        CredentialVault credentialVault = credentialInfo.getCredentialVault();
 
-
-		}
-	}
+        String rawString = credentialVault.getSystemCredentialPair().getCertificate().getSubjectX500Principal().getName();
 
 
-
-	private Document getSystemIdCardFromSTS(CredentialVault credentialVault, String cvr, String organisation) throws DgwsSecurityException {
-		Properties properties = new Properties(System.getProperties());
-		properties.setProperty(SOSIFactory.PROPERTYNAME_SOSI_VALIDATE, Boolean.toString(true));
-		SOSIFactory sosiFactory = new SOSIFactory(new SOSITestFederation(properties), credentialVault, properties);
+        String name = rawString.substring(3, rawString.indexOf(' '));
+        String surName = rawString.substring(rawString.indexOf(' ') + 1, rawString.indexOf('+'));
+        String orgName = rawString.substring(rawString.indexOf(',') + 3, rawString.indexOf('/') - 1);
 
 
+        UserInfo userInfo = new UserInfo(null, name, surName, null, null, role, authCode);
+        CareProvider careProvider = new CareProvider(SubjectIdentifierTypeValues.CVR_NUMBER, cvr, orgName);
+        UserIDCard selfSigned = sosiFactory.createNewUserIDCard(itSystem, userInfo, careProvider, AuthenticationLevel.MOCES_TRUSTED_USER, null, null, null, null);
+
+        SecurityTokenRequest securityTokenRequest = sosiFactory.createNewSecurityTokenRequest();
+        securityTokenRequest.setIDCard(selfSigned);
+        Document doc = securityTokenRequest.serialize2DOMDocument();
+
+        SignatureConfiguration signatureConfiguration = new SignatureConfiguration(new String[]{IDValues.IDCARD}, IDValues.IDCARD, IDValues.id);
+        SignatureUtil.sign(SignatureProviderFactory.fromCredentialVault(credentialVault), doc, signatureConfiguration);
+        String requestXml = XmlUtil.node2String(doc, false, true);
+
+        String responseXml = null;
+        try {
+            responseXml = sendRequest(requestXml);
+
+        } catch (IOException e) {
+            throw new DgwsSecurityException(e, 1000, "Something went wrong");
+        }
 
 
-		CareProvider careProvider = new CareProvider(SubjectIdentifierTypeValues.CVR_NUMBER, cvr, organisation);
+        SecurityTokenResponse securityTokenResponse = sosiFactory.deserializeSecurityTokenResponse(responseXml);
+
+        if (securityTokenResponse.isFault() || securityTokenResponse.getIDCard() == null) {
+            throw new DgwsSecurityException(1000, securityTokenResponse.getFaultString());
+        } else {
+            return (UserIDCard) securityTokenResponse.getIDCard();
 
 
-		// User info / createNew USERIDCARD
-		SystemIDCard selfSignedUserIdCard = sosiFactory.createNewSystemIDCard(itSystem, careProvider, AuthenticationLevel.VOCES_TRUSTED_SYSTEM, null, null, credentialVault.getSystemCredentialPair().getCertificate(), null);
+        }
+    }
 
-		SecurityTokenRequest securityTokenRequest = sosiFactory.createNewSecurityTokenRequest();
-		securityTokenRequest.setIDCard(selfSignedUserIdCard);
-		Document doc = securityTokenRequest.serialize2DOMDocument();
 
-		SignatureConfiguration signatureConfiguration = new SignatureConfiguration(new String[] { IDValues.IDCARD }, IDValues.IDCARD, IDValues.id);
-		//SignatureUtil.sign(SignatureProviderFactory.fromCredentialVault(credentialVault), doc, signatureConfiguration);
-		String requestXml = XmlUtil.node2String(doc, false, true);
+    // Voces / Org certicate
+    private SystemIDCard getSystemIdCardFromSTS(CredentialInfo credentialInfo, String cvr, String organisation, SOSIFactory sosiFactory) throws DgwsSecurityException {
+        CredentialVault credentialVault = credentialInfo.getCredentialVault();
 
-		String responseXml = null;
-		try {
-			responseXml = sendRequest(requestXml);
-		} catch (IOException e) {
-			throw new DgwsSecurityException(e, 1000, "Something went wrong");
-		}
-		SecurityTokenResponse securityTokenResponse = sosiFactory.deserializeSecurityTokenResponse(responseXml);
 
-		if (securityTokenResponse.isFault() || securityTokenResponse.getIDCard() == null) {
-			throw  new DgwsSecurityException(1000, "No ID card :-(");
-		}
-		else {
-			SystemIDCard stsSignedIdCard = (SystemIDCard) securityTokenResponse.getIDCard();
-			Request request = sosiFactory.createNewRequest(false, null);
-			request.setIDCard(stsSignedIdCard);
-			return request.serialize2DOMDocument();
-		}
-	}
+        CareProvider careProvider = new CareProvider(SubjectIdentifierTypeValues.CVR_NUMBER, cvr, organisation);
+
+
+        SystemIDCard selfSignedSystemIdCard = sosiFactory.createNewSystemIDCard(itSystem, careProvider, AuthenticationLevel.VOCES_TRUSTED_SYSTEM, null, null, credentialVault.getSystemCredentialPair().getCertificate(), null);
+
+        SecurityTokenRequest securityTokenRequest = sosiFactory.createNewSecurityTokenRequest();
+        securityTokenRequest.setIDCard(selfSignedSystemIdCard);
+        Document doc = securityTokenRequest.serialize2DOMDocument();
+
+        //SignatureConfiguration signatureConfiguration = new SignatureConfiguration(new String[]{IDValues.IDCARD}, IDValues.IDCARD, IDValues.id);
+        //SignatureUtil.sign(SignatureProviderFactory.fromCredentialVault(credentialVault), doc, signatureConfiguration);
+        String requestXml = XmlUtil.node2String(doc, false, true);
+        System.out.println();
+
+        String responseXml = null;
+        try {
+            responseXml = sendRequest(requestXml);
+        } catch (IOException e) {
+            throw new DgwsSecurityException(e, 1000, "Something went wrong");
+        }
+        SecurityTokenResponse securityTokenResponse = sosiFactory.deserializeSecurityTokenResponse(responseXml);
+
+        if (securityTokenResponse.isFault() || securityTokenResponse.getIDCard() == null) {
+            throw new DgwsSecurityException(1000, securityTokenResponse.getFaultString());
+        }
+
+        return (SystemIDCard) securityTokenResponse.getIDCard();
+    }
+
+
 /*
 	
 	protected Document generateTokenRequestForUserIdCard(CredentialVault vault, SOSIFactory sosiFactory) {
@@ -167,23 +175,20 @@ public class StsServiceImpl implements StsService {
 	}*/
 
 
+    private String sendRequest(String postBody) throws IOException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "text/xml; charset=utf-8");
+        headers.set("SOAPAction", "\"Issue\"");
 
+        HttpEntity<String> entity = new HttpEntity<>(postBody, headers);
 
+        ResponseEntity<String> result = restTemplate.exchange(stsUrl, HttpMethod.POST, entity, String.class);
 
-	private String sendRequest(String postBody) throws IOException {
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Content-Type", "text/xml; charset=utf-8");
-		headers.set("SOAPAction", "\"Issue\"");
+        int statusCode = result.getStatusCode().value();
+        if (statusCode != 200) {
+            throw new IOException("HTTP POST failed (" + statusCode + "): " + result.getBody());
+        }
 
-		HttpEntity<String> entity = new HttpEntity<>(postBody, headers);
-
-		ResponseEntity<String> result = restTemplate.exchange(stsUrl, HttpMethod.POST, entity, String.class);
-		
-		int statusCode = result.getStatusCode().value();
-		if (statusCode != 200) {
-			throw new IOException("HTTP POST failed (" + statusCode + "): " + result.getBody());
-		}
-
-		return result.getBody();
-	}
+        return result.getBody();
+    }
 }

@@ -100,7 +100,12 @@ public class IhexdsApiIT extends AbstractIntegrationTest{
 
         Iti41UploadRequest iti41UploadRequest = new Iti41UploadRequest();
 
-        iti41UploadRequest.setCertificateID("D:" + "9038f177-d345-4c42-b2b4-6e27314e714f");
+        //iti41UploadRequest.setCertificateID("D:" + "9038f177-d345-4c42-b2b4-6e27314e714f");
+        // moces
+        iti41UploadRequest.setCertificateID("D:" + "9038f177-d345-4c42-b2b4-6e27314e713e");
+
+
+
         iti41UploadRequest.setRepository(iti41Repository);
 
         iti41UploadRequest.setXmlInformation(Files.readString(Paths.get(getClass().getClassLoader().getResource("xml/DK-APD_Example_1_2_apd_maximum.xml").toURI())));

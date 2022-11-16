@@ -16,6 +16,8 @@ import dk.kvalitetsit.ihexdsapi.service.*;
 import dk.kvalitetsit.ihexdsapi.service.impl.*;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
+import org.apache.cxf.interceptor.LoggingInInterceptor;
+import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.openehealth.ipf.commons.ihe.ws.WsTransactionConfiguration;
 import org.openehealth.ipf.commons.ihe.xds.core.XdsClientFactory;
 import org.openehealth.ipf.commons.ihe.xds.iti18.Iti18PortType;
@@ -176,11 +178,14 @@ public class IheXdsConfiguration {
     }
 
     @Bean
-    @Scope(value = "prototype")
+   // @Scope(value = "prototype")
     public Iti41PortType getDocumentRepositoryServiceIti41() {
         LOGGER.info("Creating Iti41PortType for url: "+xdsIti41Endpoint);
         XdsClientFactory xdsClientFactory = generateXdsRepositoryClientFactory("wsdl/iti41.wsdl", xdsIti41Endpoint, Iti41PortType.class);
         Iti41PortType client = (Iti41PortType) xdsClientFactory.getClient();
+        Client proxy = ClientProxy.getClient(client);
+        proxy.getOutInterceptors().add(new LoggingOutInterceptor());
+        proxy.getInInterceptors().add(new LoggingInInterceptor());
 
         return client;
     }
