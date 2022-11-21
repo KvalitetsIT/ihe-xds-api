@@ -183,9 +183,9 @@ public class IheXdsConfiguration {
         LOGGER.info("Creating Iti41PortType for url: "+xdsIti41Endpoint);
         XdsClientFactory xdsClientFactory = generateXdsRepositoryClientFactory("wsdl/iti41.wsdl", xdsIti41Endpoint, Iti41PortType.class);
         Iti41PortType client = (Iti41PortType) xdsClientFactory.getClient();
-        Client proxy = ClientProxy.getClient(client);
+       /* Client proxy = ClientProxy.getClient(client);
         proxy.getOutInterceptors().add(new LoggingOutInterceptor());
-        proxy.getInInterceptors().add(new LoggingInInterceptor());
+        proxy.getInInterceptors().add(new LoggingInInterceptor());*/
 
         return client;
     }

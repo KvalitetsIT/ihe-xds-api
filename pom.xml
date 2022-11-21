@@ -62,7 +62,19 @@
 			<artifactId>junit-vintage-engine</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>dk.s4.hl7</groupId>
+			<artifactId>builders</artifactId>
+			<version>3.0.4</version>
+		</dependency>
 	</dependencies>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>NSP Nexus</id>
+			<url>https://nexus.nspop.dk/nexus/content/groups/public</url>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<dependencyManagement>
 		<dependencies>

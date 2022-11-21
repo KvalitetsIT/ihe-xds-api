@@ -15,14 +15,8 @@ public interface CodesService {
     List<Code> getDocumentTypeList();
     List<Code> getTypeCodesList();
 
+    String getClassCodeFromTypeCode(String typeCode);
 
 
-
-
-
-
-
-
-
-
+    String getClassCodeNameFromCode(String classCode);
 }

@@ -826,7 +826,9 @@ components:
               description: credential ID
               type: string
               example: "2512489996"
-
+        classCode:
+          description:
+          $ref: '#/components/schemas/code'
         confidentialityCode:
           description:
           $ref: '#/components/schemas/code'
@@ -840,26 +842,37 @@ components:
           items:
             $ref: '#/components/schemas/code'
           example: "[..], [..]"
+        formatCode:
+          description:
+          $ref: '#/components/schemas/code'
         languageCode:
           description: Document's language code
           type: string
           example: "Prefix : Mr  Name: Doe"
         legalAuthenticator:
-          description: Document's unique Id
-          type: string
-          example: "Prefix : Mr  Name: Doe"
+          description: Documentets unique Id
+          type: object
+          properties:
+            familyName:
+              type: string
+            givenName:
+              description: credential ID
+              type: string
+              example: "2512489996"
+            secondAndFurtherGivenNames:
+              description: credential ID
+              type: string
+              example: "2512489996"
         patientId:
           description: patientId and codeScheme
           $ref: '#/components/schemas/code'
         serviceStartTime:
           description: The start service from date-time as Long
-          type: integer
-          format: int64
+          type: string
           example: "1664349302510"
         serviceStopTime:
-          description: The start service to date-time as Long
-          type: integer
-          format: int64
+          description: The start service from date-time as Long
+          type: string
           example: "1664349302510"
         size:
           description: The start service from date-time as Long

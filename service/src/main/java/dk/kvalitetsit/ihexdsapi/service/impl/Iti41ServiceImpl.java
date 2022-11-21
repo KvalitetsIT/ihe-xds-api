@@ -5,6 +5,7 @@ import dk.kvalitetsit.ihexdsapi.dgws.DgwsClientInfo;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSoapDecorator;
 import dk.kvalitetsit.ihexdsapi.service.Iti41Service;
 import dk.kvalitetsit.ihexdsapi.service.model.ProvideAndRegisterDocumentSetRequest;
+import dk.kvalitetsit.ihexdsapi.utility.XmlGenerator;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.openapitools.model.*;
@@ -20,8 +21,6 @@ import org.openehealth.ipf.commons.ihe.xds.core.transform.requests.ProvideAndReg
 import org.openehealth.ipf.commons.ihe.xds.iti41.Iti41PortType;
 
 import javax.activation.DataHandler;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
@@ -92,6 +91,22 @@ public class Iti41ServiceImpl implements Iti41Service {
         dgwsSoapDecorator.clearSDgwsClientInfo();
         return response;
     }
+
+    @Override
+    public GeneratedMetaData getGeneratedMetaData(String xml)  {
+        try {
+            XmlGenerator xmlDOM = new XmlGenerator(xml);
+            xmlDOM.findAttribute("id");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+
+
+        return null;
+    }
+
+
 
     /**
      * This the where the metadata and document gets combined And forms the requestset

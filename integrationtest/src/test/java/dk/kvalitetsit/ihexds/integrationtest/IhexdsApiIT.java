@@ -15,7 +15,7 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 
 public class IhexdsApiIT extends AbstractIntegrationTest{
-
+/*
     private IhexdsApi ihexdsApi;
 
     public IhexdsApiIT() {
@@ -90,7 +90,7 @@ public class IhexdsApiIT extends AbstractIntegrationTest{
 
     }
 
-
+/*
     @Test
     public void testv1Iti41UploadPostController () throws ApiException, URISyntaxException, IOException {
 
@@ -116,7 +116,7 @@ public class IhexdsApiIT extends AbstractIntegrationTest{
         assertEquals(201, result.getStatusCode());
 
     }
-
+    /*
     @Test
     public void testv1Iti41PreviewUploadPostController () throws ApiException, URISyntaxException, IOException {
 
@@ -134,5 +134,5 @@ public class IhexdsApiIT extends AbstractIntegrationTest{
 
         assertEquals(200, result.getStatusCode());
 
-    }
+    }*/
 }
