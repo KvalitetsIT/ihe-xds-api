@@ -257,7 +257,7 @@ public class Iti18ServiceImpl implements Iti18Service {
     @Override
     public Iti18Response queryForDocument(Iti18QueryParameter iti18Request, DgwsClientInfo dgwsClientInfo) throws DgwsSecurityException {
         try {
-            dgwsSoapDecorator.setDgwsClientInfo(dgwsClientInfo);
+            dgwsSoapDecorator.setDgwsClientInfo(dgwsClientInfo, true);
 
             var query = createQuery(iti18Request);
             var response = iti18PortType.documentRegistryRegistryStoredQuery(query);
@@ -277,7 +277,7 @@ public class Iti18ServiceImpl implements Iti18Service {
     @Override
     public Iti18ResponseUnique queryForDocument(Iti18RequestUnique iti18RequestUnique, DgwsClientInfo dgwsClientInfo) throws DgwsSecurityException {
         try {
-            dgwsSoapDecorator.setDgwsClientInfo(dgwsClientInfo);
+            dgwsSoapDecorator.setDgwsClientInfo(dgwsClientInfo, true);
 
 
             // TODO Change to actual document ID

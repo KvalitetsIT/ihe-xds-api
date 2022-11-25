@@ -5,10 +5,7 @@ import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsService;
 import dk.kvalitetsit.ihexdsapi.dao.CacheRequestResponseHandle;
 import dk.kvalitetsit.ihexdsapi.dao.impl.CacheRequestResponseHandleImpl;
-import dk.kvalitetsit.ihexdsapi.service.Iti18Service;
-import dk.kvalitetsit.ihexdsapi.service.IDContextService;
-import dk.kvalitetsit.ihexdsapi.service.Iti41Service;
-import dk.kvalitetsit.ihexdsapi.service.Iti43Service;
+import dk.kvalitetsit.ihexdsapi.service.*;
 import dk.kvalitetsit.ihexdsapi.service.impl.*;
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,10 +30,11 @@ public class IheXdsControllerTest {
 
     IDContextService iDContextService;
 
-
-
     IheXdsController subject;
 
+    Iti41RepositoriesService iti41RepositoriesService;
+
+    UploadService uploadService;
 
 
     @Before
@@ -48,11 +46,12 @@ public class IheXdsControllerTest {
         this.cacheRequestResponseHandle = Mockito.mock(CacheRequestResponseHandleImpl.class);
         this.iDContextService = Mockito.mock((IDContextServiceImpl.class));
         this.iti41Service = Mockito.mock(Iti41ServiceImpl.class);
+        this.iti41RepositoriesService = Mockito.mock(Iti41RepositoriesServiceImpl.class);
+    this.uploadService = Mockito.mock((UploadServiceImpl.class));
 
 
 
-
-        subject = new IheXdsController(dgwsService, iti18Service, cacheRequestResponseHandle, iDContextService, iti43Service, iti41Service);
+        subject = new IheXdsController(dgwsService, iti18Service, cacheRequestResponseHandle, iDContextService, iti43Service, iti41Service, iti41RepositoriesService, uploadService);
     }
 
    @Test

@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.api.IhexdsApi;
+import org.openapitools.client.api.TypeCodeApi;
 import org.openapitools.client.model.*;
 
 import java.io.IOException;
@@ -15,7 +16,7 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 
 public class IhexdsApiIT extends AbstractIntegrationTest{
-/*
+
     private IhexdsApi ihexdsApi;
 
     public IhexdsApiIT() {
@@ -90,7 +91,7 @@ public class IhexdsApiIT extends AbstractIntegrationTest{
 
     }
 
-/*
+
     @Test
     public void testv1Iti41UploadPostController () throws ApiException, URISyntaxException, IOException {
 
@@ -100,9 +101,10 @@ public class IhexdsApiIT extends AbstractIntegrationTest{
 
         Iti41UploadRequest iti41UploadRequest = new Iti41UploadRequest();
 
-        //iti41UploadRequest.setCertificateID("D:" + "9038f177-d345-4c42-b2b4-6e27314e714f");
+        iti41UploadRequest.setCertificateID("D:" + "9038f177-d345-4c42-b2b4-6e27314e714f");
         // moces
-        iti41UploadRequest.setCertificateID("D:" + "9038f177-d345-4c42-b2b4-6e27314e713e");
+        //iti41UploadRequest.setCertificateID("D:" + "9038f177-d345-4c42-b2b4-6e27314e713e");
+
 
 
 
@@ -116,7 +118,7 @@ public class IhexdsApiIT extends AbstractIntegrationTest{
         assertEquals(201, result.getStatusCode());
 
     }
-    /*
+
     @Test
     public void testv1Iti41PreviewUploadPostController () throws ApiException, URISyntaxException, IOException {
 
@@ -134,5 +136,14 @@ public class IhexdsApiIT extends AbstractIntegrationTest{
 
         assertEquals(200, result.getStatusCode());
 
-    }*/
+    }
+
+    @Test
+    public void Testv1Iti41RepositoriesGet() throws ApiException {
+
+        var result = ihexdsApi.v1Iti41RepositoriesGetWithHttpInfo();
+        assertEquals(200, result.getStatusCode());
+        assertEquals(1, result.getData().size());
+
+    }
 }

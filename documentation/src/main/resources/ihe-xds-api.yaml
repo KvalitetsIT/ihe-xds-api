@@ -260,8 +260,8 @@ paths:
     get:
       tags:
         -  Request result
-      summary: Get  Request result SOAP/XML
-      description: Get  Request result SOAP/XML
+      summary: Get  Request result SOAP/XML for search request
+      description: Get  Request result SOAP/XML for search request
       parameters:
         - in: path
           name: requestId
@@ -283,8 +283,8 @@ paths:
     get:
       tags:
         -  Response result
-      summary: Get  Response result SOAP/XML
-      description: Get  Response result SOAP/XML
+      summary: Get  Response result as SOAP/XML for search response
+      description: Get  Response result SOAP/XML for search response
       parameters:
         - in: path
           name: responseId
@@ -299,6 +299,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/downloadLog'
+
+  /v1/iti41/repositories:
+    get:
+      tags:
+        - IHEXDS
+      summary: Get different repository options
+      description: Get different repository options
+      responses:
+        '200':
+          description: Ok with list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/iti41Repository'
 components:
   responses:
     '400':
@@ -587,6 +603,7 @@ components:
 
 
 # TODO Write descriptions
+  # Also meta data but used iti43 or showing the document
     iti18ResponseUnique:
       type: object
       properties:
@@ -778,6 +795,7 @@ components:
           description: Obejct of the repository
           $ref: '#/components/schemas/iti41Repository'
 
+
     # TODO Consider new name
     iti41Repository:
       type: object
@@ -873,10 +891,6 @@ components:
         serviceStopTime:
           description: The start service from date-time as Long
           type: string
-          example: "1664349302510"
-        size:
-          description: The start service from date-time as Long
-          type: integer
           example: "1664349302510"
         sourcePatientId:
           description:

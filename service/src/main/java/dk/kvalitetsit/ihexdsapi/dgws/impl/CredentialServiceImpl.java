@@ -150,7 +150,6 @@ public class CredentialServiceImpl implements CredentialService {
 
     @Override
     public List<CredentialInfoResponse> populateResponses(String owner, CredentialInfoResponse.CredentialTypeEnum type) {
-
         Collection<String[]> ids = this.getIds(owner);
         List<CredentialInfoResponse> responses = new LinkedList<>();
         if (type == null) {

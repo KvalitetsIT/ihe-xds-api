@@ -3,12 +3,12 @@ package dk.kvalitetsit.ihexdsapi.service.impl;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsClientInfo;
 import dk.kvalitetsit.ihexdsapi.service.CodesService;
 import dk.kvalitetsit.ihexdsapi.service.UploadService;
-import dk.kvalitetsit.ihexdsapi.utility.XmlGenerator;
 import dk.s4.hl7.cda.convert.CDAMetadataXmlCodec;
 import dk.s4.hl7.cda.model.CodedValue;
 import dk.s4.hl7.cda.model.cdametadata.CDAMetadata;
 import org.openapitools.model.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -16,6 +16,7 @@ import java.util.*;
 public class UploadServiceImpl implements UploadService {
 
     private CodesService codesService;
+
 
     public UploadServiceImpl(CodesServiceImpl codesService) {
         this.codesService = codesService;
@@ -37,103 +38,87 @@ public class UploadServiceImpl implements UploadService {
 
     @Override
     public GeneratedMetaData getGeneratedMetaData(String xml) {
-
-
-        // TODO Ask what is the best practice for this situation
-        // This might be coded towards tests??
-        // TODO add logger
         GeneratedMetaData generatedMetaData = new GeneratedMetaData();
 
         CDAMetadataXmlCodec codec = new CDAMetadataXmlCodec();
         CDAMetadata cdaMetadataDecoded = codec.decode(xml);
 
         // author.authorInstitution - organization
-        try {
-            if (cdaMetadataDecoded.getAuthor() != null && cdaMetadataDecoded.getAuthor().getOrganizationIdentity() != null && cdaMetadataDecoded.getAuthor().getOrganizationIdentity().getId() != null) {
-                String code = cdaMetadataDecoded.getAuthor().getOrganizationIdentity().getId().getExtension();
-                String codeSystem = cdaMetadataDecoded.getAuthor().getOrganizationIdentity().getId().getRoot();
-                String displayName = cdaMetadataDecoded.getAuthor().getOrganizationIdentity().getOrgName();
 
-                generatedMetaData.setAuthorInstitution(makeCodeObject(displayName, code, codeSystem));
-            }
-        } catch (NullPointerException e) {
-            System.out.println(e);
+        if (cdaMetadataDecoded.getAuthor() != null && cdaMetadataDecoded.getAuthor().getOrganizationIdentity() != null && cdaMetadataDecoded.getAuthor().getOrganizationIdentity().getId() != null) {
+            String code = cdaMetadataDecoded.getAuthor().getOrganizationIdentity().getId().getExtension();
+            String codeSystem = cdaMetadataDecoded.getAuthor().getOrganizationIdentity().getId().getRoot();
+            String displayName = cdaMetadataDecoded.getAuthor().getOrganizationIdentity().getOrgName();
+
+            generatedMetaData.setAuthorInstitution(makeCodeObject(displayName, code, codeSystem));
         }
 
 
         //auther.authorperson
 
-        try {
-            if (cdaMetadataDecoded.getAuthorperson() != null) {
 
-                GeneratedMetaDataAuthorPerson person = new GeneratedMetaDataAuthorPerson();
-                if (cdaMetadataDecoded.getAuthorperson().getFamilyName() != null) {
-                    person.setFamilyName(cdaMetadataDecoded.getAuthorperson().getFamilyName());
-                }
-                if (cdaMetadataDecoded.getAuthorperson().getGivenNames() != null && cdaMetadataDecoded.getAuthorperson().getGivenNames().length > 0) {
-                    person.setGivenName(cdaMetadataDecoded.getAuthorperson().getGivenNames()[0]);
-                    if (cdaMetadataDecoded.getAuthorperson().getGivenNames().length > 1) {
-                        person.setSecondAndFurtherGivenNames(cdaMetadataDecoded.getAuthorperson().getGivenNames()[1]);
-                        for (int i = 2; i < cdaMetadataDecoded.getAuthorperson().getGivenNames().length; i++) {
-                            person.setSecondAndFurtherGivenNames(person.getSecondAndFurtherGivenNames() + "&" + cdaMetadataDecoded.getAuthorperson().getGivenNames()[i]);
-                        }
+        if (cdaMetadataDecoded.getAuthor() != null && cdaMetadataDecoded.getAuthorperson() != null) {
+
+            GeneratedMetaDataAuthorPerson person = new GeneratedMetaDataAuthorPerson();
+            if (cdaMetadataDecoded.getAuthorperson().getFamilyName() != null) {
+                person.setFamilyName(cdaMetadataDecoded.getAuthorperson().getFamilyName());
+            }
+            if (cdaMetadataDecoded.getAuthorperson().getGivenNames() != null && cdaMetadataDecoded.getAuthorperson().getGivenNames().length > 0) {
+                person.setGivenName(cdaMetadataDecoded.getAuthorperson().getGivenNames()[0]);
+                if (cdaMetadataDecoded.getAuthorperson().getGivenNames().length > 1) {
+                    person.setSecondAndFurtherGivenNames(cdaMetadataDecoded.getAuthorperson().getGivenNames()[1]);
+                    for (int i = 2; i < cdaMetadataDecoded.getAuthorperson().getGivenNames().length; i++) {
+                        person.setSecondAndFurtherGivenNames(person.getSecondAndFurtherGivenNames() + "&" + cdaMetadataDecoded.getAuthorperson().getGivenNames()[i]);
                     }
                 }
-                generatedMetaData.setAuthorPerson(person);
             }
-        } catch (NullPointerException e) {
-            System.out.println(e);
+            generatedMetaData.setAuthorPerson(person);
+
         }
 
         //classCode
         Code code = null;
-        try {
-            if (cdaMetadataDecoded.getCodeCodedValue() != null && cdaMetadataDecoded.getCodeCodedValue().getCode() != null) { //even though in form (as output only), the value must come from document
-                String classCode = codesService.getClassCodeFromTypeCode(cdaMetadataDecoded.getCodeCodedValue().getCode());
-                if (classCode != null) {
-                    String classCodeName = codesService.getClassCodeNameFromCode(classCode);
-                    if (classCodeName != null) {
-                        code = makeCodeObject(classCodeName, classCode, CLASSCODESCHEME);
-                        generatedMetaData.setClassCode(code);
-                    }
-                }
 
-                if (code == null) {
-                    String defaultClassCode = this.DEFAULTCLASSCODE;
-                    String classCodeName = codesService.getClassCodeNameFromCode(defaultClassCode);
-                    if (classCodeName != null) {
-                        code = makeCodeObject(classCodeName, defaultClassCode, CLASSCODESCHEME);
-                        generatedMetaData.setClassCode(code);
-                    }
+        if (cdaMetadataDecoded.getCodeCodedValue() != null && cdaMetadataDecoded.getCodeCodedValue().getCode() != null) { //even though in form (as output only), the value must come from document
+            String classCode = codesService.getClassCodeFromTypeCode(cdaMetadataDecoded.getCodeCodedValue().getCode());
+            if (classCode != null) {
+                String classCodeName = codesService.getClassCodeNameFromCode(classCode);
+                if (classCodeName != null) {
+                    code = makeCodeObject(classCodeName, classCode, CLASSCODESCHEME);
+                    generatedMetaData.setClassCode(code);
                 }
-
             }
-        } catch (NullPointerException e) {
-            System.out.println(e);
+
+            if (code == null) {
+                String defaultClassCode = this.DEFAULTCLASSCODE;
+                String classCodeName = codesService.getClassCodeNameFromCode(defaultClassCode);
+                if (classCodeName != null) {
+                    code = makeCodeObject(classCodeName, defaultClassCode, CLASSCODESCHEME);
+                    generatedMetaData.setClassCode(code);
+                }
+            }
+
         }
 
-        try {
+
+
             //confidentialityCode
             if (cdaMetadataDecoded.getConfidentialityCodeCodedValue() != null && cdaMetadataDecoded.getConfidentialityCodeCodedValue().getCode() != null && cdaMetadataDecoded.getConfidentialityCodeCodedValue().getCodeSystem() != null) {
                 generatedMetaData.setConfidentialityCode(makeCodeObject(cdaMetadataDecoded.getConfidentialityCodeCodedValue().getDisplayName(), cdaMetadataDecoded.getConfidentialityCodeCodedValue().getCode(), cdaMetadataDecoded.getConfidentialityCodeCodedValue().getCodeSystem()));
             }
-        } catch (NullPointerException e) {
-            System.out.println(e);
-        }
+
 
         //contentTypeCode - not used
 
         //creationTime
-        try {
+
             if (cdaMetadataDecoded.getCreationTime() != null) {
                 generatedMetaData.setCreationTime(turnEpochToUTCDateTime(cdaMetadataDecoded.getCreationTime().toInstant().toEpochMilli()));
             }
-        } catch (NullPointerException e) {
-            System.out.println(e);
-        }
+
 
         //eventCodedList
-        try {
+
             for (CodedValue event : cdaMetadataDecoded.getEventCodeList()) {
                 if (generatedMetaData.getEventCode() == null) {
                     generatedMetaData.setEventCode(new LinkedList<Code>());
@@ -141,33 +126,27 @@ public class UploadServiceImpl implements UploadService {
                 Code eventCode = makeCodeObject(event.getDisplayName(), event.getCode(), event.getCodeSystem());
                 generatedMetaData.getEventCode().add(eventCode);
             }
-        } catch (NullPointerException e) {
-            System.out.println(e);
-        }
+
 
 
         //formatcode
-        try {
+
             if (cdaMetadataDecoded.getFormatCode() != null) { //overrule from possible input, since that from document has higher priority than from input
                 Code formatCode = makeCodeObject(cdaMetadataDecoded.getFormatCode().getDisplayName(), cdaMetadataDecoded.getFormatCode().getCode(), cdaMetadataDecoded.getFormatCode().getCodeSystem());
                 generatedMetaData.setFormatCode(formatCode);
             }
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+
 
         //LanguageCode
-        try {
+
             if (cdaMetadataDecoded.getLanguageCode() != null) {
                 generatedMetaData.setLanguageCode(cdaMetadataDecoded.getLanguageCode());
             }
-        } catch (NullPointerException e) {
-            System.out.println(e);
-        }
+
 
 
         //legalAuthenticator
-        try {
+
             if (cdaMetadataDecoded.getLegalAuthenticator() != null && cdaMetadataDecoded.getLegalAuthenticator().getPersonIdentity() != null) {
 
                 GeneratedMetaDataAuthorPerson auntenticator = new GeneratedMetaDataAuthorPerson();
@@ -186,49 +165,39 @@ public class UploadServiceImpl implements UploadService {
                 }
                 generatedMetaData.setLegalAuthenticator(auntenticator);
             }
-        } catch (NullPointerException e) {
-            System.out.println(e);
-        }
+
 
         //patientId
-        try {
-            if (cdaMetadataDecoded.getPatientId() != null && cdaMetadataDecoded.getPatientId().getCode() != null && cdaMetadataDecoded.getPatientId().getCodeSystem() != null) {
+
+            if (cdaMetadataDecoded.getPatient() != null && cdaMetadataDecoded.getPatientId() != null && cdaMetadataDecoded.getPatientId().getCode() != null && cdaMetadataDecoded.getPatientId().getCodeSystem() != null) {
                 Code patientIdCode = makeCodeObject("", cdaMetadataDecoded.getPatientId().getCode(), cdaMetadataDecoded.getPatientId().getCodeSystem());
                 generatedMetaData.setPatientId(patientIdCode);
             }
-        } catch (NullPointerException e) {
-            System.out.println(e);
-        }
+
 
         //serviceStartTime
-        try {
+
             if (cdaMetadataDecoded.getServiceStartTime() != null) {
                 generatedMetaData.setServiceStartTime(turnEpochToUTCDateTime(cdaMetadataDecoded.getServiceStartTime().toInstant().toEpochMilli()));
             }
-        } catch (NullPointerException e) {
-            System.out.println(e);
-        }
+
 
         //serviceStopTime
-        try {
+
             if (cdaMetadataDecoded.getServiceStopTime() != null) {
                 generatedMetaData.setServiceStopTime(turnEpochToUTCDateTime(cdaMetadataDecoded.getServiceStopTime().toInstant().toEpochMilli()));
             }
-        } catch (NullPointerException e) {
-            System.out.println(e);
-        }
+
 
         //sourcePatientId
-        try {
-            if (cdaMetadataDecoded.getSourcePatientId() != null && cdaMetadataDecoded.getSourcePatientId().getCode() != null && cdaMetadataDecoded.getSourcePatientId().getCodeSystem() != null) {
+
+            if (cdaMetadataDecoded.getPatient() != null && cdaMetadataDecoded.getSourcePatientId() != null && cdaMetadataDecoded.getSourcePatientId().getCode() != null && cdaMetadataDecoded.getSourcePatientId().getCodeSystem() != null) {
                 Code sourcePatientIdCode = makeCodeObject("", cdaMetadataDecoded.getSourcePatientId().getCode(), cdaMetadataDecoded.getSourcePatientId().getCodeSystem());
                 generatedMetaData.setSourcePatientId(sourcePatientIdCode);
             }
-        } catch (NullPointerException e) {
-            System.out.println(e);
-        }
+
         //sourcePatientInfo
-        try {
+
             if (cdaMetadataDecoded.getPatient() != null) {
                 GeneratedMetaDataSourcePatientInfo sourcePatientInfoPerson = new GeneratedMetaDataSourcePatientInfo();
                 if (cdaMetadataDecoded.getPatient().getFamilyName() != null) {
@@ -254,46 +223,37 @@ public class UploadServiceImpl implements UploadService {
                 generatedMetaData.setSourcePatientInfo(sourcePatientInfoPerson);
 
             }
-        } catch (NullPointerException e) {
-            System.out.println(e);
-        }
+
         //title
-        try {
+
 
             if (cdaMetadataDecoded.getTitle() != null) {
                 generatedMetaData.setTitle(cdaMetadataDecoded.getTitle());
             }
-        } catch (NullPointerException e) {
-            System.out.println(e);
-        }
+
         //typeCode
-        try {
+
             if ((cdaMetadataDecoded.getCodeCodedValue() != null) && (cdaMetadataDecoded.getCodeCodedValue().getCode() != null) && (cdaMetadataDecoded.getCodeCodedValue().getCodeSystem() != null) && (cdaMetadataDecoded.getCodeCodedValue().getDisplayName() != null)) {
                 Code typeCode = makeCodeObject(cdaMetadataDecoded.getCodeCodedValue().getDisplayName(), cdaMetadataDecoded.getCodeCodedValue().getCode(), cdaMetadataDecoded.getCodeCodedValue().getCodeSystem());
                 generatedMetaData.setTypeCode(typeCode);
             }
-        } catch (NullPointerException e) {
-            System.out.println(e);
-        }
+
 
 
         //uniqeId
-        try {
-        if (cdaMetadataDecoded.getId() != null && cdaMetadataDecoded.getId().getExtension() != null && cdaMetadataDecoded.getId().getRoot() != null) {
-            generatedMetaData.setUniqueId(cdaMetadataDecoded.getId().getRoot() + "^" + cdaMetadataDecoded.getId().getExtension());
-        } else if (cdaMetadataDecoded.getId() != null && cdaMetadataDecoded.getId().getRoot() != null) {
-            generatedMetaData.setUniqueId(cdaMetadataDecoded.getId().getRoot());
-        }}
-        catch (NullPointerException e) {
-            System.out.println(e);
-        }
+
+            if (cdaMetadataDecoded.getId() != null && cdaMetadataDecoded.getId().getExtension() != null && cdaMetadataDecoded.getId().getRoot() != null) {
+                generatedMetaData.setUniqueId(cdaMetadataDecoded.getId().getRoot() + "^" + cdaMetadataDecoded.getId().getExtension());
+            } else if (cdaMetadataDecoded.getId() != null && cdaMetadataDecoded.getId().getRoot() != null) {
+                generatedMetaData.setUniqueId(cdaMetadataDecoded.getId().getRoot());
+            }
+
 
 
         // Is Vaild CDA document
         generatedMetaData.setIsLegalDocument(
 
                 isValidDocument(generatedMetaData));
-
 
 
         return generatedMetaData;

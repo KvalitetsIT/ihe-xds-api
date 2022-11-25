@@ -178,23 +178,34 @@ public class IheXdsConfiguration {
     }
 
     @Bean
+    public Iti41RepositoriesService iti41RepositoriesService () {
+        return new Iti41RepositoriesServiceImpl(xdsIti41Endpoint);
+    }
+
+    @Bean
    // @Scope(value = "prototype")
     public Iti41PortType getDocumentRepositoryServiceIti41() {
         LOGGER.info("Creating Iti41PortType for url: "+xdsIti41Endpoint);
         XdsClientFactory xdsClientFactory = generateXdsRepositoryClientFactory("wsdl/iti41.wsdl", xdsIti41Endpoint, Iti41PortType.class);
         Iti41PortType client = (Iti41PortType) xdsClientFactory.getClient();
-       /* Client proxy = ClientProxy.getClient(client);
+       Client proxy = ClientProxy.getClient(client);
         proxy.getOutInterceptors().add(new LoggingOutInterceptor());
-        proxy.getInInterceptors().add(new LoggingInInterceptor());*/
+        proxy.getInInterceptors().add(new LoggingInInterceptor());
 
         return client;
     }
 
     @Bean
-    public Iti41Service iti41Service(Iti41PortType iti41PortType) {
-        Iti41ServiceImpl iti41ServiceImpl = new Iti41ServiceImpl(iti41PortType);
+    public UploadService uploadService(CodesService codesService) {
+        UploadServiceImpl uploadService = new UploadServiceImpl((CodesServiceImpl) codesService);
+        return uploadService;
+    }
+    @Bean
+    public Iti41Service iti41Service(Iti41PortType getDocumentRepositoryServiceIti41, UploadService uploadService) {
+        Iti41ServiceImpl iti41ServiceImpl = new Iti41ServiceImpl(getDocumentRepositoryServiceIti41, uploadService);
         return iti41ServiceImpl;
     }
+
 
     @Bean
     public Iti43PortType getDocumentRepositoryServiceIti43() {

@@ -4,10 +4,12 @@ import com.sun.istack.ByteArrayDataSource;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsClientInfo;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSoapDecorator;
 import dk.kvalitetsit.ihexdsapi.service.Iti41Service;
+import dk.kvalitetsit.ihexdsapi.service.UploadService;
 import dk.kvalitetsit.ihexdsapi.service.model.ProvideAndRegisterDocumentSetRequest;
 import dk.kvalitetsit.ihexdsapi.utility.XmlGenerator;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
+import org.jdom2.JDOMException;
 import org.openapitools.model.*;
 import org.openehealth.ipf.commons.ihe.xds.core.ebxml.EbXMLFactory;
 import org.openehealth.ipf.commons.ihe.xds.core.ebxml.ebxml30.EbXMLFactory30;
@@ -21,6 +23,7 @@ import org.openehealth.ipf.commons.ihe.xds.core.transform.requests.ProvideAndReg
 import org.openehealth.ipf.commons.ihe.xds.iti41.Iti41PortType;
 
 import javax.activation.DataHandler;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
 
@@ -30,20 +33,23 @@ public class Iti41ServiceImpl implements Iti41Service {
     private DgwsSoapDecorator dgwsSoapDecorator = new DgwsSoapDecorator();
     private static final EbXMLFactory ebXMLFactory = new EbXMLFactory30();
 
+    private UploadService uploadService;
+
     private String mimeType = "text/xml";
 
     private final String XDSSubmissionSet_contentTypeCode       = "urn:uuid:aa543740-bdda-424e-8c96-df4873be8500";
 
 
-    public Iti41ServiceImpl(Iti41PortType iti41PortType) {
+    public Iti41ServiceImpl(Iti41PortType iti41PortType, UploadService uploadService) {
         this.iti41PortType = iti41PortType;
+        this.uploadService = uploadService;
 
         Client proxy = ClientProxy.getClient(iti41PortType);
         proxy.getOutInterceptors().add(dgwsSoapDecorator);
     }
 
     @Override
-    public ResponseMetaData getMetaData(String xml) {
+    public ResponseMetaData setMetaData(String xml) {
         ResponseMetaData data = new ResponseMetaData();
 
         data.setUniqueId("63ee-eeee-eeee-eee");
@@ -72,14 +78,14 @@ public class Iti41ServiceImpl implements Iti41Service {
     }
 
     @Override
-    public Iti41UploadResponse uploadRequest(String xmlPayload, DgwsClientInfo dgwsClientInfo) {
-        dgwsSoapDecorator.setDgwsClientInfo(dgwsClientInfo);
+    public Iti41UploadResponse doUpload(String xmlPayload, DgwsClientInfo dgwsClientInfo) {
+        dgwsSoapDecorator.setDgwsClientInfo(dgwsClientInfo, false);
 
         Iti41UploadResponse response = new Iti41UploadResponse();
 
-        ResponseMetaData metaData = getMetaData(xmlPayload);
-
-
+        ResponseMetaData metaData = setMetaData(xmlPayload);
+        System.out.println(xmlPayload);
+        System.out.println();
         ProvideAndRegisterDocumentSetRequest request =  buildProvideAndRegisterDocumentSetRequest(xmlPayload, metaData, null);
 
         // Different iti41TypePorts need to be made in configs to change repo
@@ -93,17 +99,8 @@ public class Iti41ServiceImpl implements Iti41Service {
     }
 
     @Override
-    public GeneratedMetaData getGeneratedMetaData(String xml)  {
-        try {
-            XmlGenerator xmlDOM = new XmlGenerator(xml);
-            xmlDOM.findAttribute("id");
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-
-
-
-        return null;
+    public GeneratedMetaData getGeneratedMetaData(String xml) throws IOException, JDOMException {
+     return uploadService.getGeneratedMetaData(xml);
     }
 
 

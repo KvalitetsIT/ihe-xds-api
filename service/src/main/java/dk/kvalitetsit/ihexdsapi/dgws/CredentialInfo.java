@@ -90,7 +90,7 @@ public class CredentialInfo {
 
     private void setCVRAndOrg(String raw) {
 
-        System.out.println(raw);
+
 
         Pattern pattern = Pattern.compile("O=.* /");
 

@@ -62,7 +62,7 @@ public class Iti43ServiceImpl implements Iti43Service {
 
     @Override
     public Iti43Response getDocument(Iti43QueryParameter queryParameter, DgwsClientInfo clientInfo) throws Iti43Exception {
-        dgwsSoapDecorator.setDgwsClientInfo(clientInfo);
+        dgwsSoapDecorator.setDgwsClientInfo(clientInfo, true);
         Iti43Response iti43Response = new Iti43Response();
         RetrievedDocumentSet documentResponse = fetchDocument(queryParameter.getDocumentId(), queryParameter.getRepositoryId());
 

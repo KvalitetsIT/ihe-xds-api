@@ -45,7 +45,6 @@ public class StsServiceImpl implements StsService {
         properties.setProperty(SOSIFactory.PROPERTYNAME_SOSI_VALIDATE, Boolean.toString(true));
         SOSIFactory sosiFactory = new SOSIFactory(new SOSITestFederation(properties), credentialInfo.getCredentialVault(), properties);
 
-        // System.out.println(credentialInfo.getCredentialVault().getSystemCredentialPair().getCertificate().getSubjectX500Principal().getName());
         String cvr = credentialInfo.getCredentialVault().getSystemCredentialPair().getCertificate().getSubjectX500Principal().getName();
         cvr = cvr.substring(cvr.lastIndexOf('/') + 6, cvr.lastIndexOf(','));
 

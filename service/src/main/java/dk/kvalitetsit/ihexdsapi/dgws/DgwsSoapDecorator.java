@@ -44,6 +44,8 @@ public class DgwsSoapDecorator extends AbstractSoapInterceptor {
     private static final String SYSTEM_VERSION = "1.0";
     private static final String OPERATIONS_ORGANISATION_NAME = "TestOrg";
     private static final String ISSUER = "Issuer";
+
+    private boolean enableHSUID;
     private ThreadLocal<DgwsClientInfo> dgwsClientInfo = new ThreadLocal<>();
 
     public DgwsSoapDecorator() {
@@ -52,8 +54,9 @@ public class DgwsSoapDecorator extends AbstractSoapInterceptor {
 
     private DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
-    public void setDgwsClientInfo(DgwsClientInfo dci) {
+    public void setDgwsClientInfo(DgwsClientInfo dci, boolean enableHSUID) {
         dgwsClientInfo.set(dci);
+        this.enableHSUID = enableHSUID;
     }
 
     public void clearSDgwsClientInfo() {
@@ -76,13 +79,15 @@ public class DgwsSoapDecorator extends AbstractSoapInterceptor {
             message.getHeaders().add(dgwsHeader);
         }
 
-        // Add HSUID
-        /*
+        // Add HSUID for type18 and 43
+
+        if (enableHSUID) {
         try {
             message.getHeaders().add(getHsuid(clientInfo));
         } catch (ParserConfigurationException | JAXBException e) {
             throw new RuntimeException(e);
-        }*/
+        }}
+
     }
 
     private Header getHsuid(DgwsClientInfo clientInfo) throws JAXBException, ParserConfigurationException {

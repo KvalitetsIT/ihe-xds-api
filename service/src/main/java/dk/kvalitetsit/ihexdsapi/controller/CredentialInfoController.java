@@ -47,7 +47,7 @@ public class CredentialInfoController implements CredentialsApi {
 
 
         try {
-            CredentialInfo credential = credentialService.createAndAddCredentialInfo(
+            credentialService.createAndAddCredentialInfo(
                     createCredentialResponse.getOwner(), createCredentialResponse.getDisplayName(),
                     createCredentialResponse.getPublicCertStr(), createCredentialResponse.getPrivateKeyStr());
 
