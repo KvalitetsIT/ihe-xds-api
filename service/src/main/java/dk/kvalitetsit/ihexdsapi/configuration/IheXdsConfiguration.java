@@ -190,7 +190,7 @@ public class IheXdsConfiguration {
         Iti41PortType client = (Iti41PortType) xdsClientFactory.getClient();
        Client proxy = ClientProxy.getClient(client);
         proxy.getOutInterceptors().add(new LoggingOutInterceptor());
-        proxy.getInInterceptors().add(new LoggingInInterceptor());
+        //proxy.getInInterceptors().add(new LoggingInInterceptor());
 
         return client;
     }

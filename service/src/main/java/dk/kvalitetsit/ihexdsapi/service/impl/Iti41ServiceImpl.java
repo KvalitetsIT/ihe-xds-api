@@ -5,8 +5,9 @@ import dk.kvalitetsit.ihexdsapi.dgws.DgwsClientInfo;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSoapDecorator;
 import dk.kvalitetsit.ihexdsapi.service.Iti41Service;
 import dk.kvalitetsit.ihexdsapi.service.UploadService;
+import dk.kvalitetsit.ihexdsapi.service.decorators.CxfContentIDDecorator;
 import dk.kvalitetsit.ihexdsapi.service.model.ProvideAndRegisterDocumentSetRequest;
-import dk.kvalitetsit.ihexdsapi.utility.XmlGenerator;
+import dk.kvalitetsit.ihexdsapi.upload_interceptor.KITAttachmentOutInterceptor;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.jdom2.JDOMException;
@@ -31,6 +32,8 @@ public class Iti41ServiceImpl implements Iti41Service {
 
     private Iti41PortType iti41PortType;
     private DgwsSoapDecorator dgwsSoapDecorator = new DgwsSoapDecorator();
+
+    private CxfContentIDDecorator contentIDDecorator = new CxfContentIDDecorator();
     private static final EbXMLFactory ebXMLFactory = new EbXMLFactory30();
 
     private UploadService uploadService;
@@ -46,6 +49,8 @@ public class Iti41ServiceImpl implements Iti41Service {
 
         Client proxy = ClientProxy.getClient(iti41PortType);
         proxy.getOutInterceptors().add(dgwsSoapDecorator);
+        //proxy.getOutInterceptors().add(contentIDDecorator);
+        proxy.getOutInterceptors().add(new KITAttachmentOutInterceptor());
     }
 
     @Override
@@ -84,8 +89,8 @@ public class Iti41ServiceImpl implements Iti41Service {
         Iti41UploadResponse response = new Iti41UploadResponse();
 
         ResponseMetaData metaData = setMetaData(xmlPayload);
-        System.out.println(xmlPayload);
-        System.out.println();
+        //System.out.println(xmlPayload);
+        //System.out.println();
         ProvideAndRegisterDocumentSetRequest request =  buildProvideAndRegisterDocumentSetRequest(xmlPayload, metaData, null);
 
         // Different iti41TypePorts need to be made in configs to change repo
