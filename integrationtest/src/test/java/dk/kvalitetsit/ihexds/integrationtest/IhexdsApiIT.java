@@ -71,6 +71,43 @@ public class IhexdsApiIT extends AbstractIntegrationTest{
     }
 
     @Test
+    public void testV1Iti18PostControllerThrowError() throws ApiException {
+
+        // Checks for "multiple authorizations found Error"
+
+        Iti18QueryParameter iti18QueryParameter = new Iti18QueryParameter();
+        iti18QueryParameter.setPatientId("2512489996");
+        iti18QueryParameter.setAvailabilityStatus("APPROVED");
+        iti18QueryParameter.setDocumentType(Arrays.asList(new String[]{"STABLE", "ON-DEMAND"}));
+        iti18QueryParameter.setEndToDate(null);
+        iti18QueryParameter.setEndFromDate(null);
+        //iti18QueryParameter.setStartFromDate(Long.parseLong("1662131460000"));
+        iti18QueryParameter.setStartFromDate(null);
+        iti18QueryParameter.setStartToDate(null);
+
+
+        String credentialID = "D:9038f177-d345-4c42-b2b4-6e27314e713e";
+        HealthcareProfessionalContext context = new HealthcareProfessionalContext();
+
+        context.setAuthorizationCode("");
+        context.setConsentOverride(false);
+        context.setRole("User");
+
+        Iti18Request iti18Request = new Iti18Request();
+
+        iti18Request.setContext(context);
+        iti18Request.setCredentialId(credentialID);
+        iti18Request.setQueryParameters(iti18QueryParameter);
+
+        ApiException apiException = assertThrows(ApiException.class, () -> ihexdsApi.v1Iti18PostWithHttpInfo(iti18Request));
+        assertEquals(HttpStatus.SC_BAD_REQUEST, apiException.getCode());
+        assertTrue(apiException.getResponseBody().contains("multiple authorizations found"));
+
+
+        // add result?
+    }
+
+    @Test
     public void testV1Iti43PostController () throws ApiException {
 
 
@@ -378,7 +415,7 @@ public class IhexdsApiIT extends AbstractIntegrationTest{
 
         ApiException apiException = assertThrows(ApiException.class, () -> ihexdsApi.v1Iti41UploadPostWithHttpInfo(iti41UploadRequest));
         assertEquals(HttpStatus.SC_BAD_REQUEST, apiException.getCode());
-        //assertTrue(apiException.getResponseBody().contains("Bad type query"));
+        assertTrue(apiException.getResponseBody().contains("XDSDuplicateUniqueIdInRegistry"));
 
     }
 
