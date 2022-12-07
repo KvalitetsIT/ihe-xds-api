@@ -22,7 +22,7 @@
 	<!-- MedCom DK CDA APD profile OID, CONF-DK-APD:6c69 -->
 	<templateId extension="2019-09-10" root="1.2.208.184.14.1"/>
 	<!-- CONF-DK-APD: a5bd, CONF-DK-APD: c89b -->
-	<id assigningAuthorityName="MedCom" extension="74b28be0-4948-11ed-b878-0242acees00f2" root="1.2.208.184"/>
+	<id assigningAuthorityName="MedCom" extension="74b28be0-4948-11ed-b878-0242aceel00f2" root="1.2.208.184"/>
 	<!-- LOINC code for appointment date, CONF-DK-APD:7d26, CONF-DK-APD:e56b, CONF-DK-APD:4660 -->
 	<code code="39289-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Dato og tidspunkt for møde mellem patient og sundhedsperson"/>
 	<!-- title = "Aftale for" + patient id  CONF-DK-APD:9ac6 -->

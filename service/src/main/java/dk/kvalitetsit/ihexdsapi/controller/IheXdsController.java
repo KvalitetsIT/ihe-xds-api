@@ -122,28 +122,30 @@ public class IheXdsController implements IhexdsApi, RequestResultApi, ResponseRe
     }
 
 
+
+
     @Override
     public ResponseEntity<Iti41UploadResponse> v1Iti41UploadPost(Iti41UploadRequest iti41UploadRequest) {
-		/*HealthcareProfessionalContext context = new HealthcareProfessionalContext();
 
-		context.setAuthorizationCode("NS363");
-		context.setConsentOverride(false);
-		context.setRole("User");*/
-        try {
+       try {
+
             DgwsClientInfo clientInfo = dgwsService.getSystemClientInfo(iti41UploadRequest.getCertificateID());
-            //moces
-		/*	DgwsClientInfo clientInfo = dgwsService.getHealthCareProfessionalClientInfo("", iti41UploadRequest.getCertificateID(), context);
-			System.out.println(clientInfo);*/
-            Iti41UploadResponse response = iti41Service.doUpload(iti41UploadRequest.getXmlInformation(), clientInfo);
+            Iti41UploadResponse response = iti41Service.doUpload(iti41UploadRequest, clientInfo);
 
+            ResponseEntity<Iti41UploadResponse> responseEntity = new ResponseEntity(response, HttpStatus.OK);
+            // TODO Handle execptions correctly
+            return responseEntity;
         } catch (DgwsSecurityException e) {
-            System.out.println(e);
+            throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
+        } catch (ItiException e) {
+            List<String> errors = new ArrayList<>();
+            for (RegistryError err : e.getOtherErrors()) {
+                errors.add("" + err.getCodeContext() + ", " + err.getErrorCode() + ", " + err.getSeverity() + ", " + err.getCustomErrorCode());
+            }
+            throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage(), errors);
+
         }
 
-        System.out.println();
-
-
-        return null;
     }
 
     @Override
@@ -156,7 +158,7 @@ public class IheXdsController implements IhexdsApi, RequestResultApi, ResponseRe
 
             throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
             //throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
-        } catch (Iti43Exception e) {
+        } catch (ItiException e) {
             List<String> errors = new ArrayList<>();
             for (RegistryError err : e.getOtherErrors()) {
                 errors.add("" + err.getCodeContext() + ", " + err.getErrorCode() + ", " + err.getSeverity() + ", " + err.getCustomErrorCode());

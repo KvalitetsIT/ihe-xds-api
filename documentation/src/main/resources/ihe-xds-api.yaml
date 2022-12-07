@@ -115,7 +115,7 @@ paths:
       summary: Uploads a clinic document to the databases at Nation Service platform
       description: Uploads a clinic document to the databases at Nation Service platform
       requestBody:
-        description: The request iti41UploadRequest consisting of xml file, repository name credintialID
+        description: The request iti41UploadRequest consisting of xml file, repository name, credintialID and metadata
         required: true
         content:
           application/json:
@@ -390,9 +390,6 @@ components:
 
     code:
       type: object
-      required:
-        - name
-        - code
       properties:
         name:
           description: The name of the code
@@ -957,7 +954,6 @@ components:
               description: credential ID
               type: string
               example: "2512489996"
-
         confidentialityCode:
           description:
           $ref: '#/components/schemas/code'
@@ -971,6 +967,7 @@ components:
           items:
             $ref: '#/components/schemas/code'
           example: "[..], [..]"
+          ## TODO CHECK
         languageCode:
           description: Document's language code
           type: string
@@ -978,6 +975,7 @@ components:
         legalAuthenticator:
           description: Documentets unique Id
           type: object
+          nullable: true
           properties:
             familyName:
               type: string
@@ -999,10 +997,6 @@ components:
         serviceStopTime:
           description: The start service to date-time as Long
           type: string
-          example: "1664349302510"
-        size:
-          description: The start service from date-time as Long
-          type: integer
           example: "1664349302510"
         sourcePatientId:
           description:
@@ -1043,18 +1037,12 @@ components:
           description: credential ID
           type: string
           example: "2512489996"
-        isLegalDocument:
-          description: Boolean that indicates weather or not the document is legal
-          type: boolean
-          example: "False"
         objectType:
           description: Documentets unique Id
-          type: string
-          example: "Prefix : Mr  Name: Doe"
+          $ref: '#/components/schemas/code'
         availabilityStatus:
           description: Documentets unique Id
-          type: string
-          example: "Prefix : Mr  Name: Doe"
+          $ref: '#/components/schemas/code'
         formatCode:
           description:
           $ref: '#/components/schemas/code'
@@ -1067,6 +1055,10 @@ components:
         classCode:
           description:
           $ref: '#/components/schemas/code'
+        submissionTime:
+          description: Time for submission as UTC format
+          type: string
+          format: date-time
 
 
 
@@ -1083,6 +1075,11 @@ components:
         certificateID:
           description: ID of the credentialInfo that uploads the document
           type: string
+        responseMetaData:
+          description: Obejct of the repository
+          $ref: '#/components/schemas/responseMetaData'
+
+          ## ADD metadata
 
     iti41UploadResponse:
       type: object
@@ -1093,7 +1090,9 @@ components:
         uniqueId:
           description: If successful unique Id of the document
           type: string
-        patientId:
-          description: The id of the patient
-          type: string
+        errors:
+          description: registry errors list
+          type: array
+          items:
+            $ref: '#/components/schemas/registryError'
 

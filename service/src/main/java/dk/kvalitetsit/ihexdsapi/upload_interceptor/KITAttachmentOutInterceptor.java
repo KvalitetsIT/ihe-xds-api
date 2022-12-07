@@ -22,11 +22,7 @@ public class KITAttachmentOutInterceptor extends AbstractPhaseInterceptor<Messag
 
     public KITAttachmentOutInterceptor() {
         super(Phase.PRE_STREAM);
-
         addBefore(AttachmentOutInterceptor.class.getName());
-
-
-        System.out.println("Creating Instance");
     }
 
     @Override
@@ -104,7 +100,6 @@ public class KITAttachmentOutInterceptor extends AbstractPhaseInterceptor<Messag
         }
 
         public void handleMessage(Message message) {
-            System.out.println("WE killing it ");
             KITAttachmentSerializer ser = (KITAttachmentSerializer) message.getContent(KITAttachmentSerializer.class);
             if (ser != null) {
                 try {

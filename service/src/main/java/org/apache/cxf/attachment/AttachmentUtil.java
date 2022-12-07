@@ -49,7 +49,7 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.message.MessageUtils;
 
 public final class AttachmentUtil {
-    public static final String BODY_ATTACHMENT_ID = "root.message@cxf.apache.org";
+   public static final String BODY_ATTACHMENT_ID = "root.message@cxf.apache.org";
     static final String BINARY = "binary";
     private static final Logger LOG = LogUtils.getL7dLogger(AttachmentUtil.class);
     private static final AtomicInteger COUNTER = new AtomicInteger();
