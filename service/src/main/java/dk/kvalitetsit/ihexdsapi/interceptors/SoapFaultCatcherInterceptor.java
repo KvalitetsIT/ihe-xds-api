@@ -19,22 +19,25 @@ public class SoapFaultCatcherInterceptor  extends AbstractPhaseInterceptor<Messa
 
     @Override
     public void handleMessage(Message message) throws Fault {
+
         InputStream i = message.getContent(InputStream.class);
+
         StringBuilder textBuilder = new StringBuilder();
-        try (Reader reader = new BufferedReader(new InputStreamReader
-                (i, Charset.forName(StandardCharsets.UTF_8.name())))) {
+        try  {
+            Reader reader = new BufferedReader(new InputStreamReader
+                    (i, Charset.forName(StandardCharsets.UTF_8.name())));
             int c = 0;
             while ((c = reader.read()) != -1) {
                 textBuilder.append((char) c);
             }
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
+        message.setContent(InputStream.class, new ByteArrayInputStream(textBuilder.toString().getBytes()));
         if (textBuilder.toString().contains("<faultstring>internal_error_minlog</faultstring>")) {
-                throw new RuntimeException("ID does not exists");
+            throw new RuntimeException("ID does not exists");
         }
-
-
     }
+
 }
