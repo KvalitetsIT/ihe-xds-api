@@ -5,6 +5,7 @@ import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsService;
 import dk.kvalitetsit.ihexdsapi.dao.CacheRequestResponseHandle;
 import dk.kvalitetsit.ihexdsapi.dao.impl.CacheRequestResponseHandleImpl;
+import dk.kvalitetsit.ihexdsapi.dgws.ItiException;
 import dk.kvalitetsit.ihexdsapi.service.*;
 import dk.kvalitetsit.ihexdsapi.service.impl.*;
 import org.junit.Assert;
@@ -55,7 +56,7 @@ public class IheXdsControllerTest {
     }
 
    @Test
-    public void testv1Iti18HealthcareProfessionalGet() throws DgwsSecurityException {
+    public void testv1Iti18HealthcareProfessionalGet() throws DgwsSecurityException, ItiException {
         // Given
        Mockito.when(iDContextService.getId("tempRes")).then(a -> {
 

@@ -56,7 +56,7 @@ public class Iti41ServiceImpl implements Iti41Service {
     }
 
     @Override
-    public ResponseMetaData setMetaData(Iti41UploadRequest iti41UploadRequest) throws IOException, JDOMException {
+    public ResponseMetaData setMetaData(Iti41UploadRequest iti41UploadRequest) throws IOException, JDOMException, ItiException {
         ResponseMetaData data = new ResponseMetaData();
 
         GeneratedMetaData generatedMetaData = uploadService.getGeneratedMetaData(iti41UploadRequest.getXmlInformation());
@@ -158,7 +158,7 @@ public class Iti41ServiceImpl implements Iti41Service {
     }
 
     @Override
-    public GeneratedMetaData getGeneratedMetaData(String xml) throws IOException, JDOMException {
+    public GeneratedMetaData getGeneratedMetaData(String xml) throws IOException, JDOMException, ItiException {
         return uploadService.getGeneratedMetaData(xml);
     }
 

@@ -1,6 +1,7 @@
 package dk.kvalitetsit.ihexdsapi.service;
 
 
+import dk.kvalitetsit.ihexdsapi.dgws.ItiException;
 import dk.kvalitetsit.ihexdsapi.dgws.impl.AbstractTest;
 
 import dk.kvalitetsit.ihexdsapi.service.impl.CodesServiceImpl;
@@ -57,7 +58,7 @@ public class UploadServiceImplTest extends AbstractTest {
 
 
     @Test
-    public void testGetMetaDataJustAuthorInstitution() throws IOException, JDOMException {
+    public void testGetMetaDataJustAuthorInstitution() throws IOException, JDOMException, ItiException {
         // Given
         String inputXml =  getFileString("/xml/authorInstitution.xml");
 
@@ -73,7 +74,7 @@ public class UploadServiceImplTest extends AbstractTest {
     }
 
     @Test
-    public void testGetMetaDataJustAuthorPerson() throws IOException, JDOMException {
+    public void testGetMetaDataJustAuthorPerson() throws IOException, JDOMException, ItiException {
         // Given
         String inputXml =  getFileString("/xml/authorPerson.xml");
 
@@ -87,7 +88,7 @@ public class UploadServiceImplTest extends AbstractTest {
         assertEquals("Bo&Henrik", result.getAuthorPerson().getSecondAndFurtherGivenNames());
 
     }@Test
-    public void testGetMetaDataJustAuthorConfidentialityCode() throws IOException, JDOMException {
+    public void testGetMetaDataJustAuthorConfidentialityCode() throws IOException, JDOMException, ItiException {
         // Given
         String inputXml =  getFileString("/xml/confidentialityCode.xml");
 
@@ -101,7 +102,7 @@ public class UploadServiceImplTest extends AbstractTest {
         assertEquals("2.16.840.1.113883.5.25", result.getConfidentialityCode().getScheme() );
 
     }@Test
-    public void testGetMetaDataJustCreationTime() throws IOException, JDOMException {
+    public void testGetMetaDataJustCreationTime() throws IOException, JDOMException, ItiException {
         // Given
         String inputXml =  getFileString("/xml/creationTime.xml");
 
@@ -116,7 +117,7 @@ public class UploadServiceImplTest extends AbstractTest {
 
 
     }@Test
-    public void testGetMetaDataJustEventCodeList() throws IOException, JDOMException {
+    public void testGetMetaDataJustEventCodeList() throws IOException, JDOMException, ItiException {
         // Given
         String inputXml =  getFileString("/xml/eventCode.xml");
 
@@ -130,7 +131,7 @@ public class UploadServiceImplTest extends AbstractTest {
         assertEquals("1.2.208.176.2.4",result.getEventCode().get(0).getScheme() );
 
     }@Test
-    public void testGetMetaDataJustLanguageCode() throws IOException, JDOMException {
+    public void testGetMetaDataJustLanguageCode() throws IOException, JDOMException, ItiException {
         // Given
         String inputXml =  getFileString("/xml/languageCode.xml");
 
@@ -142,7 +143,7 @@ public class UploadServiceImplTest extends AbstractTest {
         assertEquals("da-DK", result.getLanguageCode());
 
     }@Test
-    public void testGetMetaDataJustLegalAuthenticator() throws IOException, JDOMException {
+    public void testGetMetaDataJustLegalAuthenticator() throws IOException, JDOMException, ItiException {
         // Given
         String inputXml =  getFileString("/xml/legalAuthenticator.xml");
 
@@ -157,7 +158,7 @@ public class UploadServiceImplTest extends AbstractTest {
         assertEquals(null, result.getLegalAuthenticator().getSecondAndFurtherGivenNames());*/
 
     }@Test
-    public void testGetMetaDataJustPatientId() throws IOException, JDOMException {
+    public void testGetMetaDataJustPatientId() throws IOException, JDOMException, ItiException {
         // Given
         String inputXml =  getFileString("/xml/patientId.xml");
 
@@ -171,7 +172,7 @@ public class UploadServiceImplTest extends AbstractTest {
         assertEquals("1.2.208.176.1.2", result.getPatientId().getScheme() );
 
     }@Test
-    public void testGetMetaDataJustServiceStartTime() throws IOException, JDOMException {
+    public void testGetMetaDataJustServiceStartTime() throws IOException, JDOMException, ItiException {
         // Given
         String inputXml =  getFileString("/xml/serviceStartAndStop.xml");
 
@@ -185,7 +186,7 @@ public class UploadServiceImplTest extends AbstractTest {
 
 
     }@Test
-    public void testGetMetaDataJustServiceStopTime() throws IOException, JDOMException {
+    public void testGetMetaDataJustServiceStopTime() throws IOException, JDOMException, ItiException {
         // Given
         String inputXml =  getFileString("/xml/serviceStartAndStop.xml");
 
@@ -197,7 +198,7 @@ public class UploadServiceImplTest extends AbstractTest {
         assertEquals("20221001083000", result.getServiceStopTime());
 
     }@Test
-    public void testGetMetaDataJustSourcePatientId() throws IOException, JDOMException {
+    public void testGetMetaDataJustSourcePatientId() throws IOException, JDOMException, ItiException {
         // Given
         String inputXml =  getFileString("/xml/sourcePatientId.xml");
 
@@ -211,7 +212,7 @@ public class UploadServiceImplTest extends AbstractTest {
         assertEquals("1.2.208.176.1.2", result.getSourcePatientId().getScheme());
 
     }@Test
-    public void testGetMetaDataJustSourcePatientInfo() throws IOException, JDOMException {
+    public void testGetMetaDataJustSourcePatientInfo() throws IOException, JDOMException, ItiException {
         // Given
         String inputXml =  getFileString("/xml/sourcePatientInfo.xml");
 
@@ -227,7 +228,7 @@ public class UploadServiceImplTest extends AbstractTest {
         assertEquals("19910629", result.getSourcePatientInfo().getBirthTime());
 
     }@Test
-    public void testGetMetaDataJustTitle() throws IOException, JDOMException {
+    public void testGetMetaDataJustTitle() throws IOException, JDOMException, ItiException {
         // Given
         String inputXml =  getFileString("/xml/title.xml");
 
@@ -240,7 +241,7 @@ public class UploadServiceImplTest extends AbstractTest {
 
 
     }@Test
-    public void testGetMetaDataJustTypeCode() throws IOException, JDOMException {
+    public void testGetMetaDataJustTypeCode() throws IOException, JDOMException, ItiException {
         // Given
         String inputXml =  getFileString("/xml/typeCode.xml");
 
@@ -254,7 +255,7 @@ public class UploadServiceImplTest extends AbstractTest {
         assertEquals("2.16.840.1.113883.6.1", result.getTypeCode().getScheme());
 
     }@Test
-    public void testGetMetaDataJustUniqueId() throws IOException, JDOMException {
+    public void testGetMetaDataJustUniqueId() throws IOException, JDOMException, ItiException {
         // Given
         String inputXml =  getFileString("/xml/uniqueId.xml");
 
@@ -267,7 +268,7 @@ public class UploadServiceImplTest extends AbstractTest {
 
 
     }@Test
-    public void testGetMetaDataValidDocument() throws IOException, JDOMException {
+    public void testGetMetaDataValidDocument() throws IOException, JDOMException, ItiException {
         // Given
         String inputXml =  getFileString("/xml/DK-APD_Example_1_2_apd_maximum.xml");
 

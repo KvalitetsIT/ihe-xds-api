@@ -60,6 +60,14 @@ public class Iti43ServiceImpl implements Iti43Service {
 
     @Override
     public Iti43Response getDocument(Iti43QueryParameter queryParameter, DgwsClientInfo clientInfo) throws ItiException {
+        if (queryParameter.getDocumentId().isEmpty()) {
+            throw new ItiException(1000, "Document unique ID is empty", null);
+        }
+        if (queryParameter.getRepositoryId().isEmpty()) {
+            throw new ItiException(1000, "Repository ID is empty", null);
+        }
+
+
         dgwsSoapDecorator.setDgwsClientInfo(clientInfo, true);
         Iti43Response iti43Response = new Iti43Response();
         RetrievedDocumentSet documentResponse = fetchDocument(queryParameter.getDocumentId(), queryParameter.getRepositoryId());

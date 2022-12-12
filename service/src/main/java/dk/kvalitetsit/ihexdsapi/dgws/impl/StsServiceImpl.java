@@ -41,6 +41,10 @@ public class StsServiceImpl implements StsService {
     // User  Moces
     @Override
     public DgwsClientInfo getDgwsClientInfoForSystem(CredentialInfo credentialInfo, String patientId, HealthcareProfessionalContext context) throws DgwsSecurityException {
+        if (credentialInfo == null) {
+            throw new DgwsSecurityException(1000, "CredentialInfo is null");
+        }
+
         Properties properties = new Properties(System.getProperties());
         properties.setProperty(SOSIFactory.PROPERTYNAME_SOSI_VALIDATE, Boolean.toString(true));
         SOSIFactory sosiFactory = new SOSIFactory(new SOSITestFederation(properties), credentialInfo.getCredentialVault(), properties);
@@ -56,6 +60,9 @@ public class StsServiceImpl implements StsService {
 
         Request request = sosiFactory.createNewRequest(false, null);
         request.setIDCard(userIDCard);
+        if (context.getConsentOverride() == null)  {
+            throw new DgwsSecurityException(1000, "Consent override must be a valid boolean value");
+        }
         return new DgwsClientInfo(request.serialize2DOMDocument(), userIDCard.getUserInfo().getCPR(), patientId, userIDCard.getUserInfo().getAuthorizationCode(), cvr, context.getConsentOverride());
     }
 
@@ -84,7 +91,9 @@ public class StsServiceImpl implements StsService {
         String surName = rawString.substring(rawString.indexOf(' ') + 1, rawString.indexOf('+'));
         String orgName = rawString.substring(rawString.indexOf(',') + 3, rawString.indexOf('/') - 1);
 
-
+        if (role == null || role.isEmpty()) {
+            throw new DgwsSecurityException(1000, "UserRole must be specified");
+        }
         UserInfo userInfo = new UserInfo(null, name, surName, null, null, role, authCode);
         CareProvider careProvider = new CareProvider(SubjectIdentifierTypeValues.CVR_NUMBER, cvr, orgName);
         UserIDCard selfSigned = sosiFactory.createNewUserIDCard(itSystem, userInfo, careProvider, AuthenticationLevel.MOCES_TRUSTED_USER, null, null, null, null);

@@ -13,9 +13,9 @@ import java.io.IOException;
 public interface Iti41Service {
 
 
-    ResponseMetaData setMetaData(Iti41UploadRequest iti41UploadRequest) throws IOException, JDOMException;
+    ResponseMetaData setMetaData(Iti41UploadRequest iti41UploadRequest) throws IOException, JDOMException, ItiException;
 
     Iti41UploadResponse doUpload(Iti41UploadRequest iti41UploadRequest, DgwsClientInfo dgwsClientInfo) throws ItiException;
 
-    GeneratedMetaData getGeneratedMetaData(String xml) throws IOException, JDOMException;
+    GeneratedMetaData getGeneratedMetaData(String xml) throws IOException, JDOMException, ItiException;
 }

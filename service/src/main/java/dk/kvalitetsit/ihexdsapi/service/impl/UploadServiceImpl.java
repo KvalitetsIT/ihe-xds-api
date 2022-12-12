@@ -1,6 +1,7 @@
 package dk.kvalitetsit.ihexdsapi.service.impl;
 
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsClientInfo;
+import dk.kvalitetsit.ihexdsapi.dgws.ItiException;
 import dk.kvalitetsit.ihexdsapi.service.CodesService;
 import dk.kvalitetsit.ihexdsapi.service.UploadService;
 import dk.s4.hl7.cda.convert.CDAMetadataXmlCodec;
@@ -37,8 +38,12 @@ public class UploadServiceImpl implements UploadService {
     }
 
     @Override
-    public GeneratedMetaData getGeneratedMetaData(String xml) {
+    public GeneratedMetaData getGeneratedMetaData(String xml) throws ItiException {
         GeneratedMetaData generatedMetaData = new GeneratedMetaData();
+
+        if (xml == null || xml.isEmpty()) {
+            throw new ItiException(1000, "XML file is empty", null);
+        }
 
         CDAMetadataXmlCodec codec = new CDAMetadataXmlCodec();
         CDAMetadata cdaMetadataDecoded = codec.decode(xml);

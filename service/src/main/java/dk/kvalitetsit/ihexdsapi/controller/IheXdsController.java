@@ -59,6 +59,8 @@ public class IheXdsController implements IhexdsApi, RequestResultApi, ResponseRe
     @Override
     public ResponseEntity<Iti18Response> v1Iti18Post(@Valid Iti18Request iti18Request) {
         try {
+
+
             DgwsClientInfo clientInfo = dgwsService.getHealthCareProfessionalClientInfo(iti18Request.getQueryParameters().getPatientId(), iti18Request.getCredentialId(), iti18Request.getContext());
             Iti18Response iti18Response = iti18Service.queryForDocument(iti18Request.getQueryParameters(), clientInfo);
             iti18Response.setResponseId(iDContextService.getId("tempRes"));
@@ -67,6 +69,8 @@ public class IheXdsController implements IhexdsApi, RequestResultApi, ResponseRe
 
             return new ResponseEntity<>(iti18Response, HttpStatus.OK);
         } catch (DgwsSecurityException e) {
+            throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
+        } catch (ItiException e) {
             throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
         }
     }
@@ -82,7 +86,7 @@ public class IheXdsController implements IhexdsApi, RequestResultApi, ResponseRe
             Iti18ResponseUnique response = iti18Service.queryForDocument(iti18RequestUnique, clientInfo);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (DgwsSecurityException e) {
-            throw new RuntimeException(e);
+            throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
         }
 
     }
@@ -103,6 +107,9 @@ public class IheXdsController implements IhexdsApi, RequestResultApi, ResponseRe
             throw new RuntimeException(e);
         } catch (JDOMException e) {
             throw new RuntimeException(e);
+        } catch (ItiException e) {
+            throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
+
         }
 
     }
@@ -132,17 +139,29 @@ public class IheXdsController implements IhexdsApi, RequestResultApi, ResponseRe
             DgwsClientInfo clientInfo = dgwsService.getSystemClientInfo(iti41UploadRequest.getCertificateID());
             Iti41UploadResponse response = iti41Service.doUpload(iti41UploadRequest, clientInfo);
 
+            if (response == null) {
+                System.out.println("HELLO");
+            }
+
             ResponseEntity<Iti41UploadResponse> responseEntity = new ResponseEntity(response, HttpStatus.OK);
-            // TODO Handle execptions correctly
             return responseEntity;
         } catch (DgwsSecurityException e) {
             throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
         } catch (ItiException e) {
             List<String> errors = new ArrayList<>();
+           String errorMessage = "";
+           if (e.getOtherErrors() != null && e.getOtherErrors().size() > 0 )
             for (RegistryError err : e.getOtherErrors()) {
                 errors.add("" + err.getCodeContext() + ", " + err.getErrorCode() + ", " + err.getSeverity() + ", " + err.getCustomErrorCode());
+                errorMessage = errorMessage + "" + err.getCodeContext() + ", " + err.getErrorCode() + ", " + err.getSeverity() + ", " + err.getCustomErrorCode() + "\n";
+
             }
-            throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage(), errors);
+           if (e.getMessage().contains("Failed to retrieve document")) {
+               throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), "Failed to upload document" + ": " + errorMessage, errors);
+
+           }
+
+            throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage() + ": " + errorMessage, errors);
 
         }
 
@@ -154,17 +173,25 @@ public class IheXdsController implements IhexdsApi, RequestResultApi, ResponseRe
             DgwsClientInfo clientInfo = dgwsService.getHealthCareProfessionalClientInfo(iti43Request.getQueryParameters().getPatientId(), iti43Request.getCredentialId(), iti43Request.getContext());
             Iti43Response iti43Response = iti43Service.getDocument(iti43Request.getQueryParameters(), clientInfo);
             return new ResponseEntity<>(iti43Response, HttpStatus.OK);
-        } catch (DgwsSecurityException e) {
+        }
+
+        catch (DgwsSecurityException e) {
 
             throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
-            //throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage());
         } catch (ItiException e) {
             List<String> errors = new ArrayList<>();
+
+            if (e.getOtherErrors() == null|| e.getOtherErrors().isEmpty()) {
+                throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage()  , null);
+
+            }
+            String errorMessage = e.getMessage() +"\n";
             for (RegistryError err : e.getOtherErrors()) {
                 errors.add("" + err.getCodeContext() + ", " + err.getErrorCode() + ", " + err.getSeverity() + ", " + err.getCustomErrorCode());
+                errorMessage = errorMessage + err.getCodeContext();
             }
 
-            throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), e.getMessage(), errors);
+            throw BadRequestException.createException(BadRequestException.ERROR_CODE.fromInt(e.getErrorCode()), errorMessage , errors);
         }
     }
 
