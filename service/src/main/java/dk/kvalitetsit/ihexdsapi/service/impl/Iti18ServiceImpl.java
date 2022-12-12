@@ -333,7 +333,6 @@ public class Iti18ServiceImpl implements Iti18Service {
             String orgName = "";
             String orgCodeScheme = "";
             String orgCode = "";
-            System.out.println(entry.getAuthor().getAuthorInstitution());
             for (Organization o : entry.getAuthor().getAuthorInstitution()) {
                 orgName = orgName + o.getOrganizationName() + ",";
                 orgCode = orgCode + o.getIdNumber() + ",";

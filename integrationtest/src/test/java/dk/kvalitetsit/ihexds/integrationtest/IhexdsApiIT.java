@@ -37,8 +37,6 @@ public class IhexdsApiIT extends AbstractIntegrationTest {
 
     @Test
     public void testV1Iti18PostController() throws ApiException {
-
-
         Iti18QueryParameter iti18QueryParameter = new Iti18QueryParameter();
         iti18QueryParameter.setPatientId("2512489996");
         iti18QueryParameter.setAvailabilityStatus("APPROVED");
@@ -62,6 +60,8 @@ public class IhexdsApiIT extends AbstractIntegrationTest {
         iti18Request.setContext(context);
         iti18Request.setCredentialId(credentialID);
         iti18Request.setQueryParameters(iti18QueryParameter);
+
+
 
         var result = ihexdsApi.v1Iti18PostWithHttpInfo(iti18Request);
 
