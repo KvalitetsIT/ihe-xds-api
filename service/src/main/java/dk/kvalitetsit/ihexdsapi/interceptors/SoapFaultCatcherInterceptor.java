@@ -23,6 +23,7 @@ public class SoapFaultCatcherInterceptor  extends AbstractPhaseInterceptor<Messa
         InputStream i = message.getContent(InputStream.class);
 
         StringBuilder textBuilder = new StringBuilder();
+        // Converts bytes into string but clears the InputStream for bytes.
         try  {
             Reader reader = new BufferedReader(new InputStreamReader
                     (i, Charset.forName(StandardCharsets.UTF_8.name())));
