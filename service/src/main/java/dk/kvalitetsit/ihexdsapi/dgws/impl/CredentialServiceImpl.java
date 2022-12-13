@@ -14,6 +14,7 @@ import dk.kvalitetsit.ihexdsapi.dgws.CredentialService;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
 import dk.sosi.seal.vault.GenericCredentialVault;
 
+// TODO Consider making UUID A utility helper class (refactor)
 
 public class CredentialServiceImpl implements CredentialService {
 
@@ -41,6 +42,9 @@ public class CredentialServiceImpl implements CredentialService {
         // TODO Probably not the correct way to do it
         if (displayName.equals("Sonja Bech")) {
             id = "D:" + "9038f177-d345-4c42-b2b4-6e27314e713e";
+        }
+        else if (displayName.equals("Default VOCES")) {
+            id = "D:" + "9038f177-d345-4c42-b2b4-6e27314e714f";
         }
 
         if (credentialInfoForID.containsKey(id) || this.credentialRepository.findCredentialInfoByID(id) != null) {
@@ -146,7 +150,6 @@ public class CredentialServiceImpl implements CredentialService {
 
     @Override
     public List<CredentialInfoResponse> populateResponses(String owner, CredentialInfoResponse.CredentialTypeEnum type) {
-
         Collection<String[]> ids = this.getIds(owner);
         List<CredentialInfoResponse> responses = new LinkedList<>();
         if (type == null) {

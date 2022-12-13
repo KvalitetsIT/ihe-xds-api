@@ -47,6 +47,9 @@ public class CodesServiceImpl implements CodesService {
     private List<Code> availabilityStatusList;
     private List<Code> documentTypeList;
 
+    private List<Code> classCodeList;
+
+
 
     // utility;
     public CodesServiceImpl(String typeCodeCodes, String typeCodeNames, String typeCodeScheme,
@@ -85,6 +88,8 @@ public class CodesServiceImpl implements CodesService {
 
 
 
+
+
         // Generate lister her.
         typeCodesList = this.generateListOfCodes(this.typeCodeCodes,
                 this.typeCodeNames, typeCodeScheme,
@@ -95,6 +100,7 @@ public class CodesServiceImpl implements CodesService {
         practiseSettingCodesList =  this.generateListOfCodes(this.practiceSettingCodeCodes, this.practiceSettingCodeNames, this.practiceSettingCodeScheme, "msg");
         availabilityStatusList = this.generateListOfAvailabilityStatus();
         documentTypeList = this.generateDocumentType();
+        classCodeList = this.generateListOfCodes(this.classCodeCodes, this.classCodeNames, this.classCodeScheme, "msg");
     }
 
     public CodesServiceImpl() {
@@ -176,6 +182,34 @@ public class CodesServiceImpl implements CodesService {
         return List.copyOf(typeCodesList);
     }
 
+    @Override
+    public String getClassCodeFromTypeCode(String typeCode) {
+        List<Code> typeCodes = getTypeCodesList();
+        int i = 0;
+
+        while (i < typeCodes.size()) {
+            if (typeCodes.get(i).getCode().equals(typeCodes)) {
+                return typeCodes.get(i).getCode();
+            }
+            i++;
+        }
+        return null;
+    }
+
+    @Override
+    public String getClassCodeNameFromCode(String classCode) {
+        List<Code> classCodes = getClassCodeList();
+        int i = 0;
+
+        while (i < classCodes.size()) {
+            if (classCodes.get(i).getCode().equals(classCode)) {
+                return classCodes.get(i).getName();
+            }
+            i++;
+        }
+        return null;
+    }
+
     public List<Code> getFormatCodesList() {
         return List.copyOf(formatCodesList);
     }
@@ -198,6 +232,10 @@ public class CodesServiceImpl implements CodesService {
 
     public List<Code> getDocumentTypeList() {
         return List.copyOf(documentTypeList);
+    }
+
+    public List<Code> getClassCodeList() {
+        return List.copyOf(classCodeList);
     }
 
 

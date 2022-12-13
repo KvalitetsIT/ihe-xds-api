@@ -11,6 +11,12 @@
 
 	<artifactId>service</artifactId>
 	<dependencies>
+
+		<dependency>
+			<groupId>dk.s4.hl7</groupId>
+			<artifactId>builders</artifactId>
+			<version>3.0.4</version>
+		</dependency>
 		<!-- Definition of api -->
 		<dependency>
 			<groupId>dk.kvalitetsit.ihe-xds-api</groupId>

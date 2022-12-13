@@ -2,6 +2,9 @@ package dk.kvalitetsit.ihexdsapi.dgws;
 
 import dk.sosi.seal.vault.CredentialVault;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class CredentialInfo {
 
     private CredentialVault credentialVault;
@@ -11,6 +14,10 @@ public class CredentialInfo {
     private String serialNumber;
 
     private String type;
+
+    private String organisationName;
+
+    private String cvr;
 
 
     private final String SYSTEM = "SYSTEM";
@@ -38,9 +45,27 @@ public class CredentialInfo {
 
     }
 
+    private void setOrg(String org) {
+        this.organisationName = org;
+    }
+
+    private void setCvr(String cvr) {
+        this.cvr = cvr;
+    }
+
+    public String getOrganisationName() {
+        return organisationName;
+    }
+
+    public String getCvr() {
+        return cvr;
+    }
+
     private String setType() {
         String rawString = credentialVault.getSystemCredentialPair().getCertificate().getSubjectX500Principal().toString();
         if (rawString.contains("UID")) {
+            setCVRAndOrg(rawString);
+
             return SYSTEM;
         }
         else {
@@ -61,6 +86,33 @@ public class CredentialInfo {
 
     public String getType() {
         return type;
+    }
+
+    private void setCVRAndOrg(String raw) {
+
+
+
+        Pattern pattern = Pattern.compile("O=.* /");
+
+        Matcher m = pattern.matcher(raw);
+
+        String result = "";
+        while (m.find()) {
+            result = m.group(0);
+        }
+
+        setOrg(result.substring(2, result.length()-2));
+
+        pattern = Pattern.compile(" CVR:.*,");
+
+        m = pattern.matcher(raw);
+        while (m.find()) {
+            result = m.group(0);
+        }
+
+        setCvr(result.trim().substring(4, result.length()-2));
+
+
     }
 }
 

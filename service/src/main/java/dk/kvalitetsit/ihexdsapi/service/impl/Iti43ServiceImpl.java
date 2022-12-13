@@ -1,8 +1,6 @@
 package dk.kvalitetsit.ihexdsapi.service.impl;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.Reader;
 import java.io.StringWriter;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,7 +21,7 @@ import javax.xml.xpath.XPathFactory;
 
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsClientInfo;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSoapDecorator;
-import dk.kvalitetsit.ihexdsapi.dgws.Iti43Exception;
+import dk.kvalitetsit.ihexdsapi.dgws.ItiException;
 import dk.kvalitetsit.ihexdsapi.service.Iti43Service;
 
 import org.apache.cxf.endpoint.Client;
@@ -61,8 +59,16 @@ public class Iti43ServiceImpl implements Iti43Service {
     }
 
     @Override
-    public Iti43Response getDocument(Iti43QueryParameter queryParameter, DgwsClientInfo clientInfo) throws Iti43Exception {
-        dgwsSoapDecorator.setDgwsClientInfo(clientInfo);
+    public Iti43Response getDocument(Iti43QueryParameter queryParameter, DgwsClientInfo clientInfo) throws ItiException {
+        if (queryParameter.getDocumentId().isEmpty()) {
+            throw new ItiException(1000, "Document unique ID is empty", null);
+        }
+        if (queryParameter.getRepositoryId().isEmpty()) {
+            throw new ItiException(1000, "Repository ID is empty", null);
+        }
+
+
+        dgwsSoapDecorator.setDgwsClientInfo(clientInfo, true);
         Iti43Response iti43Response = new Iti43Response();
         RetrievedDocumentSet documentResponse = fetchDocument(queryParameter.getDocumentId(), queryParameter.getRepositoryId());
 
@@ -84,7 +90,7 @@ public class Iti43ServiceImpl implements Iti43Service {
                 errors.add(registryError);
             }
             dgwsSoapDecorator.clearSDgwsClientInfo();
-            throw new Iti43Exception(1000, "Failed to retrieve document", errors);
+            throw new ItiException(1000, "Failed to retrieve document", errors);
         }
         //String xml = documentResponse.getDocuments().get(0).getDataHandler();
         String xml = null;

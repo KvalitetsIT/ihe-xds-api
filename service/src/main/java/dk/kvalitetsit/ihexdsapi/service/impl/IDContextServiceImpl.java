@@ -4,6 +4,11 @@ import dk.kvalitetsit.ihexdsapi.service.IDContextService;
 
 import java.util.HashMap;
 
+/**
+ * This is the ID context which keeps track of the ID for requests and responses
+ * when you want to downlod the previous request or ide as a file.
+ *
+*/
 public class IDContextServiceImpl implements IDContextService {
     private HashMap<String, String> temporaryIdMap;
 

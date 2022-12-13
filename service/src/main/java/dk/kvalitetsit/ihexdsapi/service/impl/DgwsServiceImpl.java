@@ -23,4 +23,17 @@ public class DgwsServiceImpl implements DgwsService {
 
         return dgwsClientInfo;
     }
+
+    @Override
+    public DgwsClientInfo getSystemClientInfo(String credentialId) throws DgwsSecurityException {
+        CredentialInfo credentialInfo = credentialService.getCredentialInfoFromId(credentialId);
+
+        if (credentialInfo == null) {
+            throw new DgwsSecurityException(1000, "Credentials do not exist");
+        }
+
+        DgwsClientInfo dgwsClientInfo = stsService.getDgwsClientInfoForSystem(credentialInfo);
+
+        return  dgwsClientInfo;
+    }
 }

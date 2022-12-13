@@ -3,8 +3,12 @@ package dk.kvalitetsit.ihexdsapi.service.impl;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsClientInfo;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSecurityException;
 import dk.kvalitetsit.ihexdsapi.dgws.DgwsSoapDecorator;
+import dk.kvalitetsit.ihexdsapi.dgws.ItiException;
+import dk.kvalitetsit.ihexdsapi.interceptors.SoapFaultCatcherInterceptor;
 import dk.kvalitetsit.ihexdsapi.service.Iti18Service;
+import dk.kvalitetsit.ihexdsapi.upload_interceptor.KITAttachmentOutInterceptor;
 import dk.kvalitetsit.ihexdsapi.xds.Codes;
+import org.apache.cxf.binding.soap.SoapFault;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.joda.time.DateTime;
@@ -24,6 +28,7 @@ import org.openehealth.ipf.commons.ihe.xds.core.stub.ebrs30.query.AdhocQueryResp
 import org.openehealth.ipf.commons.ihe.xds.core.transform.requests.QueryRegistryTransformer;
 import org.openehealth.ipf.commons.ihe.xds.core.transform.responses.QueryResponseTransformer;
 import org.openehealth.ipf.commons.ihe.xds.iti18.Iti18PortType;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.time.*;
 import java.util.*;
@@ -37,11 +42,14 @@ public class Iti18ServiceImpl implements Iti18Service {
 
     private DgwsSoapDecorator dgwsSoapDecorator = new DgwsSoapDecorator();
 
+    private SoapFaultCatcherInterceptor soapFaultCatcherInterceptor = new SoapFaultCatcherInterceptor();
+
     public Iti18ServiceImpl(Iti18PortType iti18PortType) {
         this.iti18PortType = iti18PortType;
 
         Client proxy = ClientProxy.getClient(iti18PortType);
         proxy.getOutInterceptors().add(dgwsSoapDecorator);
+        proxy.getInInterceptors().add(soapFaultCatcherInterceptor);
     }
 
     private Iti18Response populateIti18Response(String patientId, AdhocQueryResponse response, Iti18Response iti18Response) {
@@ -51,9 +59,6 @@ public class Iti18ServiceImpl implements Iti18Service {
 
         EbXMLQueryResponse30 ebXmlresponse = new EbXMLQueryResponse30(response);
         QueryResponse queryResponse = queryResponseTransformer.fromEbXML(ebXmlresponse);
-
-
-        System.out.println();
 
 
         // Query parameters
@@ -116,15 +121,19 @@ public class Iti18ServiceImpl implements Iti18Service {
     }
 
 
-    private AdhocQueryRequest createQuery(Iti18QueryParameter iti18Request) {
+    private AdhocQueryRequest createQuery(Iti18QueryParameter iti18Request) throws ItiException {
 
         FindDocumentsQuery fdq = new FindDocumentsQuery();
 
 
         // Patient ID
-        AssigningAuthority authority = new AssigningAuthority(Codes.DK_CPR_CLASSIFICAION_OID);
-        Identifiable patientIdentifiable = new Identifiable(iti18Request.getPatientId(), authority);
-        fdq.setPatientId(patientIdentifiable);
+        if (iti18Request.getPatientId() != null && !iti18Request.getPatientId().isEmpty()) {
+            AssigningAuthority authority = new AssigningAuthority(Codes.DK_CPR_CLASSIFICAION_OID);
+            Identifiable patientIdentifiable = new Identifiable(iti18Request.getPatientId(), authority);
+            fdq.setPatientId(patientIdentifiable);
+        } else {
+            throw new ItiException(1000, "Patient-ID is empty", null);
+        }
 
         // Availability status
         if (iti18Request.getAvailabilityStatus() != null && iti18Request.getAvailabilityStatus().trim().length() > 0) {
@@ -188,6 +197,10 @@ public class Iti18ServiceImpl implements Iti18Service {
         }
 
         // Document Type
+        if (iti18Request.getDocumentType() == null) {
+
+            throw new ItiException((Exception) new NullPointerException().getCause(), 1000, "List is null");
+        }
         if (iti18Request.getDocumentType().contains("STABLE")) {
             if (fdq.getDocumentEntryTypes() == null) {
                 fdq.setDocumentEntryTypes(new LinkedList<>());
@@ -201,11 +214,13 @@ public class Iti18ServiceImpl implements Iti18Service {
             fdq.getDocumentEntryTypes().add(DocumentEntryType.ON_DEMAND);
         }
 
+
         QueryRegistry queryRegistry = new QueryRegistry(fdq);
         queryRegistry.setReturnType(QueryReturnType.LEAF_CLASS);
 
         QueryRegistryTransformer queryRegistryTransformer = new QueryRegistryTransformer();
         EbXMLAdhocQueryRequest ebxmlAdhocQueryRequest = queryRegistryTransformer.toEbXML(queryRegistry);
+
         AdhocQueryRequest internal = (AdhocQueryRequest) ebxmlAdhocQueryRequest.getInternal();
 
         return internal;
@@ -255,33 +270,33 @@ public class Iti18ServiceImpl implements Iti18Service {
     }
 
     @Override
-    public Iti18Response queryForDocument(Iti18QueryParameter iti18Request, DgwsClientInfo dgwsClientInfo) throws DgwsSecurityException {
+    public Iti18Response queryForDocument(Iti18QueryParameter iti18Request, DgwsClientInfo dgwsClientInfo) throws DgwsSecurityException, ItiException {
         try {
-            dgwsSoapDecorator.setDgwsClientInfo(dgwsClientInfo);
+
+            dgwsSoapDecorator.setDgwsClientInfo(dgwsClientInfo, true);
 
             var query = createQuery(iti18Request);
             var response = iti18PortType.documentRegistryRegistryStoredQuery(query);
 
 
             Iti18Response iti18Response = populateIti18Response(iti18Request.getPatientId(), response, new Iti18Response());
-
-
             return iti18Response;
-
-        } finally {
+        }
+            finally
+         {
             dgwsSoapDecorator.clearSDgwsClientInfo();
-            ;
+
         }
     }
 
     @Override
     public Iti18ResponseUnique queryForDocument(Iti18RequestUnique iti18RequestUnique, DgwsClientInfo dgwsClientInfo) throws DgwsSecurityException {
         try {
-            dgwsSoapDecorator.setDgwsClientInfo(dgwsClientInfo);
+            dgwsSoapDecorator.setDgwsClientInfo(dgwsClientInfo, true);
 
 
             // TODO Change to actual document ID
-        var query = buildAdhocQueryRequest(
+            var query = buildAdhocQueryRequest(
                     iti18RequestUnique.getQueryParameters().getDocumentId());
            /*var query = buildAdhocQueryRequest(
                     "1.2.208.184^1232b492-72d0-4789-9bea-ff829f7e0114");*/
@@ -318,7 +333,6 @@ public class Iti18ServiceImpl implements Iti18Service {
             String orgName = "";
             String orgCodeScheme = "";
             String orgCode = "";
-            System.out.println(entry.getAuthor().getAuthorInstitution());
             for (Organization o : entry.getAuthor().getAuthorInstitution()) {
                 orgName = orgName + o.getOrganizationName() + ",";
                 orgCode = orgCode + o.getIdNumber() + ",";
@@ -376,7 +390,7 @@ public class Iti18ServiceImpl implements Iti18Service {
             metaDataResponse.setHash(entry.getHash());
 
             metaDataResponse.setHealthCareFacilityType(makeCodeObject(entry.getHealthcareFacilityTypeCode()
-                    .getDisplayName().getValue(), entry.getHealthcareFacilityTypeCode().getCode(),
+                            .getDisplayName().getValue(), entry.getHealthcareFacilityTypeCode().getCode(),
                     entry.getHealthcareFacilityTypeCode().getSchemeName()));
 
             metaDataResponse.setHomeComunity(entry.getHomeCommunityId());
@@ -461,6 +475,7 @@ public class Iti18ServiceImpl implements Iti18Service {
         return metaDataResponse;
     }
 
+    //TODO refactor in one class
     private org.openapitools.model.Code makeCodeObject(String name, String code, String codeScheme) {
         org.openapitools.model.Code c = new org.openapitools.model.Code();
         c.setName(name);
