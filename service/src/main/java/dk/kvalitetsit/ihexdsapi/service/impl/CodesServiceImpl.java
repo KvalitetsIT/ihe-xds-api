@@ -94,13 +94,13 @@ public class CodesServiceImpl implements CodesService {
         typeCodesList = this.generateListOfCodes(this.typeCodeCodes,
                 this.typeCodeNames, typeCodeScheme,
                 "Amount of type codes doesn't match amount of type codes names");
-        formatCodesList = this.generateListOfCodes(this.formatCodeCodes, this.formatCodeNames, formatCodeScheme, "msg");
-        healthcareFacilityTypeCodesList = this.generateListOfCodes(this.healthcareFacilityTypeCodeCodes, this.healthcareFacilityTypeCodeNames, this.healthcareFacilityTypeCodeScheme, "msg");
-        eventCodesList = this.generateListOfCodes(this.eventCodeCodes, this.eventCodeNames, "", "msg");
-        practiseSettingCodesList =  this.generateListOfCodes(this.practiceSettingCodeCodes, this.practiceSettingCodeNames, this.practiceSettingCodeScheme, "msg");
+        formatCodesList = this.generateListOfCodes(this.formatCodeCodes, this.formatCodeNames, formatCodeScheme, "Amount of type codes doesn't match amount of format codes names");
+        healthcareFacilityTypeCodesList = this.generateListOfCodes(this.healthcareFacilityTypeCodeCodes, this.healthcareFacilityTypeCodeNames, this.healthcareFacilityTypeCodeScheme, "Amount of type codes doesn't match amount of healthcare type codes names");
+        eventCodesList = this.generateListOfCodes(this.eventCodeCodes, this.eventCodeNames, "", "Amount of type codes doesn't match amount of event codes names");
+        practiseSettingCodesList =  this.generateListOfCodes(this.practiceSettingCodeCodes, this.practiceSettingCodeNames, this.practiceSettingCodeScheme, "Amount of type codes doesn't match amount of practicesetting codes names");
         availabilityStatusList = this.generateListOfAvailabilityStatus();
         documentTypeList = this.generateDocumentType();
-        classCodeList = this.generateListOfCodes(this.classCodeCodes, this.classCodeNames, this.classCodeScheme, "msg");
+        classCodeList = this.generateListOfCodes(this.classCodeCodes, this.classCodeNames, this.classCodeScheme, "Amount of type codes doesn't match amount of class codes names");
     }
 
     public CodesServiceImpl() {
