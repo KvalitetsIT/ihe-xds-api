@@ -35,20 +35,30 @@ public class InitConfiguration {
 
     @PostConstruct
     public void setupDefaultCredentials() throws URISyntaxException, IOException, DgwsSecurityException {
-         String key1 = Files.readString(Paths.get(this.keyPath));
-         String cert1 = Files.readString(Paths.get(this.publicPath));
-         String key2 = Files.readString(Paths.get(this.keyPath2));
-         String cert2 = Files.readString(Paths.get(this.publicPath2));
+        String key1 = Files.readString(Paths.get(this.keyPath));
+        String cert1 = Files.readString(Paths.get(this.publicPath));
+        String key2 = Files.readString(Paths.get(this.keyPath2));
+        String cert2 = Files.readString(Paths.get(this.publicPath2));
         String key3 = Files.readString(Paths.get(this.keyPath3));
         String cert3 = Files.readString(Paths.get(this.publicPath3));
 
-         // Need better variable names
-        credentialService.createAndAddCredentialInfo(null, "Sonja Bech", cert1, key1
-                );
-        credentialService.createAndAddCredentialInfo(null, "Grethe Pedersen", cert2, key2
-                );
+        /*if (credentialService.getIds(" ").size() == 0) {
+            System.out.println(credentialService.getIds(" "));*/
+        // Need better variable names
+        try {
+            credentialService.createAndAddCredentialInfo(null, "Sonja Bech", cert1, key1
+            );
+            credentialService.createAndAddCredentialInfo(null, "Grethe Pedersen", cert2, key2
+            );
 
-        credentialService.createAndAddCredentialInfo(null, "Default VOCES", cert3, key3
-                );
+            credentialService.createAndAddCredentialInfo(null, "Default VOCES", cert3, key3
+            );
+        }
+        catch (DgwsSecurityException e) {
+            System.out.println(e);
+        }
+
     }
+   /* }
+       /* System.out.println(credentialService.getIds(" "));}*/
 }
