@@ -42,7 +42,7 @@ paths:
               $ref: '#/components/schemas/iti18Request'
       responses:
         '200':
-          description: Ok with list
+          description: Returns ok with list
           content:
             application/json:
               schema:
@@ -331,22 +331,22 @@ components:
         - documentId
       properties:
         patientId:
-          description: Patientens Id (CPR)
+          description: The patient's ID (CPR)
           type: string
           nullable: false
           example: "2512489996"
         documentId:
-          description: Dokumentets Id Or unique ID
+          description: Document's Id Or unique ID
           type: string
           nullable: false
-          example: "987598435735.54587493.454353"
+          example: "1.2.208.184^74b28be0-4948-11ed-b878-0242a4cqt00f2"
         repositoryID:
-          description: Repostory ID
+          description: The repository ID
           type: string
           nullable: false
           example : "1.2.208.192.100.101"
         documentType:
-          description: Document type
+          description: The document type
           type: string
           nullable: false
           example: "Dato og tidspunkt for møde mellem patient og sundhedsperson"
@@ -585,17 +585,17 @@ components:
         - repositoryId
       properties:
         patientId:
-          description: Patientens Id (CPR)
+          description: Patient Id (CPR)
           type: string
           example: "2512489996"
         documentId:
-          description: Documentets unique Id
+          description: Document unique Id
           type: string
-          example: "2512489996"
+          example: "1.2.208.184^74b28be0-4948-11ed-b878-0242a4cqt00f2"
         repositoryId:
-          description: Documentets repository Id
+          description: Document repository Id
           type: string
-          example: "2512489996"
+          example: "1.2.208.192.100.101"
 
 
 
@@ -605,39 +605,39 @@ components:
       type: object
       properties:
         authorInstitution:
-          description: the context in which to make the query
+          description: The authorInstitution object
           $ref: '#/components/schemas/code'
         authorPerson:
-          description: Documentets unique Id
+          description: The authorPerson object as string
           type: string
           example: "Prefix : Mr  Name: Doe"
         availabilityStatus:
-          description:
+          description: The availability status
           $ref: '#/components/schemas/code'
         classCode :
-          description:
+          description: The object of class close
           $ref: '#/components/schemas/code'
         comments:
-          description: Documentets unique Id
+          description: The comments
           type: string
-          example: "Prefix : Mr  Name: Doe"
+          example: "Some comment ...."
         confidentialityCode:
-          description:
+          description: The confidentiality code
           $ref: '#/components/schemas/code'
         creationTime:
-          description: The start service from date-time as Long
+          description: The creation date-time as Long
           type: integer
           format: int64
           example: "1664349302510"
         documentAvailability:
-          description:
+          description: The document availability
           $ref: '#/components/schemas/code'
         entryUuid:
-          description: Documentets unique Id
+          description: Documents entry unique Id
           type: string
-          example: "Prefix : Mr  Name: Doe"
+          example: "1.2.208.184^74b28be0-4948-11ed-b878-0242a4cqt00f2"
         eventCode:
-          description: registry errors list
+          description: Event codes
           type: array
           items:
             $ref: '#/components/schemas/code'
@@ -649,50 +649,49 @@ components:
             $ref: '#/components/schemas/registryError'
           example: "[..], [..]"
         extraMetadata:
-          description: Documentets unique Id
+          description: The extra metadata
           type: string
           example:
         formatCode:
-          description:
+          description: The format code
           $ref: '#/components/schemas/code'
         hash:
-          description: Documentets unique Id
+          description: The hash
           type: string
-          example:
+          example: "73649f7429da9388393"
         healthCareFacilityType:
-          description:
+          description: The healthcarefacilitytype code
           $ref: '#/components/schemas/code'
         homeComunity:
-          description: Documentets unique Id
+          description: Home community
           type: string
-          example: "Prefix : Mr  Name: Doe"
+          example: "73649f7429da9388393"
         languageCode:
-          description: Documentets unique Id
+          description: The language code
           type: string
-          example: "Prefix : Mr  Name: Doe"
+          example: "da-DK"
         legalAuthenticator:
-          description: Documentets unique Id
+          description: The legalAuthenticator object
           type: string
           example: "Prefix : Mr  Name: Doe"
         logicalUuid:
-          description: Documentets unique Id
+          description: Generated uuId
           type: string
-          example: "Prefix : Mr  Name: Doe"
+          example: "74b28be0-4948-11ed-b878-0242a4cqt00f2"
         mimeType:
-          description: Documentets unique Id
+          description: The mime type
           type: string
-          example: "Prefix : Mr  Name: Doe"
         objectType:
-          description: Documentets unique Id
+          description: The object type
           type: string
-          example: "Prefix : Mr  Name: Doe"
+          example: "Stable"
         practiceSettingCode:
-          description:
+          description: PracticeSettingCode object
           $ref: '#/components/schemas/code'
         repositoryUniqueId:
-          description: Documentets unique Id
+          description: Repository unique Id
           type: string
-          example: "Prefix : Mr  Name: Doe"
+          example: "74b28be0-4948-11ed-b878-0242a4cqt00f2"
         serviceStartTime:
           description: The start service from date-time as Long
           type: integer
@@ -719,37 +718,37 @@ components:
               type: string
               example: "2512489996"
             gender:
-              description: The severirty's opcode and name
+              description: The gender either M, F or UNI
               type: string
               enum:
                 - M
                 - F
                 - UNI
             birthTime:
-              description: The start service from date-time as Long
+              description: The birthTime from date-time as Long
               type: integer
               format: int64
               example: "1664349302510"
         title:
-          description: credential ID
+          description: The title of the document
           type: string
           example: "2512489996"
         type:
-          description:
+          description: The type of the document
           $ref: '#/components/schemas/code'
         typeCode:
-          description:
+          description: The type code of the document
           $ref: '#/components/schemas/code'
         uniqueId:
-          description: credential ID
+          description: The unique ID
           type: string
           example: "2512489996"
         uri:
-          description: credential ID
+          description: THE uri
           type: string
-          example: "2512489996"
+          example: ""
         version:
-          description: credential ID
+          description: The version
           type: string
           example: "2512489996"
 
@@ -768,13 +767,13 @@ components:
         credentialId:
           description: credential ID
           type: string
-          example: "2512489996"
+          example: "9038f177-d345-4c42-b2b4-6e27314e714f"
         patientId:
-          description: Patientens Id (CPR)
+          description: Patient Id (CPR)
           type: string
           example: "2512489996"
         documentId:
-          description: Documentets unique Id
+          description: Document unique Id
           type: string
           example: "2512489996"
         context:
@@ -825,30 +824,31 @@ components:
       type: object
       properties:
         authorInstitution:
-          description: the context in which to make the query
+          description: Then author institution object
           $ref: '#/components/schemas/code'
         authorPerson:
-          description: Documentets unique Id
+          description: author person object
           type: object
           properties:
             familyName:
+              description: last name
               type: string
             givenName:
-              description: credential ID
+              description: First name
               type: string
-              example: "2512489996"
+              example: "John Doe"
             secondAndFurtherGivenNames:
-              description: credential ID
+              description: More names are giving
               type: string
-              example: "2512489996"
+              example: "Jane, Adrian"
         classCode:
-          description:
+          description: Class code object
           $ref: '#/components/schemas/code'
         confidentialityCode:
-          description:
+          description: confidentiality Code
           $ref: '#/components/schemas/code'
         creationTime:
-          description: The start service from date-time as Long
+          description: The creating time as strings
           type: string
           example: "1664349302510"
         eventCode:
@@ -863,69 +863,69 @@ components:
         languageCode:
           description: Document's language code
           type: string
-          example: "Prefix : Mr  Name: Doe"
+          example: "da-DK"
         legalAuthenticator:
-          description: Documentets unique Id
+          description: legal authenticator object
           type: object
           properties:
             familyName:
               type: string
             givenName:
-              description: credential ID
+              description: First name
               type: string
-              example: "2512489996"
+              example: "John Doe"
             secondAndFurtherGivenNames:
-              description: credential ID
+              description: Other given names
               type: string
-              example: "2512489996"
+              example: "Jane, Adrian"
         patientId:
           description: patientId and codeScheme
           $ref: '#/components/schemas/code'
         serviceStartTime:
-          description: The start service from date-time as Long
+          description: The start service from date-time as string (UTC)
           type: string
-          example: "1664349302510"
+          example: "20221001083000"
         serviceStopTime:
-          description: The start service from date-time as Long
+          description: The start service from date-time as string (UTC)
           type: string
-          example: "1664349302510"
+          example: "20221001083000"
         sourcePatientId:
-          description:
+          description: The source patient ID object
           $ref: '#/components/schemas/code'
         sourcePatientInfo:
-          description:
+          description: The source patient info object
           type: object
           properties:
             familyName:
               type: string
             givenName:
-              description: credential ID
+              description: First name
               type: string
-              example: "2512489996"
+              example: "John"
             secondAndFurtherGivenNames:
-              description: credential ID
+              description: Other given names. Separated by comma
               type: string
-              example: "2512489996"
+              example: "John, Adrian, Jane"
             gender:
-              description: The severirty's opcode and name
+              description: Gender information
               type: string
               enum:
                 - M
                 - F
                 - UNI
             birthTime:
-              description: The start service from date-time as Long
+              description: The day the patient was born
               type: string
               example: "1664349302510"
         title:
-          description: title
+          description: Title of the document
           type: string
-          example: "2512489996"
+          example: "Aftale for 2906910651"
         typeCode:
-          description:
+          description: The type code object
           $ref: '#/components/schemas/code'
         uniqueId:
-          description: credential ID
+          description: Document unique ID
           type: string
           example: "2512489996"
         isLegalDocument:
@@ -938,122 +938,123 @@ components:
       type: object
       properties:
         authorInstitution:
-          description: the context in which to make the query
+          description: Then author institution object
           $ref: '#/components/schemas/code'
         authorPerson:
-          description: Documentets unique Id
+          description: author person object
           type: object
           properties:
             familyName:
+              description: last name
               type: string
+              example: "Doe"
             givenName:
-              description: credential ID
+              description: first name
               type: string
-              example: "2512489996"
+              example: "John"
             secondAndFurtherGivenNames:
-              description: credential ID
+              description: more given names
               type: string
-              example: "2512489996"
+              example: "Jane, Adrian"
         confidentialityCode:
-          description:
+          description:  confidentiality Code
           $ref: '#/components/schemas/code'
         creationTime:
-          description: The start service from date-time as Long
+          description: The start service from date-time as string (UTC)
           type: string
-          example: "1664349302510"
+          example: "20220909071100"
         eventCode:
           description: document event code
           type: array
           items:
             $ref: '#/components/schemas/code'
           example: "[..], [..]"
-          ## TODO CHECK
         languageCode:
           description: Document's language code
           type: string
-          example: "Prefix : Mr  Name: Doe"
+          example: "da-DK"
         legalAuthenticator:
-          description: Documentets unique Id
+          description: Legal authenticator object that can be null
           type: object
           nullable: true
           properties:
             familyName:
               type: string
             givenName:
-              description: credential ID
+              description: First name
               type: string
-              example: "2512489996"
+              example: "John"
             secondAndFurtherGivenNames:
-              description: credential ID
+              description: More given names
               type: string
-              example: "2512489996"
+              example: "John, jane, Adrian"
         patientId:
           description: patientId and codeScheme
           $ref: '#/components/schemas/code'
         serviceStartTime:
-          description: The start service from date-time as Long
+          description: The start service from date-time as string  (UTC)
           type: string
-          example: "1664349302510"
+          example: "20221001080000"
         serviceStopTime:
-          description: The start service to date-time as Long
+          description: The start service to date-time  as string  (UTC)
           type: string
-          example: "1664349302510"
+          example: "20221001080000"
         sourcePatientId:
-          description:
+          description: Source patient ID
           $ref: '#/components/schemas/code'
         sourcePatientInfo:
-          description:
+          description: Source patient Info
           type: object
           properties:
             familyName:
               type: string
             givenName:
-              description: credential ID
+              description: First name
               type: string
-              example: "2512489996"
+              example: "John"
             secondAndFurtherGivenNames:
-              description: credential ID
+              description: More given names
               type: string
-              example: "2512489996"
+              example: "jane, Adrian"
             gender:
-              description: The severirty's opcode and name
+              description: Gender enum
               type: string
               enum:
                 - M
                 - F
                 - UNI
             birthTime:
-              description: The start service from date-time as Long
+              description: The start service from date-time as String
               type: string
-              example: "1664349302510"
+              example: "19910629"
         title:
-          description: title
+          description: title of document
           type: string
-          example: "2512489996"
+          example: "Aftale for 2906910651"
         typeCode:
-          description:
+          description: Type code object
           $ref: '#/components/schemas/code'
         uniqueId:
-          description: credential ID
+          description: Unique ID of document
           type: string
           example: "2512489996"
         objectType:
-          description: Documentets unique Id
+          description: Object type object
           $ref: '#/components/schemas/code'
         availabilityStatus:
-          description: Documentets unique Id
+          description: Availability status of the document
           $ref: '#/components/schemas/code'
         formatCode:
-          description:
+          description: Format code object
           $ref: '#/components/schemas/code'
         healthcareFacilityTypeCode:
-          description:
+          description: healthcareFacilityTypeCode object
           $ref: '#/components/schemas/code'
         practiceSetting:
-          description:
+          description: practiceSetting object
           $ref: '#/components/schemas/code'
         classCode:
-          description:
+          description: class code object
           $ref: '#/components/schemas/code'
         submissionTime:
           description: Time for submission as UTC format
@@ -1076,7 +1077,7 @@ components:
           description: ID of the credentialInfo that uploads the document
           type: string
         responseMetaData:
-          description: Obejct of the repository
+          description: Obejct of the meta data
           $ref: '#/components/schemas/responseMetaData'
 
           ## ADD metadata
