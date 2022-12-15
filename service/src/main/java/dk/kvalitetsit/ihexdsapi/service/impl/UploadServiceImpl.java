@@ -154,7 +154,7 @@ public class UploadServiceImpl implements UploadService {
 
             if (cdaMetadataDecoded.getLegalAuthenticator() != null && cdaMetadataDecoded.getLegalAuthenticator().getPersonIdentity() != null) {
 
-                GeneratedMetaDataAuthorPerson auntenticator = new GeneratedMetaDataAuthorPerson();
+                GeneratedMetaDataLegalAuthenticator auntenticator = new GeneratedMetaDataLegalAuthenticator();
 
                 if (cdaMetadataDecoded.getLegalAuthenticator().getPersonIdentity().getFamilyName() != null) {
                     auntenticator.setFamilyName(cdaMetadataDecoded.getLegalAuthenticator().getPersonIdentity().getFamilyName());

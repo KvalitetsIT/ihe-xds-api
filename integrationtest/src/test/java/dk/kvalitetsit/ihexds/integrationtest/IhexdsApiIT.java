@@ -1,12 +1,10 @@
 package dk.kvalitetsit.ihexds.integrationtest;
 
-import dk.kvalitetsit.ihexdsapi.controller.exception.BadRequestException;
 import org.apache.http.HttpStatus;
 import org.junit.Test;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.api.IhexdsApi;
-import org.openapitools.client.api.TypeCodeApi;
 import org.openapitools.client.model.*;
 
 import java.io.IOException;
@@ -760,7 +758,7 @@ public class IhexdsApiIT extends AbstractIntegrationTest {
         authorIns.setScheme("1.2.208.176.1.1");
         responseMetaData.setAuthorInstitution(authorIns);
 
-        GeneratedMetaDataAuthorPerson authorPerson = new GeneratedMetaDataAuthorPerson();
+        ResponseMetaDataAuthorPerson authorPerson = new ResponseMetaDataAuthorPerson();
         authorPerson.setGivenName("Jens");
         authorPerson.setFamilyName("Jensen");
         authorPerson.setSecondAndFurtherGivenNames("Bo&Henrik");
@@ -819,11 +817,11 @@ public class IhexdsApiIT extends AbstractIntegrationTest {
 
         responseMetaData.setSourcePatientId(sourcePatientId);
 
-        GeneratedMetaDataSourcePatientInfo sourcePatientInfo = new GeneratedMetaDataSourcePatientInfo();
+        ResponseMetaDataSourcePatientInfo sourcePatientInfo = new ResponseMetaDataSourcePatientInfo();
         sourcePatientInfo.setFamilyName("Andersen");
         sourcePatientInfo.setGivenName("AndersMEGETMEGETMEGETMEGETMEGETMEGETMEGETLANGTNAVN");
         sourcePatientInfo.setSecondAndFurtherGivenNames("Aftaler");
-        sourcePatientInfo.setGender(GeneratedMetaDataSourcePatientInfo.GenderEnum.M);
+        sourcePatientInfo.setGender(ResponseMetaDataSourcePatientInfo.GenderEnum.M);
         sourcePatientInfo.setBirthTime("19910629");
 
         responseMetaData.setSourcePatientInfo(sourcePatientInfo);
@@ -900,7 +898,7 @@ public class IhexdsApiIT extends AbstractIntegrationTest {
         authorIns.setScheme("1.2.208.176.1.1");
         responseMetaData.setAuthorInstitution(authorIns);
 
-        GeneratedMetaDataAuthorPerson authorPerson = new GeneratedMetaDataAuthorPerson();
+        ResponseMetaDataAuthorPerson authorPerson = new ResponseMetaDataAuthorPerson();
         authorPerson.setGivenName("Jens");
         authorPerson.setFamilyName("Jensen");
         authorPerson.setSecondAndFurtherGivenNames("Bo&Henrik");
@@ -959,11 +957,11 @@ public class IhexdsApiIT extends AbstractIntegrationTest {
 
         responseMetaData.setSourcePatientId(sourcePatientId);
 
-        GeneratedMetaDataSourcePatientInfo sourcePatientInfo = new GeneratedMetaDataSourcePatientInfo();
+        ResponseMetaDataSourcePatientInfo sourcePatientInfo = new ResponseMetaDataSourcePatientInfo();
         sourcePatientInfo.setFamilyName("Andersen");
         sourcePatientInfo.setGivenName("AndersMEGETMEGETMEGETMEGETMEGETMEGETMEGETLANGTNAVN");
         sourcePatientInfo.setSecondAndFurtherGivenNames("Aftaler");
-        sourcePatientInfo.setGender(GeneratedMetaDataSourcePatientInfo.GenderEnum.M);
+        sourcePatientInfo.setGender(ResponseMetaDataSourcePatientInfo.GenderEnum.M);
         sourcePatientInfo.setBirthTime("19910629");
 
         responseMetaData.setSourcePatientInfo(sourcePatientInfo);
@@ -1038,7 +1036,7 @@ public class IhexdsApiIT extends AbstractIntegrationTest {
         authorIns.setScheme("1.2.208.176.1.1");
         responseMetaData.setAuthorInstitution(authorIns);
 
-        GeneratedMetaDataAuthorPerson authorPerson = new GeneratedMetaDataAuthorPerson();
+        ResponseMetaDataAuthorPerson authorPerson = new ResponseMetaDataAuthorPerson();
         authorPerson.setGivenName("Jens");
         authorPerson.setFamilyName("Jensen");
         authorPerson.setSecondAndFurtherGivenNames("Bo&Henrik");
@@ -1097,11 +1095,11 @@ public class IhexdsApiIT extends AbstractIntegrationTest {
 
         responseMetaData.setSourcePatientId(sourcePatientId);
 
-        GeneratedMetaDataSourcePatientInfo sourcePatientInfo = new GeneratedMetaDataSourcePatientInfo();
+        ResponseMetaDataSourcePatientInfo sourcePatientInfo = new ResponseMetaDataSourcePatientInfo();
         sourcePatientInfo.setFamilyName("Andersen");
         sourcePatientInfo.setGivenName("AndersMEGETMEGETMEGETMEGETMEGETMEGETMEGETLANGTNAVN");
         sourcePatientInfo.setSecondAndFurtherGivenNames("Aftaler");
-        sourcePatientInfo.setGender(GeneratedMetaDataSourcePatientInfo.GenderEnum.M);
+        sourcePatientInfo.setGender(ResponseMetaDataSourcePatientInfo.GenderEnum.M);
         sourcePatientInfo.setBirthTime("19910629");
 
         responseMetaData.setSourcePatientInfo(sourcePatientInfo);
@@ -1176,7 +1174,7 @@ public class IhexdsApiIT extends AbstractIntegrationTest {
         authorIns.setScheme("1.2.208.176.1.1");
         responseMetaData.setAuthorInstitution(authorIns);
 
-        GeneratedMetaDataAuthorPerson authorPerson = new GeneratedMetaDataAuthorPerson();
+        ResponseMetaDataAuthorPerson authorPerson = new ResponseMetaDataAuthorPerson();
         authorPerson.setGivenName("Jens");
         authorPerson.setFamilyName("Jensen");
         authorPerson.setSecondAndFurtherGivenNames("Bo&Henrik");
@@ -1235,11 +1233,11 @@ public class IhexdsApiIT extends AbstractIntegrationTest {
 
         responseMetaData.setSourcePatientId(sourcePatientId);
 
-        GeneratedMetaDataSourcePatientInfo sourcePatientInfo = new GeneratedMetaDataSourcePatientInfo();
+        ResponseMetaDataSourcePatientInfo sourcePatientInfo = new ResponseMetaDataSourcePatientInfo();
         sourcePatientInfo.setFamilyName("Andersen");
         sourcePatientInfo.setGivenName("AndersMEGETMEGETMEGETMEGETMEGETMEGETMEGETLANGTNAVN");
         sourcePatientInfo.setSecondAndFurtherGivenNames("Aftaler");
-        sourcePatientInfo.setGender(GeneratedMetaDataSourcePatientInfo.GenderEnum.M);
+        sourcePatientInfo.setGender(ResponseMetaDataSourcePatientInfo.GenderEnum.M);
         sourcePatientInfo.setBirthTime("19910629");
 
         responseMetaData.setSourcePatientInfo(sourcePatientInfo);
@@ -1315,7 +1313,7 @@ public class IhexdsApiIT extends AbstractIntegrationTest {
         authorIns.setScheme("1.2.208.176.1.1");
         responseMetaData.setAuthorInstitution(authorIns);
 
-        GeneratedMetaDataAuthorPerson authorPerson = new GeneratedMetaDataAuthorPerson();
+        ResponseMetaDataAuthorPerson authorPerson = new ResponseMetaDataAuthorPerson();
         authorPerson.setGivenName("Jens");
         authorPerson.setFamilyName("Jensen");
         authorPerson.setSecondAndFurtherGivenNames("Bo&Henrik");
@@ -1374,11 +1372,11 @@ public class IhexdsApiIT extends AbstractIntegrationTest {
 
         responseMetaData.setSourcePatientId(sourcePatientId);
 
-        GeneratedMetaDataSourcePatientInfo sourcePatientInfo = new GeneratedMetaDataSourcePatientInfo();
+        ResponseMetaDataSourcePatientInfo sourcePatientInfo = new ResponseMetaDataSourcePatientInfo();
         sourcePatientInfo.setFamilyName("Andersen");
         sourcePatientInfo.setGivenName("AndersMEGETMEGETMEGETMEGETMEGETMEGETMEGETLANGTNAVN");
         sourcePatientInfo.setSecondAndFurtherGivenNames("Aftaler");
-        sourcePatientInfo.setGender(GeneratedMetaDataSourcePatientInfo.GenderEnum.M);
+        sourcePatientInfo.setGender(ResponseMetaDataSourcePatientInfo.GenderEnum.M);
         sourcePatientInfo.setBirthTime("19910629");
 
         responseMetaData.setSourcePatientInfo(sourcePatientInfo);
@@ -1460,7 +1458,7 @@ public class IhexdsApiIT extends AbstractIntegrationTest {
         authorIns.setScheme("1.2.208.176.1.1");
         responseMetaData.setAuthorInstitution(authorIns);
 
-        GeneratedMetaDataAuthorPerson authorPerson = new GeneratedMetaDataAuthorPerson();
+        ResponseMetaDataAuthorPerson authorPerson = new ResponseMetaDataAuthorPerson();
         authorPerson.setGivenName("Jens");
         authorPerson.setFamilyName("Jensen");
         authorPerson.setSecondAndFurtherGivenNames("Bo&Henrik");
@@ -1519,11 +1517,11 @@ public class IhexdsApiIT extends AbstractIntegrationTest {
 
         responseMetaData.setSourcePatientId(sourcePatientId);
 
-        GeneratedMetaDataSourcePatientInfo sourcePatientInfo = new GeneratedMetaDataSourcePatientInfo();
+        ResponseMetaDataSourcePatientInfo sourcePatientInfo = new ResponseMetaDataSourcePatientInfo();
         sourcePatientInfo.setFamilyName("Andersen");
         sourcePatientInfo.setGivenName("AndersMEGETMEGETMEGETMEGETMEGETMEGETMEGETLANGTNAVN");
         sourcePatientInfo.setSecondAndFurtherGivenNames("Aftaler");
-        sourcePatientInfo.setGender(GeneratedMetaDataSourcePatientInfo.GenderEnum.M);
+        sourcePatientInfo.setGender(ResponseMetaDataSourcePatientInfo.GenderEnum.M);
         sourcePatientInfo.setBirthTime("19910629");
 
         responseMetaData.setSourcePatientInfo(sourcePatientInfo);
@@ -1605,7 +1603,7 @@ public class IhexdsApiIT extends AbstractIntegrationTest {
         authorIns.setScheme("1.2.208.176.1.1");
         responseMetaData.setAuthorInstitution(authorIns);
 
-        GeneratedMetaDataAuthorPerson authorPerson = new GeneratedMetaDataAuthorPerson();
+        ResponseMetaDataAuthorPerson authorPerson = new ResponseMetaDataAuthorPerson();
         authorPerson.setGivenName("Jens");
         authorPerson.setFamilyName("Jensen");
         authorPerson.setSecondAndFurtherGivenNames("Bo&Henrik");
@@ -1664,11 +1662,11 @@ public class IhexdsApiIT extends AbstractIntegrationTest {
 
         responseMetaData.setSourcePatientId(sourcePatientId);
 
-        GeneratedMetaDataSourcePatientInfo sourcePatientInfo = new GeneratedMetaDataSourcePatientInfo();
+        ResponseMetaDataSourcePatientInfo sourcePatientInfo = new ResponseMetaDataSourcePatientInfo();
         sourcePatientInfo.setFamilyName("Andersen");
         sourcePatientInfo.setGivenName("AndersMEGETMEGETMEGETMEGETMEGETMEGETMEGETLANGTNAVN");
         sourcePatientInfo.setSecondAndFurtherGivenNames("Aftaler");
-        sourcePatientInfo.setGender(GeneratedMetaDataSourcePatientInfo.GenderEnum.M);
+        sourcePatientInfo.setGender(ResponseMetaDataSourcePatientInfo.GenderEnum.M);
         sourcePatientInfo.setBirthTime("19910629");
 
         responseMetaData.setSourcePatientInfo(sourcePatientInfo);
@@ -1749,7 +1747,7 @@ public class IhexdsApiIT extends AbstractIntegrationTest {
         authorIns.setScheme("1.2.208.176.1.1");
         responseMetaData.setAuthorInstitution(authorIns);
 
-        GeneratedMetaDataAuthorPerson authorPerson = new GeneratedMetaDataAuthorPerson();
+        ResponseMetaDataAuthorPerson authorPerson = new ResponseMetaDataAuthorPerson();
         authorPerson.setGivenName("Jens");
         authorPerson.setFamilyName("Jensen");
         authorPerson.setSecondAndFurtherGivenNames("Bo&Henrik");
@@ -1808,11 +1806,11 @@ public class IhexdsApiIT extends AbstractIntegrationTest {
 
         responseMetaData.setSourcePatientId(sourcePatientId);
 
-        GeneratedMetaDataSourcePatientInfo sourcePatientInfo = new GeneratedMetaDataSourcePatientInfo();
+        ResponseMetaDataSourcePatientInfo sourcePatientInfo = new ResponseMetaDataSourcePatientInfo();
         sourcePatientInfo.setFamilyName("Andersen");
         sourcePatientInfo.setGivenName("AndersMEGETMEGETMEGETMEGETMEGETMEGETMEGETLANGTNAVN");
         sourcePatientInfo.setSecondAndFurtherGivenNames("Aftaler");
-        sourcePatientInfo.setGender(GeneratedMetaDataSourcePatientInfo.GenderEnum.M);
+        sourcePatientInfo.setGender(ResponseMetaDataSourcePatientInfo.GenderEnum.M);
         sourcePatientInfo.setBirthTime("19910629");
 
         responseMetaData.setSourcePatientInfo(sourcePatientInfo);
@@ -1863,7 +1861,7 @@ public class IhexdsApiIT extends AbstractIntegrationTest {
 
     }
 
-// ---------------------------- Upload Choose xml and Repository-----------------------\\
+    // ---------------------------- Upload Choose xml and Repository-----------------------\\
     @Test
     public void testv1Iti41PreviewUploadPostController() throws ApiException, URISyntaxException, IOException {
 
@@ -1880,7 +1878,7 @@ public class IhexdsApiIT extends AbstractIntegrationTest {
         assertEquals(200, result.getStatusCode());
 
     }
-// TODO Once repo matetrs
+    // TODO Once repo matetrs
    /* @Test
     public void testv1Iti41PreviewUploadPostControllerThrowsErrorRepositoryIsNull() throws ApiException, URISyntaxException, IOException {
 
@@ -1898,7 +1896,6 @@ public class IhexdsApiIT extends AbstractIntegrationTest {
         //assertTrue(apiException.getResponseBody().contains("Credentials do not exist"));
 
     }
-    */
     @Test
 
     public void testv1Iti41PreviewUploadPostControllerThrowsErrorXMLIsNull() throws ApiException, URISyntaxException, IOException {
@@ -1923,5 +1920,5 @@ public class IhexdsApiIT extends AbstractIntegrationTest {
         assertEquals(200, result.getStatusCode());
         assertEquals(1, result.getData().size());
 
-    }
+    }*/
 }
