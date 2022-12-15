@@ -73,7 +73,19 @@ public class Iti41ServiceImpl implements Iti41Service {
 
         // Set metadata from xml
         data.setUniqueId(generatedMetaData.getUniqueId());
-        data.setSourcePatientInfo(generatedMetaData.getSourcePatientInfo());
+
+
+        ResponseMetaDataSourcePatientInfo metaDataSourcePatientInfo = new ResponseMetaDataSourcePatientInfo();
+
+        metaDataSourcePatientInfo.setFamilyName(generatedMetaData.getSourcePatientInfo().getFamilyName());
+        metaDataSourcePatientInfo.setGender(ResponseMetaDataSourcePatientInfo.GenderEnum.fromValue(generatedMetaData.getSourcePatientInfo().getGender().toString())
+        );
+        metaDataSourcePatientInfo.setGivenName(generatedMetaData.getSourcePatientInfo().getGivenName());
+        metaDataSourcePatientInfo.setSecondAndFurtherGivenNames(generatedMetaData.getSourcePatientInfo().getSecondAndFurtherGivenNames());
+        metaDataSourcePatientInfo.setBirthTime(generatedMetaData.getSourcePatientInfo().getBirthTime());
+
+
+        data.setSourcePatientInfo(metaDataSourcePatientInfo);
         data.setPatientId(generatedMetaData.getPatientId());
         data.setSourcePatientId(generatedMetaData.getSourcePatientId());
         data.setCreationTime(generatedMetaData.getCreationTime());
@@ -83,7 +95,16 @@ public class Iti41ServiceImpl implements Iti41Service {
         data.setTitle(generatedMetaData.getTitle());
         data.setAuthorInstitution(generatedMetaData.getAuthorInstitution());
         data.setTypeCode(generatedMetaData.getTypeCode());
-        data.setAuthorPerson(generatedMetaData.getAuthorPerson());
+
+        ResponseMetaDataAuthorPerson responseMetaDataAuthorPerson = new ResponseMetaDataAuthorPerson();
+
+        responseMetaDataAuthorPerson.setFamilyName(generatedMetaData.getAuthorPerson().getFamilyName());
+        responseMetaDataAuthorPerson.setGivenName(generatedMetaData.getAuthorPerson().getGivenName());
+        responseMetaDataAuthorPerson.setSecondAndFurtherGivenNames(generatedMetaData.getAuthorPerson().getSecondAndFurtherGivenNames());
+
+        data.setAuthorPerson(responseMetaDataAuthorPerson);
+
+
         data.setEventCode(generatedMetaData.getEventCode());
 
 
