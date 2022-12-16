@@ -1,6 +1,9 @@
 package dk.kvalitetsit.ihexdsapi.controller.exception;
 
+import dk.kvalitetsit.ihexdsapi.utility.ValutGenerator;
 import org.openapitools.model.BasicError;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -19,8 +22,11 @@ public class BadRequestException extends RuntimeException {
 
     private final int errorCode;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(BadRequestException.class);
 
-    ERROR_CODE(int errorCode) {
+
+
+        ERROR_CODE(int errorCode) {
         this.errorCode = errorCode;
     }
         private final static Map<Integer, ERROR_CODE> intToMap = new HashMap<>();
@@ -55,6 +61,7 @@ public class BadRequestException extends RuntimeException {
         error.setStatusText(HttpStatus.BAD_REQUEST.getReasonPhrase());
         error.setTimestamp(OffsetDateTime.now());
         error.setErrorCode(errorCode.errorCode);
+
 
         return new BadRequestException(error);
     } public static BadRequestException createException(ERROR_CODE errorCode, String errorMessage, List<String> errors) {

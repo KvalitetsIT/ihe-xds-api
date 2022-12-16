@@ -178,7 +178,7 @@ public class CredentialServiceImpl implements CredentialService {
 
             }
         }
-
+        LOGGER.info(responses.toString());
         return responses;
     }
 
