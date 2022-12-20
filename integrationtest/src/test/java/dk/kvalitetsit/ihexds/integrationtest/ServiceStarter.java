@@ -99,6 +99,8 @@ public class ServiceStarter {
         System.setProperty("object.type.codes", "STABLE");
         System.setProperty("object.type.names", "Stable");
 
+        System.setProperty("CORS_ALLOWED_ORIGINS", "http://localhost:3000");
+
 
         SpringApplication.run((VideoLinkHandlerApplication.class));
     }
@@ -186,6 +188,8 @@ public class ServiceStarter {
 
                 .withEnv("object.type.codes", "STABLE")
                 .withEnv("object.type.names", "Stable")
+
+                .withEnv("CORS_ALLOWED_ORIGINS", "http://localhost:3000")
 
 
 //                .withEnv("JVM_OPTS", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000")
