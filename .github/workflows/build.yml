@@ -18,7 +18,7 @@ jobs:
         echo "DOCKER_DOCUMENTATION=kvalitetsit/ihe-xds-api-documentation" >> $GITHUB_ENV
 
 # Checkout source code
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v6.0.3
 
 # Fail if DOCKER_SERVICE is ihe-xds-api and repo is not ihe-xds-api. This step can be deleted once
     - name: Initial build
